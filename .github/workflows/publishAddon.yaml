@@ -8,3 +8,5 @@ on:
 jobs:
   publish-addon:
     uses:  Pepperi-Addons/development-guidelines/.github/workflows/publish.yml@master
+    secrets:
+      PEPPERI_ADDON_PUBLISH_KEY: ${{ secrets.PEPPERI_ADDON_PUBLISH_KEY }}
