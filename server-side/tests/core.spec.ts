@@ -284,8 +284,9 @@ describe('Create schema', async () => {
 
             expect(schema).to.be.an('object');
             expect(schema.Name).to.be.a('string');
-            expect(schema.Type).to.be.a('string');
-            expect(schema.GenericResource).to.be.a('boolean');
+            expect(schema.Name).to.equal(request.query.resource_name);
+            expect(schema.Type).to.equal('papi');
+            expect(schema.GenericResource).to.be.true;
             expect(schema.Fields).to.be.an('object');
         }
     })
