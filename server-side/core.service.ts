@@ -46,11 +46,11 @@ export class CoreService
 			Fields: {}
 		};
 
-		const uniqueFields = ['WrntyID', 'UUID', 'ExternalID'];
+		const uniqueFields = ['InternalID', 'UUID', 'ExternalID'];
 
 		for (const resourceField of resourceFields)
 		{
-			schema.Fields[resourceField.Label] = {
+			schema.Fields[resourceField.FieldID] = {
 				Type: this.getFieldTypeFromFieldsFormat(resourceField),
 				Unique: uniqueFields.includes(resourceField.Label),
 			}
