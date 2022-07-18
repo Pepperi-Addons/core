@@ -278,7 +278,7 @@ describe('Create schema', async () => {
                 }
             }
 
-            const core = new CoreService(request, papiService);
+            const core = new CoreService(request.query.resource_name ,request, papiService);
 
             const schema = await core.createSchema();
 
@@ -311,9 +311,7 @@ describe('Create schema', async () => {
                 }
             }
 
-            const core = new CoreService(request, papiService);
-
-            await expect(core.createSchema()).eventually.to.be.rejectedWith(`The resource name is not valid. Please provide a valid resource name.`);
+            expect(() => new CoreService(request.query.resource_name, request, papiService)).to.throw('The resource name is not valid. Please provide a valid resource name.');
         }
     )
 });
