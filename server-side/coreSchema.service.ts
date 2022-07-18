@@ -2,7 +2,7 @@ import { Request } from "@pepperi-addons/debug-server";
 import { ResourceField, ResourceFields, RESOURCE_TYPES } from "./constants";
 import PapiService from "./papi.service";
 
-export class CoreService
+export class CoreSchemaService
 {
 	constructor(protected resource: string, protected request: Request, protected papi: PapiService)
 	{
@@ -23,8 +23,10 @@ export class CoreService
 	/**
 	 * Throws an error if the requested resource is not supported
 	 */
-	private validateResource() {
-		if (!RESOURCE_TYPES.includes(this.resource)) {
+	private validateResource() 
+	{
+		if (!RESOURCE_TYPES.includes(this.resource)) 
+		{
 			const errorMessage = `The resource name is not valid. Please provide a valid resource name.`;
 			console.error(errorMessage);
 			throw new Error(errorMessage);
@@ -84,7 +86,8 @@ export class CoreService
 		}
 	}
 
-	public async purgeSchema() {
+	public async purgeSchema() 
+	{
 		// DI-20776: Implement the purgeSchema method
 		// In the future we should use “hard delete” of papi - which is not developed yet
 		// There is no way to uninstall core addons anyhow

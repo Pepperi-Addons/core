@@ -2,7 +2,7 @@ import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import PapiService from '../papi.service';
-import { CoreService } from '../core.service';
+import { CoreSchemaService } from '../coreSchema.service';
 import { mockClient } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { PapiClient } from '@pepperi-addons/papi-sdk';
@@ -278,7 +278,7 @@ describe('Create schema', async () => {
                 }
             }
 
-            const core = new CoreService(request.query.resource_name ,request, papiService);
+            const core = new CoreSchemaService(request.query.resource_name ,request, papiService);
 
             const schema = await core.createSchema();
 
@@ -311,7 +311,7 @@ describe('Create schema', async () => {
                 }
             }
 
-            expect(() => new CoreService(request.query.resource_name, request, papiService)).to.throw('The resource name is not valid. Please provide a valid resource name.');
+            expect(() => new CoreSchemaService(request.query.resource_name, request, papiService)).to.throw('The resource name is not valid. Please provide a valid resource name.');
         }
     )
 });
