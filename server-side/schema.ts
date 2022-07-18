@@ -1,5 +1,6 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import { Core } from './core';
+import { CoreService } from './core.service';
+import { Helper } from './helper';
 import PapiService from './papi.service';
 
 export async function create(client: Client, request: Request) 
@@ -9,8 +10,9 @@ export async function create(client: Client, request: Request)
 	switch (request.method) 
 	{
 	case "POST": {
-		const papiService = new PapiService(client);
-		const core = new Core(request, papiService);
+		const papiClient = Helper.getPapiClient(client);
+		const papiService = new PapiService(papiClient);
+		const core = new CoreService(request, papiService);
 
 		return await core.createSchema();
 	}

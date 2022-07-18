@@ -2,7 +2,7 @@ import { Request } from "@pepperi-addons/debug-server";
 import { ResourceField, ResourceFields, RESOURCE_TYPES } from "./constants";
 import PapiService from "./papi.service";
 
-export class Core
+export class CoreService
 {
 	protected resource: string;
 

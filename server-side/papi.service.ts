@@ -5,18 +5,10 @@ import { ResourceFields } from './constants';
 export class PapiService 
 {
 
-	papiClient: PapiClient
+	// papiClient: PapiClient
 
-	constructor(private client: Client) 
-	{
-		this.papiClient = new PapiClient({
-			baseURL: client.BaseURL,
-			token: client.OAuthAccessToken,
-			addonUUID: client.AddonUUID,
-			addonSecretKey: client.AddonSecretKey,
-			actionUUID: client.ActionUUID
-		});
-	}
+	constructor(protected papiClient: PapiClient) 
+	{}
 
 	async getResourceFields(resourceName: string): Promise<ResourceFields> 
 	{
