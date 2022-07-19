@@ -53,8 +53,13 @@ export async function resources(client: Client, request: Request)
 		const papiService = new PapiService(papiClient);
 		const core = new CoreService(request.query?.resource_name, request, papiService);
 
-		if(request.query.key){
+		if(request.query.key)
+		{
 			return await core.getByKey();
+		}
+		else
+		{
+			return await core.getResources();
 		}
 	}
 	default: {
