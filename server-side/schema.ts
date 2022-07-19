@@ -12,9 +12,28 @@ export async function create(client: Client, request: Request)
 	case "POST": {
 		const papiClient = Helper.getPapiClient(client);
 		const papiService = new PapiService(papiClient);
-		const core = new CoreService(request, papiService);
+		const core = new CoreService(request.query?.resource_name, request, papiService);
 
 		return await core.createSchema();
+	}
+	default: {
+		throw new Error(`Unsupported method: ${request.method}`);
+	}
+	}
+}
+
+export async function purge(client: Client, request: Request) 
+{
+	console.log(`Body received: ${JSON.stringify(request.body)}`);
+
+	switch (request.method) 
+	{
+	case "POST": {
+		const papiClient = Helper.getPapiClient(client);
+		const papiService = new PapiService(papiClient);
+		const core = new CoreService(request.body.Name, request, papiService);
+
+		return await core.purgeSchema();
 	}
 	default: {
 		throw new Error(`Unsupported method: ${request.method}`);

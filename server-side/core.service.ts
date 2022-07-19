@@ -4,11 +4,9 @@ import PapiService from "./papi.service";
 
 export class CoreService
 {
-	protected resource: string;
-
-	constructor(protected request: Request, protected papi: PapiService)
+	constructor(protected resource: string, protected request: Request, protected papi: PapiService)
 	{
-		this.resource = this.request.query.resource_name;
+		this.validateResource();
 	}
 
 	/**
@@ -16,17 +14,17 @@ export class CoreService
      */
 	public async createSchema(): Promise<any>
 	{
-		this.validateCreateSchemaPrerequisites();
 		const resourceFields: ResourceFields = await this.papi.getResourceFields(this.resource);
 		const schema = this.translateResourceFieldsToSchema(resourceFields);
 
 		return schema;
 	}
 
-	protected validateCreateSchemaPrerequisites()
-	{
-		if(!RESOURCE_TYPES.includes(this.resource))
-		{
+	/**
+	 * Throws an error if the requested resource is not supported
+	 */
+	private validateResource() {
+		if (!RESOURCE_TYPES.includes(this.resource)) {
 			const errorMessage = `The resource name is not valid. Please provide a valid resource name.`;
 			console.error(errorMessage);
 			throw new Error(errorMessage);
@@ -85,4 +83,11 @@ export class CoreService
 			return 'String'
 		}
 	}
+
+	public async purgeSchema() {
+		// DI-20776: Implement the purgeSchema method
+		// In the future we should use “hard delete” of papi - which is not developed yet
+		// There is no way to uninstall core addons anyhow
+	}
+
 }
