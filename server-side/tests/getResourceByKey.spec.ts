@@ -45,7 +45,7 @@ describe('GET resource by key', async () => {
 
         const core = new CoreService(request.query.resource_name ,request, papiService);
 
-        const item = await core.getByKey();
+        const item = await core.getResourceByKey();
 
         expect(item).to.be.an('object');
         expect(item).to.have.property('Key', requestedKey);

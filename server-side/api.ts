@@ -18,7 +18,7 @@ export async function get_users_by_key(client: Client, request: Request)
 }
 // #endregion
 
-// #region GET
+// #region GET/POST
 
 export async function items(client: Client, request: Request) 
 {
@@ -36,13 +36,16 @@ export async function users(client: Client, request: Request)
 }
 // #endregion
 
+
 async function dataSourceQueriesAdapter(client: Client, request: Request, resourceName: string)
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
+	console.log(`Body received: ${JSON.stringify(request.body)}`);
 
 	switch (request.method) 
 	{
-	case "GET": {
+	case "GET": 
+	case "POST": {
 		const requestCopy = {...request};
 		requestCopy.query.resource_name = resourceName;
 		return resources(client, requestCopy);

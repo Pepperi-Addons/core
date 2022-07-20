@@ -25,7 +25,7 @@ export class CoreService
 	/**
 	 * Return the item with the given key
 	 */
-	public async getByKey() 
+	public async getResourceByKey() 
 	{
 		this.validateKey();
 
