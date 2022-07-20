@@ -1,7 +1,7 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
 import { resources } from './data_source_api';
 
-
+// #region get by key
 export async function get_items_by_key(client: Client, request: Request) 
 {
 	return await dataSourceQueriesAdapter(client, request, "items");
@@ -18,7 +18,7 @@ export async function get_users_by_key(client: Client, request: Request)
 }
 // #endregion
 
-// #region single resource
+// #region GET
 
 export async function items(client: Client, request: Request) 
 {
