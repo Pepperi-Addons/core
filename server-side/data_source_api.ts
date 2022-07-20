@@ -48,7 +48,8 @@ export async function resources(client: Client, request: Request)
 
 	switch (request.method) 
 	{
-	case "GET": {
+	case "GET":
+	{
 		const papiClient = Helper.getPapiClient(client);
 		const papiService = new PapiService(papiClient);
 		const core = new CoreService(request.query?.resource_name, request, papiService);
@@ -62,7 +63,16 @@ export async function resources(client: Client, request: Request)
 			return await core.getResources();
 		}
 	}
-	default: {
+	case "POST":
+	{
+		const papiClient = Helper.getPapiClient(client);
+		const papiService = new PapiService(papiClient);
+		const core = new CoreService(request.query?.resource_name, request, papiService);
+
+		return await core.createResource();
+	}
+	default:
+	{
 		throw new Error(`Unsupported method: ${request.method}`);
 	}
 	}

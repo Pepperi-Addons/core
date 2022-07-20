@@ -13,6 +13,11 @@ export class PapiService
 		return this.papiClient.get(url);
 	}
 
+	createResource(resourceName: string, body: any)
+	{
+		return this.papiClient.post(`/${resourceName}`, body);
+	}
+
 	async getResources(resourceName: string, query: any)
 	{
 		let url = `/${resourceName}`;
