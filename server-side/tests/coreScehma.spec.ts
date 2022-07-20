@@ -28,7 +28,7 @@ describe('Create schema', async () => {
         const papiService = new PapiService(papiClient);
 
         const request: Request = {
-            method: 'POST',
+            method: 'GET',
             body: {},
             header: {},
             query:
