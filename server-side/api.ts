@@ -25,7 +25,7 @@ export async function items(client: Client, request: Request)
 	return await dataSourceQueriesAdapter(client, request, "items");
 }
 
-export async function keys(client: Client, request: Request) 
+export async function accounts(client: Client, request: Request) 
 {
 	return await dataSourceQueriesAdapter(client, request, "accounts");
 }
