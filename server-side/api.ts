@@ -45,7 +45,7 @@ async function dataSourceQueriesAdapter(client: Client, request: Request, resour
 	case "GET": {
 		const requestCopy = {...request};
 		requestCopy.query.resource_name = resourceName;
-		return resources(client, request);
+		return resources(client, requestCopy);
 	}
 	default: {
 		throw new Error(`Unsupported method: ${request.method}`);
