@@ -56,7 +56,7 @@ export class CoreService
 		case "InternalID":
 		{
 			const internalId = this.request.query.value;
-			const papiItem = this.papi.getResourceByInternalId(this.resource, internalId);
+			const papiItem = await this.papi.getResourceByInternalId(this.resource, internalId);
 			const transaltedItem = this.translatePapiItemToItem(papiItem);
 
 			return transaltedItem;
@@ -64,7 +64,7 @@ export class CoreService
 		case "ExternalID":
 		{
 			const externalId = this.request.query.value;
-			const papiItem = this.papi.getResourceByExternalId(this.resource, externalId);
+			const papiItem = await this.papi.getResourceByExternalId(this.resource, externalId);
 			const transaltedItem = this.translatePapiItemToItem(papiItem);
 
 			return transaltedItem;
