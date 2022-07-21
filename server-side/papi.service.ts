@@ -1,5 +1,6 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { ResourceFields } from './constants';
+import { Helper } from './helper';
 
 export class PapiService 
 {
@@ -12,7 +13,16 @@ export class PapiService
 		return this.papiClient.get(url);
 	}
 
-	getResourceByKey(resourceName: string, key: string): Promise<any> 
+	async getResources(resourceName: string, query: any)
+	{
+		let url = `/${resourceName}`;
+		const encodedQeury = Helper.encodeQueryParams(query);
+		url = `${url}?${encodedQeury}`;
+
+		return this.papiClient.get(url);
+	}
+
+	async getResourceByKey(resourceName: string, key: string): Promise<any> 
 	{
 		return this.papiClient.get(`/${resourceName}/UUID/${key}`);
 	}
