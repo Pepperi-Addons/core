@@ -1,12 +1,8 @@
-import { PapiClient, InstalledAddon } from '@pepperi-addons/papi-sdk';
-import { Client } from '@pepperi-addons/debug-server';
+import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { ResourceFields } from './constants';
 
 export class PapiService 
 {
-
-	// papiClient: PapiClient
-
 	constructor(protected papiClient: PapiClient) 
 	{}
 
@@ -16,9 +12,9 @@ export class PapiService
 		return this.papiClient.get(url);
 	}
 
-	getAddons(): Promise<InstalledAddon[]> 
+	getResourceByKey(resourceName: string, key: string): Promise<any> 
 	{
-		return this.papiClient.addons.installedAddons.find({});
+		return this.papiClient.get(`/${resourceName}/UUID/${key}`);
 	}
 }
 
