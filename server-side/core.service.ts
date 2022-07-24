@@ -175,12 +175,22 @@ export class CoreService
 
 		this.trasnlateUniqueFieldQueriesToPapi(papiSearchBody);
 
+		// If fields include property Key, remove it from the fields list and and UUID instead.
+		const fields = papiSearchBody.fields?.split(',');
+		if(fields?.includes("Key")){
+			fields.splice(fields.indexOf("Key"), 1);
+			fields.push("UUID");
+
+			papiSearchBody.fields = fields.join(',');
+
+		}
+
 		return papiSearchBody;
 	}
 
 	private trasnlateUniqueFieldQueriesToPapi(papiSearchBody: any) {
 		if (this.request.body.UniqueFieldID === "ExternalID") {
-			papiSearchBody.where = `ExternalID in (${JSON.parse(this.request.body.UniqueFieldList).join(',')}) AND (${papiSearchBody.where})`;
+			papiSearchBody.where = `ExternalID in ('${this.request.body.UniqueFieldList.join('\',')}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
 		}
 
 		if (this.request.body.UniqueFieldID === "InternalID") {
@@ -199,7 +209,7 @@ export class CoreService
 			this.request.body.UUIDList = this.request.body.KeyList;
 		}
 
-		for (const supportedSearchField in papiSupportedSearchFields) {
+		for (const supportedSearchField of papiSupportedSearchFields) {
 			if (this.request.body[supportedSearchField]) {
 				papiSearchBody[supportedSearchField] = this.request.body[supportedSearchField];
 			}
