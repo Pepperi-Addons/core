@@ -1,5 +1,5 @@
 import { Request } from "@pepperi-addons/debug-server";
-import { RESOURCE_TYPES } from "./constants";
+import { RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import PapiService from "./papi.service";
 
 export class CoreService 
@@ -25,15 +25,75 @@ export class CoreService
 	/**
 	 * Return the item with the given key
 	 */
-	public async getResourceByKey() 
+	public async getResourceByKey(key?: string): Promise<any>
 	{
-		this.validateKey();
+		const requestedKey = key ?? this.request.query.key;
 
-		const key = this.request.query.key;
-		const papiItem = await this.papi.getResourceByKey(this.resource, key);
+		this.validateKey(requestedKey);
+
+		const papiItem = await this.papi.getResourceByKey(this.resource, requestedKey);
 		const transaltedItem = this.translatePapiItemToItem(papiItem);
 
 		return transaltedItem;
+	}
+
+	/**
+	 * Returns an item by the unique field
+	 */
+	public async getResourceByUniqueField()
+	{
+		//validate field_id and value query parameters are present
+		this.validateUniqueKeyPrerequisites();
+
+		switch(this.request.query.field_id)
+		{
+		case "UUID":
+		case "Key":
+		{
+			const key = this.request.query.value;
+			return this.getResourceByKey(key);
+		}
+		case "InternalID":
+		{
+			const internalId = this.request.query.value;
+			const papiItem = await this.papi.getResourceByInternalId(this.resource, internalId);
+			const transaltedItem = this.translatePapiItemToItem(papiItem);
+
+			return transaltedItem;
+		}
+		case "ExternalID":
+		{
+			const externalId = this.request.query.value;
+			const papiItem = await this.papi.getResourceByExternalId(this.resource, externalId);
+			const transaltedItem = this.translatePapiItemToItem(papiItem);
+
+			return transaltedItem;
+		}
+		default:
+		{
+			// Something weird happened, since the field_id is not one of the above
+			// and it is validated in the validateUniqueKeyPrerequisites function...
+			const errorMessage = `The field_id is not valid. Please provide a valid field_id.`;
+			console.error(errorMessage);
+			throw new Error(errorMessage);
+		}
+		}
+	}
+
+	/**
+	 * Throws an exception if field_id and value query parameters are not present
+	 */
+	validateUniqueKeyPrerequisites()
+	{
+		if (!(this.request.query.field_id && this.request.query.value))
+		{
+			throw new Error(`Missing the required field_id and value query parameters.`);
+		}
+
+		if(!UNIQUE_FIELDS.includes(this.request.query.field_id))
+		{
+			throw new Error(`The field_id query parameter is not valid. Supported field_ids are: ${UNIQUE_FIELDS.join(", ")}`);
+		}
 	}
 
 	/**
@@ -149,9 +209,9 @@ export class CoreService
 	/**
 	 * Throws an error if no key is provided
 	 */
-	private validateKey() 
+	private validateKey(key: string) 
 	{
-		if (!this.request.query.key) 
+		if (!key) 
 		{
 			throw new Error("No key provided");
 		}

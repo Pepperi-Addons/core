@@ -1,5 +1,5 @@
 import { Request } from "@pepperi-addons/debug-server";
-import { ResourceField, ResourceFields, RESOURCE_TYPES } from "./constants";
+import { ResourceField, ResourceFields, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import PapiService from "./papi.service";
 
 export class CoreSchemaService
@@ -46,13 +46,11 @@ export class CoreSchemaService
 			Fields: {}
 		};
 
-		const uniqueFields = ['InternalID', 'UUID', 'ExternalID'];
-
 		for (const resourceField of resourceFields)
 		{
 			schema.Fields[resourceField.FieldID] = {
 				Type: this.getFieldTypeFromFieldsFormat(resourceField),
-				Unique: uniqueFields.includes(resourceField.FieldID),
+				Unique: UNIQUE_FIELDS.includes(resourceField.FieldID),
 			}
 		}
         
