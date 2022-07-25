@@ -296,9 +296,11 @@ export class CoreService
 	 */
 	public async batch(): Promise<DIMXObject[]>
 	{
-		const body = [...this.request.body];
+		this.validateBatchPrerequisites();
+
+		const batchObjects = [...this.request.body.Objects];
 		// Transalte the items to PAPI format
-		const papiItems = body.map(item => this.translateItemToPapiItem(item));
+		const papiItems = batchObjects.map(batchObject => this.translateItemToPapiItem(batchObject));
 		const papiBatchResult: PapiBatchResponse = await this.papi.batch(this.resource, papiItems);
 		// PAPI batch objects are returned with empty UUIDs. We have to get the
 		// actual UUIDs from PAPI and replace the empty UUIDs with the actual UUIDs.
@@ -308,6 +310,29 @@ export class CoreService
 		const batchDimxObjects = this.translatePapiBatchResponseToDimxObjects(papiBatchResult)
 
 		return batchDimxObjects;
+	}
+
+	/**
+	 * Throws an error in case the body is missing an Objects array, or if a OverwriteObject=true is passed.
+	 */
+	validateBatchPrerequisites()
+	{
+		let errorMessage: string = '';
+		if(!(this.request.body?.Objects && Array.isArray(this.request.body?.Objects)))
+		{
+			errorMessage = 'Missing an Objects array';
+		}
+
+		if(this.request.body.OverwriteObject)
+		{
+			errorMessage = 'OverwriteObject parameter is not supported.'
+		}
+
+		if(errorMessage)
+		{
+			console.error(errorMessage);
+			throw new Error(errorMessage);
+		}
 	}
 
 	/**
