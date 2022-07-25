@@ -1,5 +1,6 @@
 import { Request } from "@pepperi-addons/debug-server";
-import { RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
+import { DIMXObject } from "@pepperi-addons/papi-sdk";
+import { PapiBatchResponse, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import PapiService from "./papi.service";
 
 export class CoreService 
@@ -276,12 +277,73 @@ export class CoreService
 	}
 
 	/**
-	 * Translate the item to PAPI format
-	 * @param body the item to translate
+	 * Batch upserts a list of items
+	 * @returns a list of upserted items
 	 */
-	protected translateItemToPapiItem(body: any)
+	public async batch(): Promise<DIMXObject[]>
 	{
-		const resItem = {...body};
+		const body = {...this.request.body};
+		// Transalte the items to PAPI format
+		const papiItems = body.map(item => this.translateItemToPapiItem(item));
+		const papiBatchResult: PapiBatchResponse = await this.papi.batch(this.resource, papiItems);
+		// PAPI batch objects are returned with empty UUIDs. We have to get the
+		// actual UUIDs from PAPI and replace the empty UUIDs with the actual UUIDs.
+		await this.fillPapiBatchResultWithUUIDs(papiBatchResult);
+
+		// To comply with DIMX Batch operations, we have to return DIMXObjects
+		const batchDimxObjects = this.translatePapiBatchResponseToDimxObjects(papiBatchResult)
+
+		return batchDimxObjects;
+	}
+
+	/**
+	 * Create an Array of DIMXObject based on a PapiBatchResponse
+	 * @param papiBatchResult The papiBatchResult from which to create DIMXObjects
+	 * @returns an Array of DIMXObject based on a PapiBatchResponse
+	 */
+	protected translatePapiBatchResponseToDimxObjects(papiBatchResult: PapiBatchResponse): Array<DIMXObject>
+	{
+		const res: DIMXObject[] = papiBatchResult.map(papiItem => {
+			return {
+				Key: papiItem.UUID,
+				Status: papiItem.Status,
+				...(papiItem.Status === "Error" && {Details: papiItem.Status})
+			}
+		});
+
+		return res;
+	}
+
+	/**
+	 * PAPI batch objects are returned with empty UUIDs. We have to get the
+	 * actual UUIDs from PAPI and replace the empty UUIDs with the actual UUIDs.
+	 * @param papiBatchResult the PapiBatchResponse object on which to add UUIDs
+	 */
+	protected async fillPapiBatchResultWithUUIDs(papiBatchResult: PapiBatchResponse)
+	{
+		const requestCopy = { ...this.request };
+
+		// Failed items are returned with InternalID = 0, we will filter them out.
+		requestCopy.body =
+		{
+			InternalIDList: papiBatchResult.filter(item => item.InternalID != 0).map(item => item.InternalID),
+			include_deleted: true,
+			fields: ["UUID", "InternalID"]
+		};
+
+		const coreService = new CoreService(this.resource, requestCopy, this.papi);
+		const searchRes = await coreService.search();
+
+		papiBatchResult.forEach(batchItem => batchItem.UUID = searchRes.find(searchItem => searchItem.InternalID === batchItem.InternalID).UUID);
+	}
+
+	/**
+	 * Translate the item to PAPI format
+	 * @param item the item to translate
+	 */
+	protected translateItemToPapiItem(item: any)
+	{
+		const resItem = {...item};
 
 		// If item has both UUID and Ket fields, make sure they are equivalent
 		if (resItem.UUID && resItem.Key && resItem.UUID !== resItem.Key) 
