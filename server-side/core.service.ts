@@ -142,9 +142,9 @@ export class CoreService
 	 */
 	validateSearchPrerequisites()
 	{
-		if(this.request.body.UniquFieldID && !UNIQUE_FIELDS.includes(this.request.body.UniquFieldID))
+		if(this.request.body.UniqueFieldID && !UNIQUE_FIELDS.includes(this.request.body.UniqueFieldID))
 		{
-			const errorMessage = `The passed UniqueFieldID is not supported: '${this.request.body.UniquFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(UNIQUE_FIELDS)}`;
+			const errorMessage = `The passed UniqueFieldID is not supported: '${this.request.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(UNIQUE_FIELDS)}`;
 			console.error(errorMessage);
 			throw new Error(errorMessage);
 		}
@@ -158,7 +158,7 @@ export class CoreService
 
 		if(this.request.body.UniqueFieldList && !this.request.body.UniqueFieldID)
 		{
-			const errorMessage = `Missing UniqueFieldId parameter.`;
+			const errorMessage = `Missing UniqueFieldID parameter.`;
 			console.error(errorMessage);
 			throw new Error(errorMessage);
 		}

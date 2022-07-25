@@ -43,7 +43,7 @@ export class PapiService
 		return this.papiClient.get(`/${resourceName}/${internalId}`);
 	}
 
-	searchResource(resourceName: string, body: void)
+	async searchResource(resourceName: string, body: void)
 	{
 		return this.papiClient.post(`/${resourceName}/search`, body);
 	}
