@@ -177,7 +177,7 @@ export class CoreService
 	{
 		const resItem = {...body};
 
-		// If item has both UUID and Ket fields, make sure they are equivalent
+		// If item has both UUID and Key fields, make sure they are equivalent
 		if (resItem.UUID && resItem.Key && resItem.UUID !== resItem.Key) 
 		{
 			throw new Error("The UUID and Key fields are not equivalent.");
