@@ -296,7 +296,7 @@ export class CoreService
 	 */
 	public async batch(): Promise<DIMXObject[]>
 	{
-		const body = {...this.request.body};
+		const body = [...this.request.body];
 		// Transalte the items to PAPI format
 		const papiItems = body.map(item => this.translateItemToPapiItem(item));
 		const papiBatchResult: PapiBatchResponse = await this.papi.batch(this.resource, papiItems);
@@ -322,7 +322,7 @@ export class CoreService
 			return {
 				Key: papiItem.UUID,
 				Status: papiItem.Status,
-				...(papiItem.Status === "Error" && {Details: papiItem.Status})
+				...(papiItem.Status === "Error" && {Details: papiItem.Message})
 			}
 		});
 
@@ -343,13 +343,20 @@ export class CoreService
 		{
 			InternalIDList: papiBatchResult.filter(item => item.InternalID != 0).map(item => item.InternalID),
 			include_deleted: true,
-			fields: ["UUID", "InternalID"]
+			fields: "UUID,InternalID"
 		};
 
 		const coreService = new CoreService(this.resource, requestCopy, this.papi);
 		const searchRes = await coreService.search();
 
-		papiBatchResult.forEach(batchItem => batchItem.UUID = searchRes.find(searchItem => searchItem.InternalID === batchItem.InternalID).UUID);
+		for (const searchItem of searchRes)
+		{
+			const papiItem = papiBatchResult.find(batchItem => batchItem.InternalID === searchItem.InternalID);
+			if(papiItem)
+			{
+				papiItem.UUID = searchItem.UUID;
+			}
+		}
 	}
 
 	/**

@@ -118,7 +118,7 @@ export async function search(client: Client, request: Request)
 	case "POST":
 	{
 		const coreService = getCoreService(client, request);
-		return coreService.search();
+		return coreService.batch();
 	}
 	default:
 	{
