@@ -25,7 +25,7 @@ export class CoreService
 	/**
 	 * Return the item with the given key
 	 */
-	public async getByKey() 
+	public async getResourceByKey() 
 	{
 		this.validateKey();
 
@@ -92,6 +92,45 @@ export class CoreService
 				query.fields = fields.join(",");
 			}
 		}
+	}
+	/**
+	 * Create a new item
+	 * @returns the newly created item
+	 */
+	public async createResource()
+	{
+		// Translate the item to PAPI format
+		const papiItemRequestBody = this.translateItemToPapiItem(this.request.body);
+		// Create the PAPI item
+		const papiItem = await this.papi.createResource(this.resource, papiItemRequestBody);
+		// Transalte the PAPI item to an item
+		const translatedItem = this.translatePapiItemToItem(papiItem);
+
+		return translatedItem;
+	}
+
+	/**
+	 * Translate the item to PAPI format
+	 * @param body the item to translate
+	 */
+	protected translateItemToPapiItem(body: any)
+	{
+		const resItem = {...body};
+
+		// If item has both UUID and Key fields, make sure they are equivalent
+		if (resItem.UUID && resItem.Key && resItem.UUID !== resItem.Key) 
+		{
+			throw new Error("The UUID and Key fields are not equivalent.");
+		}
+
+		// If item has a Key field, set the UUID field to the same value and delete the Key field
+		if (resItem.Key)
+		{
+			resItem.UUID = resItem.Key;
+			delete resItem.Key;
+		}
+
+		return resItem;
 	}
 
 	/**
