@@ -48,9 +48,9 @@ export class CoreSchemaService
 
 		for (const resourceField of resourceFields)
 		{
-			schema.Fields[resourceField.Label] = {
+			schema.Fields[resourceField.FieldID] = {
 				Type: this.getFieldTypeFromFieldsFormat(resourceField),
-				Unique: UNIQUE_FIELDS.includes(resourceField.Label),
+				Unique: UNIQUE_FIELDS.includes(resourceField.FieldID),
 			}
 		}
         
