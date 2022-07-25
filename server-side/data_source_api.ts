@@ -71,6 +71,43 @@ export async function resources(client: Client, request: Request)
 	}
 }
 
+export async function get_by_unique_field(client: Client, request: Request) 
+{
+	console.log(`Query received: ${JSON.stringify(request.query)}`);
+
+	switch (request.method) 
+	{
+	case "GET":
+	{
+		const coreService = getCoreService(client, request);
+		return await coreService.getResourceByUniqueField();
+	}
+	default:
+	{
+		throw new Error(`Unsupported method: ${request.method}`);
+	}
+	}
+}
+
+export async function search(client: Client, request: Request) 
+{
+	console.log(`Query received: ${JSON.stringify(request.query)}`);
+	console.log(`Body received: ${JSON.stringify(request.body)}`);
+
+	switch (request.method) 
+	{
+	case "POST":
+	{
+		const coreService = getCoreService(client, request);
+		return coreService.search();
+	}
+	default:
+	{
+		throw new Error(`Unsupported method: ${request.method}`);
+	}
+	}
+}
+
 function getCoreSchemaService(client: Client, request: Request)
 {
 	const papiService = getPapiService(client);
@@ -86,7 +123,8 @@ function getCoreService(client: Client, request: Request)
 	return core;
 }
 
-function getPapiService(client: Client) {
+function getPapiService(client: Client) 
+{
 	const papiClient = Helper.getPapiClient(client);
 	const papiService = new PapiService(papiClient);
 	return papiService;

@@ -18,3 +18,4 @@ export type ResourceField = {
 export type ResourceFields = Array<ResourceField>;
 
 export const RESOURCE_TYPES = ['accounts', 'items', 'users'];
+export const UNIQUE_FIELDS = ['InternalID', 'UUID', 'ExternalID', 'Key'];

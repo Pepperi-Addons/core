@@ -31,6 +31,22 @@ export class PapiService
 	{
 		return this.papiClient.get(`/${resourceName}/UUID/${key}`);
 	}
+
+	async getResourceByExternalId(resourceName: string, externalId: any)
+	{
+		return this.papiClient.get(`/${resourceName}/ExternalId/${externalId}`);
+
+	}
+
+	async getResourceByInternalId(resourceName: string, internalId: any)
+	{
+		return this.papiClient.get(`/${resourceName}/${internalId}`);
+	}
+
+	async searchResource(resourceName: string, body: void)
+	{
+		return this.papiClient.post(`/${resourceName}/search`, body);
+	}
 }
 
 export default PapiService;
