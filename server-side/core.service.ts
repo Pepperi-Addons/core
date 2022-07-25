@@ -124,12 +124,17 @@ export class CoreService
 	 * @param items the items from which to delete the unwanted fields.
 	 * @param fieldsString fields string, separated by ',', represents the wanted fields.
 	 */
-	private deleteUnwantedFieldsFromItems(items: any, fieldsString: any) {
-		if (fieldsString) {
+	private deleteUnwantedFieldsFromItems(items: any, fieldsString: any) 
+	{
+		if (fieldsString) 
+		{
 			const fields = fieldsString.split(",");
-			items.forEach(item => {
-				Object.keys(item).forEach(key => {
-					if (!fields.includes(key)) {
+			items.forEach(item => 
+			{
+				Object.keys(item).forEach(key => 
+				{
+					if (!fields.includes(key)) 
+					{
 						delete item[key];
 					}
 				});
@@ -178,7 +183,8 @@ export class CoreService
 
 		// If fields include property Key, remove it from the fields list and and UUID instead.
 		const fields = papiSearchBody.fields?.split(',');
-		if(fields?.includes("Key")){
+		if(fields?.includes("Key"))
+		{
 			fields.splice(fields.indexOf("Key"), 1);
 			fields.push("UUID");
 
@@ -189,29 +195,37 @@ export class CoreService
 		return papiSearchBody;
 	}
 
-	private trasnlateUniqueFieldQueriesToPapi(papiSearchBody: any) {
-		if (this.request.body.UniqueFieldID === "ExternalID") {
+	private trasnlateUniqueFieldQueriesToPapi(papiSearchBody: any) 
+	{
+		if (this.request.body.UniqueFieldID === "ExternalID") 
+		{
 			papiSearchBody.where = `ExternalID in ('${this.request.body.UniqueFieldList.join('\',')}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
 		}
 
-		if (this.request.body.UniqueFieldID === "InternalID") {
+		if (this.request.body.UniqueFieldID === "InternalID") 
+		{
 			papiSearchBody.InternalIDList = this.request.body.UniqueFieldList;
 		}
 
-		if (this.request.body.UniqueFieldID === "UUID" || this.request.body.UniqueFieldID === "Key") {
+		if (this.request.body.UniqueFieldID === "UUID" || this.request.body.UniqueFieldID === "Key") 
+		{
 			papiSearchBody.UUIDList = this.request.body.UniqueFieldList;
 		}
 	}
 
-	private translatePapiSupportedSearchFields(papiSearchBody: any) {
+	private translatePapiSupportedSearchFields(papiSearchBody: any) 
+	{
 		const papiSupportedSearchFields = ["page", "page_size", "include_deleted", "fields", "where", "InternalIDList", "UUIDList"];
 
-		if (this.request.body.KeyList) {
+		if (this.request.body.KeyList) 
+		{
 			this.request.body.UUIDList = this.request.body.KeyList;
 		}
 
-		for (const supportedSearchField of papiSupportedSearchFields) {
-			if (this.request.body[supportedSearchField]) {
+		for (const supportedSearchField of papiSupportedSearchFields) 
+		{
+			if (this.request.body[supportedSearchField]) 
+			{
 				papiSearchBody[supportedSearchField] = this.request.body[supportedSearchField];
 			}
 		}
@@ -303,7 +317,8 @@ export class CoreService
 	 */
 	protected translatePapiBatchResponseToDimxObjects(papiBatchResult: PapiBatchResponse): Array<DIMXObject>
 	{
-		const res: DIMXObject[] = papiBatchResult.map(papiItem => {
+		const res: DIMXObject[] = papiBatchResult.map(papiItem => 
+		{
 			return {
 				Key: papiItem.UUID,
 				Status: papiItem.Status,

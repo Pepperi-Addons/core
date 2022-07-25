@@ -85,7 +85,7 @@ async function resourcesFunctionAdapter(client: Client, request: Request, resour
 	return genericAdapter(client, request, resourceName, resources);
 }
 
-async function genericAdapter(client: Client, request: Request, resourceName: string, adaptedFunction: Function)
+async function genericAdapter(client: Client, request: Request, resourceName: string, adaptedFunction: (client: Client, request: Request) => Promise<any>)
 {
 	const requestCopy = {...request};
 	requestCopy.query.resource_name = resourceName;
