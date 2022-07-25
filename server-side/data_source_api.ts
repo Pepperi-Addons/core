@@ -90,7 +90,6 @@ export async function get_by_unique_field(client: Client, request: Request)
 export async function search(client: Client, request: Request) 
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
-	console.log(`Body received: ${JSON.stringify(request.body)}`);
 
 	switch (request.method) 
 	{
