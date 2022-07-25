@@ -22,7 +22,6 @@ export async function create(client: Client, request: Request)
 
 export async function purge(client: Client, request: Request) 
 {
-	console.log(`Body received: ${JSON.stringify(request.body)}`);
 
 	switch (request.method) 
 	{
@@ -42,7 +41,6 @@ export async function purge(client: Client, request: Request)
 export async function resources(client: Client, request: Request) 
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
-	console.log(`Body received: ${JSON.stringify(request.body)}`);
 
 	switch (request.method) 
 	{
