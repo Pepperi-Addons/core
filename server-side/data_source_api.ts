@@ -87,6 +87,24 @@ export async function get_by_unique_field(client: Client, request: Request)
 	}
 }
 
+export async function search(client: Client, request: Request) 
+{
+	console.log(`Query received: ${JSON.stringify(request.query)}`);
+
+	switch (request.method) 
+	{
+	case "POST":
+	{
+		const coreService = getCoreService(client, request);
+		return coreService.search();
+	}
+	default:
+	{
+		throw new Error(`Unsupported method: ${request.method}`);
+	}
+	}
+}
+
 function getCoreSchemaService(client: Client, request: Request)
 {
 	const papiService = getPapiService(client);

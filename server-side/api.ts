@@ -1,5 +1,5 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import { get_by_unique_field, resources } from './data_source_api';
+import { get_by_unique_field, resources, search } from './data_source_api';
 
 // #region get by key
 export async function get_items_by_key(client: Client, request: Request) 
@@ -58,6 +58,27 @@ async function getByUniqueFieldFunctionAdapter(client: Client, request: Request,
 }
 // #endregion
 
+// #region search
+export async function items_search(client: Client, request: Request) 
+{
+	return await searchFunctionAdapter(client, request, "items");
+}
+
+export async function accounts_search(client: Client, request: Request) 
+{
+	return await searchFunctionAdapter(client, request, "accounts");
+}
+
+export async function users_search(client: Client, request: Request) 
+{
+	return await searchFunctionAdapter(client, request, "users");
+}
+
+async function searchFunctionAdapter(client: Client, request: Request, resourceName: string)
+{
+	return genericAdapter(client, request, resourceName, search);
+}
+// #endregion
 
 async function resourcesFunctionAdapter(client: Client, request: Request, resourceName: string)
 {
