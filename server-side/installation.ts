@@ -21,6 +21,9 @@ export async function install(client: Client, request: Request): Promise<any>
 
 export async function uninstall(client: Client, request: Request): Promise<any> 
 {
+	const papiClient = createPapiClient(client);
+	await removeDimxRelations(papiClient, client);
+	
 	return {success:true,resultObject:{}}
 }
 
@@ -51,25 +54,43 @@ function createPapiClient(Client: Client)
 
 async function createDimxRelations(papiClient: PapiClient, client: Client) 
 {
+	const isHidden = false;
+	const { importRelation, exportRelation }: { importRelation: Relation; exportRelation: Relation; } = getDimxRelationsBodies(client, isHidden);
+	
+	await upsertRelation(papiClient, importRelation);
+	await upsertRelation(papiClient, exportRelation);
+}
+
+async function removeDimxRelations(papiClient: PapiClient, client: Client) 
+{
+	const isHidden = true;
+
+	const { importRelation, exportRelation }: { importRelation: Relation; exportRelation: Relation; } = getDimxRelationsBodies(client, isHidden);
+	
+	await upsertRelation(papiClient, importRelation);
+	await upsertRelation(papiClient, exportRelation);
+}
+
+function getDimxRelationsBodies(client: Client, isHidden: boolean) {
 	const importRelation: Relation = {
 		RelationName: "DataImportSource",
 		AddonUUID: client.AddonUUID,
 		Name: 'papi',
 		KeyName: 'Key',
 		Type: 'AddonAPI',
-		AddonRelativeURL:'/data_source_api/batch'
-	}
+		AddonRelativeURL: '/data_source_api/batch',
+		Hidden: isHidden
+	};
 
 	const exportRelation: Relation = {
 		RelationName: 'DataExportSource',
 		AddonUUID: client.AddonUUID,
 		Name: 'papi',
 		Type: 'AddonAPI',
-		AddonRelativeURL:'/data_source_api/resources'
-	}
-	
-	await upsertRelation(papiClient, importRelation);
-	await upsertRelation(papiClient, exportRelation);
+		AddonRelativeURL: '/data_source_api/resources',
+		Hidden: isHidden
+	};
+	return { importRelation, exportRelation };
 }
 
 async function upsertRelation(papiClient: PapiClient, relation: Relation) 
