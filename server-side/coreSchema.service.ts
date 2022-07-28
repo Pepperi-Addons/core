@@ -1,10 +1,11 @@
-import { Request } from "@pepperi-addons/debug-server";
+import { Client, Request } from "@pepperi-addons/debug-server";
+import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
 import { ResourceField, ResourceFields, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import PapiService from "./papi.service";
 
 export class CoreSchemaService
 {
-	constructor(protected resource: string, protected request: Request, protected papi: PapiService)
+	constructor(protected resource: string, protected request: Request, protected client: Client, protected papi: PapiService)
 	{
 		this.validateResource();
 	}
@@ -39,18 +40,22 @@ export class CoreSchemaService
      */
 	protected translateResourceFieldsToSchema(resourceFields: ResourceFields)
 	{
-		const schema = {
+		const schema: AddonDataScheme = {
 			Name: this.resource,
 			Type: 'papi',
+			AddonUUID: this.client.AddonUUID,
 			GenericResource: true,
 			Fields: {}
 		};
 
 		for (const resourceField of resourceFields)
 		{
-			schema.Fields[resourceField.FieldID] = {
-				Type: this.getFieldTypeFromFieldsFormat(resourceField),
-				Unique: UNIQUE_FIELDS.includes(resourceField.FieldID),
+			if(schema.Fields)
+			{
+				schema.Fields[resourceField.FieldID] = {
+					Type: this.getFieldTypeFromFieldsFormat(resourceField),
+					Unique: UNIQUE_FIELDS.includes(resourceField.FieldID),
+				}
 			}
 		}
         
