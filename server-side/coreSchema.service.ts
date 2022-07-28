@@ -1,5 +1,4 @@
 import { Client, Request } from "@pepperi-addons/debug-server";
-import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
 import { ResourceField, ResourceFields, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import PapiService from "./papi.service";
 
@@ -40,7 +39,7 @@ export class CoreSchemaService
      */
 	protected translateResourceFieldsToSchema(resourceFields: ResourceFields)
 	{
-		const schema: AddonDataScheme = {
+		const schema = {
 			Name: this.resource,
 			Type: 'papi',
 			AddonUUID: this.client.AddonUUID,
