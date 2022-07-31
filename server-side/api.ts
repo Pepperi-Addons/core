@@ -1,5 +1,5 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import { get_by_unique_field, resources, search } from './data_source_api';
+import { batch, get_by_unique_field, resources, search } from './data_source_api';
 
 // #region get by key
 export async function get_items_by_key(client: Client, request: Request) 
@@ -80,12 +80,34 @@ async function searchFunctionAdapter(client: Client, request: Request, resourceN
 }
 // #endregion
 
+// #region batch
+export async function batch_items(client: Client, request: Request) 
+{
+	return await searchFunctionAdapter(client, request, "items");
+}
+
+export async function batch_accounts(client: Client, request: Request) 
+{
+	return await searchFunctionAdapter(client, request, "accounts");
+}
+
+export async function batch_users(client: Client, request: Request) 
+{
+	return await batchFunctionAdapter(client, request, "users");
+}
+
+async function batchFunctionAdapter(client: Client, request: Request, resourceName: string)
+{
+	return genericAdapter(client, request, resourceName, batch);
+}
+// #endregion
+
 async function resourcesFunctionAdapter(client: Client, request: Request, resourceName: string)
 {
 	return genericAdapter(client, request, resourceName, resources);
 }
 
-async function genericAdapter(client: Client, request: Request, resourceName: string, adaptedFunction: Function)
+async function genericAdapter(client: Client, request: Request, resourceName: string, adaptedFunction: (client: Client, request: Request) => Promise<any>)
 {
 	const requestCopy = {...request};
 	requestCopy.query.resource_name = resourceName;

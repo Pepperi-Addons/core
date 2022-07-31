@@ -1,5 +1,5 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import { ResourceFields } from './constants';
+import { PapiBatchResponse, ResourceFields } from './constants';
 import { Helper } from './helper';
 
 export class PapiService 
@@ -16,6 +16,11 @@ export class PapiService
 	createResource(resourceName: string, body: any)
 	{
 		return this.papiClient.post(`/${resourceName}`, body);
+	}
+
+	batch(resourceName: string, body: any): Promise<PapiBatchResponse>
+	{
+		return this.papiClient.post(`/batch/${resourceName}`, body);
 	}
 
 	async getResources(resourceName: string, query: any)

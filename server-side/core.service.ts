@@ -1,5 +1,6 @@
 import { Request } from "@pepperi-addons/debug-server";
-import { RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
+import { DIMXObject } from "@pepperi-addons/papi-sdk";
+import { PapiBatchResponse, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import PapiService from "./papi.service";
 
 export class CoreService 
@@ -123,12 +124,17 @@ export class CoreService
 	 * @param items the items from which to delete the unwanted fields.
 	 * @param fieldsString fields string, separated by ',', represents the wanted fields.
 	 */
-	private deleteUnwantedFieldsFromItems(items: any, fieldsString: any) {
-		if (fieldsString) {
+	private deleteUnwantedFieldsFromItems(items: any, fieldsString: any) 
+	{
+		if (fieldsString) 
+		{
 			const fields = fieldsString.split(",");
-			items.forEach(item => {
-				Object.keys(item).forEach(key => {
-					if (!fields.includes(key)) {
+			items.forEach(item => 
+			{
+				Object.keys(item).forEach(key => 
+				{
+					if (!fields.includes(key)) 
+					{
 						delete item[key];
 					}
 				});
@@ -177,7 +183,8 @@ export class CoreService
 
 		// If fields include property Key, remove it from the fields list and and UUID instead.
 		const fields = papiSearchBody.fields?.split(',');
-		if(fields?.includes("Key")){
+		if(fields?.includes("Key"))
+		{
 			fields.splice(fields.indexOf("Key"), 1);
 			fields.push("UUID");
 
@@ -188,29 +195,37 @@ export class CoreService
 		return papiSearchBody;
 	}
 
-	private trasnlateUniqueFieldQueriesToPapi(papiSearchBody: any) {
-		if (this.request.body.UniqueFieldID === "ExternalID") {
+	private trasnlateUniqueFieldQueriesToPapi(papiSearchBody: any) 
+	{
+		if (this.request.body.UniqueFieldID === "ExternalID") 
+		{
 			papiSearchBody.where = `ExternalID in ('${this.request.body.UniqueFieldList.join('\',')}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
 		}
 
-		if (this.request.body.UniqueFieldID === "InternalID") {
+		if (this.request.body.UniqueFieldID === "InternalID") 
+		{
 			papiSearchBody.InternalIDList = this.request.body.UniqueFieldList;
 		}
 
-		if (this.request.body.UniqueFieldID === "UUID" || this.request.body.UniqueFieldID === "Key") {
+		if (this.request.body.UniqueFieldID === "UUID" || this.request.body.UniqueFieldID === "Key") 
+		{
 			papiSearchBody.UUIDList = this.request.body.UniqueFieldList;
 		}
 	}
 
-	private translatePapiSupportedSearchFields(papiSearchBody: any) {
+	private translatePapiSupportedSearchFields(papiSearchBody: any) 
+	{
 		const papiSupportedSearchFields = ["page", "page_size", "include_deleted", "fields", "where", "InternalIDList", "UUIDList"];
 
-		if (this.request.body.KeyList) {
+		if (this.request.body.KeyList) 
+		{
 			this.request.body.UUIDList = this.request.body.KeyList;
 		}
 
-		for (const supportedSearchField of papiSupportedSearchFields) {
-			if (this.request.body[supportedSearchField]) {
+		for (const supportedSearchField of papiSupportedSearchFields) 
+		{
+			if (this.request.body[supportedSearchField]) 
+			{
 				papiSearchBody[supportedSearchField] = this.request.body[supportedSearchField];
 			}
 		}
@@ -276,12 +291,106 @@ export class CoreService
 	}
 
 	/**
-	 * Translate the item to PAPI format
-	 * @param body the item to translate
+	 * Batch upserts a list of items
+	 * @returns a list of upserted items
 	 */
-	protected translateItemToPapiItem(body: any)
+	public async batch(): Promise<DIMXObject[]>
 	{
-		const resItem = {...body};
+		this.validateBatchPrerequisites();
+
+		const batchObjects = [...this.request.body.Objects];
+		// Transalte the items to PAPI format
+		const papiItems = batchObjects.map(batchObject => this.translateItemToPapiItem(batchObject));
+		const papiBatchResult: PapiBatchResponse = await this.papi.batch(this.resource, papiItems);
+		// PAPI batch objects are returned with empty UUIDs. We have to get the
+		// actual UUIDs from PAPI and replace the empty UUIDs with the actual UUIDs.
+		await this.fillPapiBatchResultWithUUIDs(papiBatchResult);
+
+		// To comply with DIMX Batch operations, we have to return DIMXObjects
+		const batchDimxObjects = this.translatePapiBatchResponseToDimxObjects(papiBatchResult)
+
+		return batchDimxObjects;
+	}
+
+	/**
+	 * Throws an error in case the body is missing an Objects array, or if a OverwriteObject=true is passed.
+	 */
+	validateBatchPrerequisites()
+	{
+		let errorMessage: string = '';
+		if(!(this.request.body?.Objects && Array.isArray(this.request.body?.Objects)))
+		{
+			errorMessage = 'Missing an Objects array';
+		}
+
+		if(this.request.body.OverwriteObject)
+		{
+			errorMessage = 'OverwriteObject parameter is not supported.'
+		}
+
+		if(errorMessage)
+		{
+			console.error(errorMessage);
+			throw new Error(errorMessage);
+		}
+	}
+
+	/**
+	 * Create an Array of DIMXObject based on a PapiBatchResponse
+	 * @param papiBatchResult The papiBatchResult from which to create DIMXObjects
+	 * @returns an Array of DIMXObject based on a PapiBatchResponse
+	 */
+	protected translatePapiBatchResponseToDimxObjects(papiBatchResult: PapiBatchResponse): Array<DIMXObject>
+	{
+		const res: DIMXObject[] = papiBatchResult.map(papiItem => 
+		{
+			return {
+				Key: papiItem.UUID,
+				Status: papiItem.Status,
+				...(papiItem.Status === "Error" && {Details: papiItem.Message})
+			}
+		});
+
+		return res;
+	}
+
+	/**
+	 * PAPI batch objects are returned with empty UUIDs. We have to get the
+	 * actual UUIDs from PAPI and replace the empty UUIDs with the actual UUIDs.
+	 * @param papiBatchResult the PapiBatchResponse object on which to add UUIDs
+	 */
+	protected async fillPapiBatchResultWithUUIDs(papiBatchResult: PapiBatchResponse)
+	{
+		const requestCopy = { ...this.request };
+
+		// Failed items are returned with InternalID = 0, we will filter them out.
+		requestCopy.body =
+		{
+			InternalIDList: papiBatchResult.filter(item => item.InternalID != 0).map(item => item.InternalID),
+			include_deleted: true,
+			fields: "UUID,InternalID"
+		};
+
+		const coreService = new CoreService(this.resource, requestCopy, this.papi);
+		const searchRes = await coreService.search();
+
+		for (const searchItem of searchRes)
+		{
+			const papiItem = papiBatchResult.find(batchItem => batchItem.InternalID === searchItem.InternalID);
+			if(papiItem)
+			{
+				papiItem.UUID = searchItem.UUID;
+			}
+		}
+	}
+
+	/**
+	 * Translate the item to PAPI format
+	 * @param item the item to translate
+	 */
+	protected translateItemToPapiItem(item: any)
+	{
+		const resItem = {...item};
 
 		// If item has both UUID and Key fields, make sure they are equivalent
 		if (resItem.UUID && resItem.Key && resItem.UUID !== resItem.Key) 

@@ -69,6 +69,25 @@ export async function resources(client: Client, request: Request)
 	}
 }
 
+export async function batch(client: Client, request: Request) 
+{
+	console.log(`Query received: ${JSON.stringify(request.query)}`);
+	console.log(`Body received: ${JSON.stringify(request.body)}`);
+
+	switch (request.method) 
+	{
+	case "POST":
+	{
+		const coreService = getCoreService(client, request);
+		return await coreService.batch();
+	}
+	default:
+	{
+		throw new Error(`Unsupported method: ${request.method}`);
+	}
+	}
+}
+
 export async function get_by_unique_field(client: Client, request: Request) 
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
@@ -96,7 +115,7 @@ export async function search(client: Client, request: Request)
 	case "POST":
 	{
 		const coreService = getCoreService(client, request);
-		return coreService.search();
+		return coreService.batch();
 	}
 	default:
 	{

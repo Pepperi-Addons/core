@@ -15,6 +15,10 @@ export type ResourceField = {
     [any: string]: any
 };
 
+export type PapiBatchResponse = [
+    { InternalID: number, UUID: string, ExternalID: string, Status: 'Update' | 'Insert' | 'Ignore' | 'Error', Message: string, URI: string }
+]
+
 export type ResourceFields = Array<ResourceField>;
 
 export const RESOURCE_TYPES = ['accounts', 'items', 'users'];
