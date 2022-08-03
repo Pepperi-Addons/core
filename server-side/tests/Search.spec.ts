@@ -237,7 +237,7 @@ describe('Search resources', async () => {
     it('should return hidden and non-hidden items', async () => {
 
         const requestCopy = {...request};
-        const body = {include_deleted: true};
+        const body = {IncludeDeleted: true};
         requestCopy.body = body;
 
         const core = new CoreService(request.query.resource_name ,requestCopy, papiService);

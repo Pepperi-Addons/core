@@ -114,7 +114,7 @@ export class CoreService
 		// if Fields are requested, drop any other fields
 		// PAPI handles this for us, but this should be done
 		// for any fields that were added during the translation.
-		this.deleteUnwantedFieldsFromItems(translatedItems, this.request.body.fields);
+		this.deleteUnwantedFieldsFromItems(translatedItems, this.request.body.Fields);
 
 		return translatedItems;
 	}
@@ -215,18 +215,28 @@ export class CoreService
 
 	private translatePapiSupportedSearchFields(papiSearchBody: any) 
 	{
-		const papiSupportedSearchFields = ["page", "page_size", "include_deleted", "fields", "where", "InternalIDList", "UUIDList"];
+		const papiSupportedSearchFields = {
+			Page: "page",
+			PageSize: "page_size",
+			IncludeDeleted: "include_deleted",
+			Fields: "fields",
+			Where: "where",
+			InternalIDList: "InternalIDList",
+			UUIDList: "UUIDList"
+		};
 
 		if (this.request.body.KeyList) 
 		{
 			this.request.body.UUIDList = this.request.body.KeyList;
 		}
 
-		for (const supportedSearchField of papiSupportedSearchFields) 
+
+		// Translate the supported search fields to papi search fields
+		for (const supportedSearchField of Object.keys(papiSupportedSearchFields)) 
 		{
 			if (this.request.body[supportedSearchField]) 
 			{
-				papiSearchBody[supportedSearchField] = this.request.body[supportedSearchField];
+				papiSearchBody[papiSupportedSearchFields[supportedSearchField]] = this.request.body[supportedSearchField];
 			}
 		}
 	}
