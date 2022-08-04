@@ -215,29 +215,12 @@ export class CoreService
 
 	private translatePapiSupportedSearchFields(papiSearchBody: any) 
 	{
-		const papiSupportedSearchFields = {
-			Page: "page",
-			PageSize: "page_size",
-			IncludeDeleted: "include_deleted",
-			Fields: "fields",
-			Where: "where",
-			InternalIDList: "InternalIDList",
-			UUIDList: "UUIDList"
-		};
-
-		if (this.request.body.KeyList) 
+		// populate papiSearchBody with the properties on the request's body, keeping any existing properties on the papiSearchBody.
+		Object.keys(this.request.body).map(key => papiSearchBody[key] = this.request.body[key]);
+		if (papiSearchBody.KeyList) 
 		{
-			this.request.body.UUIDList = this.request.body.KeyList;
-		}
-
-
-		// Translate the supported search fields to papi search fields
-		for (const supportedSearchField of Object.keys(papiSupportedSearchFields)) 
-		{
-			if (this.request.body[supportedSearchField]) 
-			{
-				papiSearchBody[papiSupportedSearchFields[supportedSearchField]] = this.request.body[supportedSearchField];
-			}
+			papiSearchBody.UUIDList = papiSearchBody.KeyList;
+			delete papiSearchBody.KeyList;
 		}
 	}
 
