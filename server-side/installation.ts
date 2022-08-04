@@ -55,18 +55,18 @@ function createPapiClient(Client: Client)
 async function createDimxRelations(papiClient: PapiClient, client: Client) 
 {
 	const isHidden = false;
-	const { importRelation, exportRelation }: { importRelation: Relation; exportRelation: Relation; } = getDimxRelationsBodies(client, isHidden);
-	
-	await upsertRelation(papiClient, importRelation);
-	await upsertRelation(papiClient, exportRelation);
+	await upsertDimxRelations(client, isHidden, papiClient);
 }
 
 async function removeDimxRelations(papiClient: PapiClient, client: Client) 
 {
 	const isHidden = true;
+	await upsertDimxRelations(client, isHidden, papiClient);
+}
 
+async function upsertDimxRelations(client: Client, isHidden: boolean, papiClient: PapiClient) {
 	const { importRelation, exportRelation }: { importRelation: Relation; exportRelation: Relation; } = getDimxRelationsBodies(client, isHidden);
-	
+
 	await upsertRelation(papiClient, importRelation);
 	await upsertRelation(papiClient, exportRelation);
 }
