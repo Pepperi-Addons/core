@@ -23,3 +23,5 @@ export type ResourceFields = Array<ResourceField>;
 
 export const RESOURCE_TYPES = ['accounts', 'items', 'users'];
 export const UNIQUE_FIELDS = ['InternalID', 'UUID', 'ExternalID', 'Key'];
+
+export const DIMX_ADDON_UUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';

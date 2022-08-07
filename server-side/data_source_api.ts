@@ -26,11 +26,8 @@ export async function purge(client: Client, request: Request)
 	switch (request.method) 
 	{
 	case "POST": {
-		const papiClient = Helper.getPapiClient(client);
-		const papiService = new PapiService(papiClient);
-		const core = new CoreSchemaService(request.body.Name, request, papiService);
-
-		return await core.purgeSchema();
+		const coreSchema = getCoreSchemaService(client, request);
+		return await coreSchema.purgeSchema();
 	}
 	default: {
 		throw new Error(`Unsupported method: ${request.method}`);
@@ -127,7 +124,7 @@ export async function search(client: Client, request: Request)
 function getCoreSchemaService(client: Client, request: Request)
 {
 	const papiService = getPapiService(client);
-	const core = new CoreSchemaService(request.query?.resource_name, request, papiService);
+	const core = new CoreSchemaService(request.body?.Name, request, client, papiService);
 	return core;
 }
 
