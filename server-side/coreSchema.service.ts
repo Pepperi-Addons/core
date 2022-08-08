@@ -50,6 +50,7 @@ export class CoreSchemaService
 
 		// Validate that the requested schema is valid
 		this.validateSchema();
+		this.validateSchemaFields();
 	}
 	
 	private validateSchema(): void 
@@ -79,6 +80,18 @@ export class CoreSchemaService
 		if(!RESOURCE_TYPES.includes(this.request.body.Name)) 
 		{
 			throw new Error("Can not create a schema for the resource '" + this.request.body.Name + "'. Supported resources are: '" + RESOURCE_TYPES.join(', ') + "'");
+		}
+	}
+
+	/**
+	 * Throws an exception if the schema fields are passed. 
+	 * Currently no custom fields are supported.
+	 */
+	private validateSchemaFields()
+	{
+		if(this.request.body.Fields && Object.keys(this.request.body.Fields).length > 0)
+		{
+			throw new Error("Custom fields are not supported.");
 		}
 	}
 
