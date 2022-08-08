@@ -197,20 +197,31 @@ export class CoreService
 
 	private trasnlateUniqueFieldQueriesToPapi(papiSearchBody: any) 
 	{
-		if (this.request.body.UniqueFieldID === "ExternalID") 
+		let shouldDeleteUniqueFields = false;
+		if (papiSearchBody.UniqueFieldID === "ExternalID") 
 		{
-			papiSearchBody.where = `ExternalID in ('${this.request.body.UniqueFieldList.join('\',')}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
+			papiSearchBody.where = `ExternalID in ('${papiSearchBody.UniqueFieldList.join('\',')}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
+			shouldDeleteUniqueFields = true;
 		}
 
-		if (this.request.body.UniqueFieldID === "InternalID") 
+		if (papiSearchBody.UniqueFieldID === "InternalID") 
 		{
-			papiSearchBody.InternalIDList = this.request.body.UniqueFieldList;
+			papiSearchBody.InternalIDList = papiSearchBody.UniqueFieldList;
+			shouldDeleteUniqueFields = true;
 		}
 
-		if (this.request.body.UniqueFieldID === "UUID" || this.request.body.UniqueFieldID === "Key") 
+		if (papiSearchBody.UniqueFieldID === "UUID" || papiSearchBody.UniqueFieldID === "Key") 
 		{
-			papiSearchBody.UUIDList = this.request.body.UniqueFieldList;
+			papiSearchBody.UUIDList = papiSearchBody.UniqueFieldList;
+			shouldDeleteUniqueFields = true;
 		}
+
+		if (shouldDeleteUniqueFields) 
+		{
+			delete papiSearchBody.UniqueFieldID;
+			delete papiSearchBody.UniqueFieldList;
+		}
+		
 	}
 
 	private translatePapiSupportedSearchFields(papiSearchBody: any) 
