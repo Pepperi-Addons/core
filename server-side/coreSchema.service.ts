@@ -124,9 +124,12 @@ export class CoreSchemaService
 
 		for (const resourceField of resourceFields)
 		{
-			schema.Fields[resourceField.FieldID] = {
-				Type: this.getFieldTypeFromFieldsFormat(resourceField),
-				Unique: UNIQUE_FIELDS.includes(resourceField.FieldID),
+			if(schema.Fields)
+			{
+				schema.Fields[resourceField.FieldID] = {
+					Type: this.getFieldTypeFromFieldsFormat(resourceField),
+					Unique: UNIQUE_FIELDS.includes(resourceField.FieldID),
+				}
 			}
 		}
         
@@ -165,6 +168,7 @@ export class CoreSchemaService
 		// DI-20776: Implement the purgeSchema method
 		// In the future we should use “hard delete” of papi - which is not developed yet
 		// There is no way to uninstall core addons anyhow
+		return { success: true };
 	}
 
 }

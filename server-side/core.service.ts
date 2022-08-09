@@ -114,7 +114,7 @@ export class CoreService
 		// if Fields are requested, drop any other fields
 		// PAPI handles this for us, but this should be done
 		// for any fields that were added during the translation.
-		this.deleteUnwantedFieldsFromItems(translatedItems, this.request.body.fields);
+		this.deleteUnwantedFieldsFromItems(translatedItems, this.request.body.Fields);
 
 		return translatedItems;
 	}
@@ -197,37 +197,41 @@ export class CoreService
 
 	private trasnlateUniqueFieldQueriesToPapi(papiSearchBody: any) 
 	{
-		if (this.request.body.UniqueFieldID === "ExternalID") 
+		let shouldDeleteUniqueFields = false;
+		if (papiSearchBody.UniqueFieldID === "ExternalID") 
 		{
-			papiSearchBody.where = `ExternalID in ('${this.request.body.UniqueFieldList.join('\',')}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
+			papiSearchBody.where = `ExternalID in ('${papiSearchBody.UniqueFieldList.join('\',')}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
+			shouldDeleteUniqueFields = true;
 		}
 
-		if (this.request.body.UniqueFieldID === "InternalID") 
+		if (papiSearchBody.UniqueFieldID === "InternalID") 
 		{
-			papiSearchBody.InternalIDList = this.request.body.UniqueFieldList;
+			papiSearchBody.InternalIDList = papiSearchBody.UniqueFieldList;
+			shouldDeleteUniqueFields = true;
 		}
 
-		if (this.request.body.UniqueFieldID === "UUID" || this.request.body.UniqueFieldID === "Key") 
+		if (papiSearchBody.UniqueFieldID === "UUID" || papiSearchBody.UniqueFieldID === "Key") 
 		{
-			papiSearchBody.UUIDList = this.request.body.UniqueFieldList;
+			papiSearchBody.UUIDList = papiSearchBody.UniqueFieldList;
+			shouldDeleteUniqueFields = true;
 		}
+
+		if (shouldDeleteUniqueFields) 
+		{
+			delete papiSearchBody.UniqueFieldID;
+			delete papiSearchBody.UniqueFieldList;
+		}
+		
 	}
 
 	private translatePapiSupportedSearchFields(papiSearchBody: any) 
 	{
-		const papiSupportedSearchFields = ["page", "page_size", "include_deleted", "fields", "where", "InternalIDList", "UUIDList"];
-
-		if (this.request.body.KeyList) 
+		// populate papiSearchBody with the properties on the request's body, keeping any existing properties on the papiSearchBody.
+		Object.keys(this.request.body).map(key => papiSearchBody[key] = this.request.body[key]);
+		if (papiSearchBody.KeyList) 
 		{
-			this.request.body.UUIDList = this.request.body.KeyList;
-		}
-
-		for (const supportedSearchField of papiSupportedSearchFields) 
-		{
-			if (this.request.body[supportedSearchField]) 
-			{
-				papiSearchBody[supportedSearchField] = this.request.body[supportedSearchField];
-			}
+			papiSearchBody.UUIDList = papiSearchBody.KeyList;
+			delete papiSearchBody.KeyList;
 		}
 	}
 
