@@ -40,6 +40,7 @@
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "*",
-        "@pepperi-addons/papi-sdk": "*"
+        "@pepperi-addons/papi-sdk": "*",
+        "semver": "^7.3.7"
     }
 }
