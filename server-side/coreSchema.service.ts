@@ -1,5 +1,7 @@
 import { Client, Request } from "@pepperi-addons/debug-server";
+import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
 import { ResourceField, ResourceFields, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
+import { Helper } from "./helper";
 import PapiService from "./papi.service";
 
 export class CoreSchemaService
@@ -14,10 +16,83 @@ export class CoreSchemaService
      */
 	public async createSchema(): Promise<any>
 	{
+		await this.validateSchemaCreationRequest();
+
+		// Return the client addon's scheme (of type 'papi').
+		return this.getMergedSchema();
+	
+	}
+
+	private async getMergedSchema(): Promise<AddonDataScheme>
+	{
 		const resourceFields: ResourceFields = await this.papi.getResourceFields(this.resource);
 		const schema = this.translateResourceFieldsToSchema(resourceFields);
+		const result = {
+			...this.request.body,
+			...schema
+		}
 
-		return schema;
+		if(this.request.body.Fields)
+		{
+			result.Fields = {
+				...this.request.body.Fields,
+				...schema.Fields
+			};
+		}
+
+		return result;
+	}
+
+	private async validateSchemaCreationRequest()
+	{
+		// Validate that the provided secret key matches the addon's secre key, and that the addon is indeed installed.
+		await Helper.validateAddonSecretKey(this.request.header, this.client, this.request.query.addon_uuid);
+
+		// Validate that the requested schema is valid
+		this.validateSchema();
+		this.validateSchemaFields();
+	}
+	
+	private validateSchema(): void 
+	{
+		this.validateSchemaType();
+		this.validateSchemaName();
+	}
+
+	/**
+     * Validates that the requested schema type is 'pfs'. Throws an excpetion otherwise.
+     */
+	private validateSchemaType() 
+	{
+		if (!this.request.body || this.request.body.Type !== 'papi') 
+		{
+			throw new Error("The schema must be of type 'papi'")
+		}
+	}
+
+	private validateSchemaName() 
+	{
+		if (!this.request.body || !this.request.body.Name) 
+		{
+			throw new Error("The schema must have a Name property");
+		}
+
+		if(!RESOURCE_TYPES.includes(this.request.body.Name)) 
+		{
+			throw new Error("Can not create a schema for the resource '" + this.request.body.Name + "'. Supported resources are: '" + RESOURCE_TYPES.join(', ') + "'");
+		}
+	}
+
+	/**
+	 * Throws an exception if the schema fields are passed. 
+	 * Currently no custom fields are supported.
+	 */
+	private validateSchemaFields()
+	{
+		if(this.request.body.Fields && Object.keys(this.request.body.Fields).length > 0)
+		{
+			throw new Error("Custom fields are not supported.");
+		}
 	}
 
 	/**
@@ -42,7 +117,7 @@ export class CoreSchemaService
 		const schema = {
 			Name: this.resource,
 			Type: 'papi',
-			AddonUUID: this.client.AddonUUID,
+			AddonUUID: this.request.query.addon_uuid,
 			GenericResource: true,
 			Fields: {}
 		};

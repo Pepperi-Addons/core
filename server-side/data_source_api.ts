@@ -124,7 +124,7 @@ export async function search(client: Client, request: Request)
 function getCoreSchemaService(client: Client, request: Request)
 {
 	const papiService = getPapiService(client);
-	const core = new CoreSchemaService(request.query?.resource_name, request, client, papiService);
+	const core = new CoreSchemaService(request.body?.Name, request, client, papiService);
 	return core;
 }
 
