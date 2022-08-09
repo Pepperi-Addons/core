@@ -93,6 +93,7 @@ export class CoreSchemaService
 		// DI-20776: Implement the purgeSchema method
 		// In the future we should use “hard delete” of papi - which is not developed yet
 		// There is no way to uninstall core addons anyhow
+		return { success: true };
 	}
 
 }
