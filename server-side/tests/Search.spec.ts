@@ -71,20 +71,20 @@ describe('Search resources', async () => {
         {
             return Promise.resolve(resourcesList.filter(resource => !resource.Hidden));
         }
-        else if(url === `/users/search` && body?.include_deleted)
+        else if(url === `/users/search` && body?.IncludeDeleted)
         {
             return Promise.resolve(resourcesList);
         }
         else if(url === `/users/search` && body?.UUIDList)
         {
             let resources = resourcesList.filter(resource => body.UUIDList.includes(resource.UUID));
-            resources = body.include_deleted ? resources : resources.filter(resource => !resource.Hidden);
+            resources = body.IncludeDeleted ? resources : resources.filter(resource => !resource.Hidden);
             return Promise.resolve(resources);
         }
         else if(url === `/users/search` && body?.InternalIDList)
         {
             let resources = resourcesList.filter(resource => body.InternalIDList.includes(resource.InternalID));
-            resources = body.include_deleted ? resources : resources.filter(resource => !resource.Hidden);
+            resources = body.IncludeDeleted ? resources : resources.filter(resource => !resource.Hidden);
             return Promise.resolve(resources);
         }
         else if(url === `/users/search` && body?.where)
@@ -237,7 +237,7 @@ describe('Search resources', async () => {
     it('should return hidden and non-hidden items', async () => {
 
         const requestCopy = {...request};
-        const body = {include_deleted: true};
+        const body = {IncludeDeleted: true};
         requestCopy.body = body;
 
         const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
