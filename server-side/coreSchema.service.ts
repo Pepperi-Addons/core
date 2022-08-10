@@ -57,17 +57,12 @@ export class CoreSchemaService
 		await Helper.validateAddonSecretKey(this.request.header, this.client, this.request.query.addon_uuid);
 
 		// Validate that the requested schema is valid
-		this.validateSchema();
-		this.validateSchemaFields();
-	}
-	
-	private validateSchema(): void 
-	{
 		this.validateSchemaName();
+		this.validateSchemaFields();
 	}
 
 	/**
-     * Validates that the requested schema type is 'pfs'. Throws an excpetion otherwise.
+     * Validates that the requested schema type is 'papi'. Throws an excpetion otherwise.
      */
 	private validateSchemaType() 
 	{
