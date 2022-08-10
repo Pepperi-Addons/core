@@ -1,6 +1,6 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import typescript from 'rollup-plugin-typescript2';
 import { PapiBatchResponse, ResourceFields } from './constants';
+import { ErrorWithStatus } from './errorWithStatus';
 import { Helper } from './helper';
 
 export class PapiService 
@@ -11,61 +11,39 @@ export class PapiService
 	async getResourceFields(resourceName: string): Promise<ResourceFields> 
 	{
 		const url = `/meta_data/${resourceName}/fields?include_owned=true&include_internal=false`;
-		try{
-			return this.papiClient.get(url);
+		try
+		{
+			return await this.papiClient.get(url);
 		}
 		catch(error)
 		{
-			this.throwWrappedError(error);
-
-			// This line will never run, since we either return the actual response or throw an error.
-			// But it's here to make typescript happy.
-			return new Promise<ResourceFields>(() => {});
+			throw new ErrorWithStatus(error)
 		}
 
 	}
 
-	private throwWrappedError(error: unknown) {
-		if (error instanceof Error) {
-			// Copy error message
-			const errorWrapper: any = new Error(error.message);
-
-			// Copry error code
-			errorWrapper.status = ((Object)(error)).status;
-
-			throw errorWrapper;
-		}
-	}
-
-	createResource(resourceName: string, body: any)
+	async createResource(resourceName: string, body: any)
 	{
 		try
 		{
-			return this.papiClient.post(`/${resourceName}`, body);
+			return await this.papiClient.post(`/${resourceName}`, body);
 		}
 		catch(error)
 		{
-			this.throwWrappedError(error);
-
-			// This line will never run, since we either return the actual response or throw an error.
-			// But it's here to make typescript happy.
-			return new Promise<any>(() => {});
+			throw new ErrorWithStatus(error)
 		}
 		
 	}
 
-	batch(resourceName: string, body: any): Promise<PapiBatchResponse>
+	async batch(resourceName: string, body: any): Promise<PapiBatchResponse>
 	{
-		try{
-			return this.papiClient.post(`/batch/${resourceName}`, body);
+		try
+		{
+			return await this.papiClient.post(`/batch/${resourceName}`, body);
 		}
 		catch(error)
 		{
-			this.throwWrappedError(error);
-
-			// This line will never run, since we either return the actual response or throw an error.
-			// But it's here to make typescript happy.
-			return new Promise<PapiBatchResponse>(() => {});
+			throw new ErrorWithStatus(error)
 		}
 	}
 
@@ -74,77 +52,62 @@ export class PapiService
 		let url = `/${resourceName}`;
 		const encodedQeury = Helper.encodeQueryParams(query);
 		url = `${url}?${encodedQeury}`;
-		try{
-			return this.papiClient.get(url);
+		try
+		{
+			return await this.papiClient.get(url);
 		}
 		catch(error)
 		{
-			this.throwWrappedError(error);
-
-			// This line will never run, since we either return the actual response or throw an error.
-			// But it's here to make typescript happy.
-			return new Promise<any>(() => {});
+			throw new ErrorWithStatus(error)
 		}
 	}
 
 	async getResourceByKey(resourceName: string, key: string): Promise<any> 
 	{
-		try{
-			return this.papiClient.get(`/${resourceName}/UUID/${key}`);
+		try
+		{
+			return await this.papiClient.get(`/${resourceName}/UUID/${key}`);
 		}
 		catch(error)
 		{
-			this.throwWrappedError(error);
-
-			// This line will never run, since we either return the actual response or throw an error.
-			// But it's here to make typescript happy.
-			return new Promise<any>(() => {});
+			throw new ErrorWithStatus(error)
 		}
 	}
 
 	async getResourceByExternalId(resourceName: string, externalId: any)
 	{
-		try{
-			return this.papiClient.get(`/${resourceName}/ExternalId/${externalId}`);
+		try
+		{
+			return await this.papiClient.get(`/${resourceName}/ExternalId/${externalId}`);
 		}
 		catch(error)
 		{
-			this.throwWrappedError(error);
-
-			// This line will never run, since we either return the actual response or throw an error.
-			// But it's here to make typescript happy.
-			return new Promise<any>(() => {});
+			throw new ErrorWithStatus(error)
 		}
 	}
 
 	async getResourceByInternalId(resourceName: string, internalId: any)
 	{
-		try{
-			return this.papiClient.get(`/${resourceName}/${internalId}`);
+		try
+		{
+			return await this.papiClient.get(`/${resourceName}/${internalId}`);
 		}
 		catch(error)
 		{
-			this.throwWrappedError(error);
-
-			// This line will never run, since we either return the actual response or throw an error.
-			// But it's here to make typescript happy.
-			return new Promise<any>(() => {});
+			throw new ErrorWithStatus(error)
 		}
 	}
 
 	async searchResource(resourceName: string, body: void)
 	{
-		try{
-			return this.papiClient.post(`/${resourceName}/search`, body);
+		try
+		{
+			return await this.papiClient.post(`/${resourceName}/search`, body);
 
 		}
 		catch(error)
 		{
-			this.throwWrappedError(error);
-
-			// This line will never run, since we either return the actual response or throw an error.
-			// But it's here to make typescript happy.
-			return new Promise<any>(() => {});
+			throw new ErrorWithStatus(error)
 		}
 	}
 }

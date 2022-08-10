@@ -64,14 +64,16 @@ async function removeDimxRelations(papiClient: PapiClient, client: Client)
 	await upsertDimxRelations(client, isHidden, papiClient);
 }
 
-async function upsertDimxRelations(client: Client, isHidden: boolean, papiClient: PapiClient) {
+async function upsertDimxRelations(client: Client, isHidden: boolean, papiClient: PapiClient) 
+{
 	const { importRelation, exportRelation }: { importRelation: Relation; exportRelation: Relation; } = getDimxRelationsBodies(client, isHidden);
 
 	await upsertRelation(papiClient, importRelation);
 	await upsertRelation(papiClient, exportRelation);
 }
 
-function getDimxRelationsBodies(client: Client, isHidden: boolean) {
+function getDimxRelationsBodies(client: Client, isHidden: boolean) 
+{
 	const importRelation: Relation = {
 		RelationName: "DataImportSource",
 		AddonUUID: client.AddonUUID,
