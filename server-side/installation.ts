@@ -89,7 +89,7 @@ function getDimxRelationsBodies(client: Client, isHidden: boolean)
 		AddonUUID: client.AddonUUID,
 		Name: 'papi',
 		Type: 'AddonAPI',
-		AddonRelativeURL: '/data_source_api/resources',
+		AddonRelativeURL: '/data_source_api/papi_export',
 		Hidden: isHidden
 	};
 	return { importRelation, exportRelation };
