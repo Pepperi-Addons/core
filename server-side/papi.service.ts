@@ -1,5 +1,6 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { PapiBatchResponse, ResourceFields } from './constants';
+import { ErrorWithStatus } from './errorWithStatus';
 import { Helper } from './helper';
 
 export class PapiService 
@@ -10,17 +11,40 @@ export class PapiService
 	async getResourceFields(resourceName: string): Promise<ResourceFields> 
 	{
 		const url = `/meta_data/${resourceName}/fields?include_owned=true&include_internal=false`;
-		return this.papiClient.get(url);
+		try
+		{
+			return await this.papiClient.get(url);
+		}
+		catch(error)
+		{
+			throw new ErrorWithStatus(error)
+		}
+
 	}
 
-	createResource(resourceName: string, body: any)
+	async createResource(resourceName: string, body: any)
 	{
-		return this.papiClient.post(`/${resourceName}`, body);
+		try
+		{
+			return await this.papiClient.post(`/${resourceName}`, body);
+		}
+		catch(error)
+		{
+			throw new ErrorWithStatus(error)
+		}
+		
 	}
 
-	batch(resourceName: string, body: any): Promise<PapiBatchResponse>
+	async batch(resourceName: string, body: any): Promise<PapiBatchResponse>
 	{
-		return this.papiClient.post(`/batch/${resourceName}`, body);
+		try
+		{
+			return await this.papiClient.post(`/batch/${resourceName}`, body);
+		}
+		catch(error)
+		{
+			throw new ErrorWithStatus(error)
+		}
 	}
 
 	async getResources(resourceName: string, query: any)
@@ -28,29 +52,63 @@ export class PapiService
 		let url = `/${resourceName}`;
 		const encodedQeury = Helper.encodeQueryParams(query);
 		url = `${url}?${encodedQeury}`;
-
-		return this.papiClient.get(url);
+		try
+		{
+			return await this.papiClient.get(url);
+		}
+		catch(error)
+		{
+			throw new ErrorWithStatus(error)
+		}
 	}
 
 	async getResourceByKey(resourceName: string, key: string): Promise<any> 
 	{
-		return this.papiClient.get(`/${resourceName}/UUID/${key}`);
+		try
+		{
+			return await this.papiClient.get(`/${resourceName}/UUID/${key}`);
+		}
+		catch(error)
+		{
+			throw new ErrorWithStatus(error)
+		}
 	}
 
 	async getResourceByExternalId(resourceName: string, externalId: any)
 	{
-		return this.papiClient.get(`/${resourceName}/ExternalId/${externalId}`);
-
+		try
+		{
+			return await this.papiClient.get(`/${resourceName}/ExternalId/${externalId}`);
+		}
+		catch(error)
+		{
+			throw new ErrorWithStatus(error)
+		}
 	}
 
 	async getResourceByInternalId(resourceName: string, internalId: any)
 	{
-		return this.papiClient.get(`/${resourceName}/${internalId}`);
+		try
+		{
+			return await this.papiClient.get(`/${resourceName}/${internalId}`);
+		}
+		catch(error)
+		{
+			throw new ErrorWithStatus(error)
+		}
 	}
 
 	async searchResource(resourceName: string, body: void)
 	{
-		return this.papiClient.post(`/${resourceName}/search`, body);
+		try
+		{
+			return await this.papiClient.post(`/${resourceName}/search`, body);
+
+		}
+		catch(error)
+		{
+			throw new ErrorWithStatus(error)
+		}
 	}
 }
 

@@ -298,7 +298,7 @@ export class CoreService
 	 * Batch upserts a list of items
 	 * @returns a list of upserted items
 	 */
-	public async batch(): Promise<DIMXObject[]>
+	public async batch(): Promise<{DIMXObjects: DIMXObject[]}>
 	{
 		this.validateBatchPrerequisites();
 
@@ -344,9 +344,10 @@ export class CoreService
 	 * @param papiBatchResult The papiBatchResult from which to create DIMXObjects
 	 * @returns an Array of DIMXObject based on a PapiBatchResponse
 	 */
-	protected translatePapiBatchResponseToDimxObjects(papiBatchResult: PapiBatchResponse): Array<DIMXObject>
+	protected translatePapiBatchResponseToDimxObjects(papiBatchResult: PapiBatchResponse): {DIMXObjects: Array<DIMXObject>}
 	{
-		const res: DIMXObject[] = papiBatchResult.map(papiItem => 
+		const res: {DIMXObjects: DIMXObject[]} = {DIMXObjects: []};
+		res.DIMXObjects = papiBatchResult.map(papiItem => 
 		{
 			return {
 				Key: papiItem.UUID,
@@ -359,33 +360,18 @@ export class CoreService
 	}
 
 	/**
-	 * PAPI batch objects are returned with empty UUIDs. We have to get the
-	 * actual UUIDs from PAPI and replace the empty UUIDs with the actual UUIDs.
+	 * PAPI batch objects are returned with empty UUIDs. We have to set the
+	 * actual UUIDs based on the original batch request - DIMX validates that each item has a Key.
 	 * @param papiBatchResult the PapiBatchResponse object on which to add UUIDs
 	 */
 	protected async fillPapiBatchResultWithUUIDs(papiBatchResult: PapiBatchResponse)
 	{
-		const requestCopy = { ...this.request };
+		const batchObjects = [...this.request.body.Objects];
+		const batchObjectKeys = batchObjects.map(batchObject => batchObject.Key);
 
-		// Failed items are returned with InternalID = 0, we will filter them out.
-		requestCopy.body =
-		{
-			InternalIDList: papiBatchResult.filter(item => item.InternalID != 0).map(item => item.InternalID),
-			include_deleted: true,
-			fields: "UUID,InternalID"
-		};
-
-		const coreService = new CoreService(this.resource, requestCopy, this.papi);
-		const searchRes = await coreService.search();
-
-		for (const searchItem of searchRes)
-		{
-			const papiItem = papiBatchResult.find(batchItem => batchItem.InternalID === searchItem.InternalID);
-			if(papiItem)
-			{
-				papiItem.UUID = searchItem.UUID;
-			}
-		}
+		papiBatchResult.forEach((papiItem, index) => {
+			papiItem.UUID = batchObjectKeys[index];
+		});
 	}
 
 	/**
