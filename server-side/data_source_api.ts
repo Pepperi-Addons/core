@@ -35,6 +35,27 @@ export async function purge(client: Client, request: Request)
 	}
 }
 
+export async function papi_export(client: Client, request: Request)
+{
+	const resourcesRequest = {...request};
+	resourcesRequest.query['where'] = request.body['Where'];
+	resourcesRequest.query['fields'] = request.body['Fields'];
+	resourcesRequest.query['page'] = request.body['Page'];
+	resourcesRequest.query['page_size'] = request.body['MaxPageSize'];
+	resourcesRequest.query['order_by'] = request.body['OrderBy'];
+	resourcesRequest.query['include_deleted'] = request.body["IncludeDeleted"];
+	resourcesRequest.query['resource_name'] = request.body["Resource"];
+	resourcesRequest.query['addon_uuid'] = request.body["AddonUUID"];
+
+	resourcesRequest.method = 'GET';
+
+	resourcesRequest.body = {};
+
+	const exportResult = await resources(client, resourcesRequest);
+
+	return {Objects: exportResult};
+}
+
 export async function resources(client: Client, request: Request) 
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
@@ -69,7 +90,6 @@ export async function resources(client: Client, request: Request)
 export async function batch(client: Client, request: Request) 
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
-	console.log(`Body received: ${JSON.stringify(request.body)}`);
 
 	switch (request.method) 
 	{
@@ -132,7 +152,7 @@ function getCoreSchemaService(client: Client, request: Request)
 function getCoreService(client: Client, request: Request)
 {
 	const papiService = getPapiService(client);
-	const core = new CoreService(request.query?.resource_name, request, papiService);
+	const core = new CoreService(request.query?.resource_name ?? request.body.Resource, request, papiService);
 	return core;
 }
 

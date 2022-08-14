@@ -185,15 +185,16 @@ describe('Batch', async () => {
 
         const items = await core.batch();
 
-        expect(items).to.be.an('Array');
-        expect(items.length).to.equal(papiBatchResult.length);
-        for(const item in items)
+        expect(items).to.be.an('Object').with.property('DIMXObjects');
+        expect(items.DIMXObjects).to.be.an('Array');
+        expect(items.DIMXObjects.length).to.equal(papiBatchResult.length);
+        for(const item in items.DIMXObjects)
         {
-            expect(items[item]).to.have.property('Key');
-            expect(items[item]).to.have.property('Status');
-            if(items[item].Status === 'Error')
+            expect(items.DIMXObjects[item]).to.have.property('Key');
+            expect(items.DIMXObjects[item]).to.have.property('Status');
+            if(items.DIMXObjects[item].Status === 'Error')
             {
-                expect(items[item]).to.have.property('Details');
+                expect(items.DIMXObjects[item]).to.have.property('Details');
             }
         }
     });
