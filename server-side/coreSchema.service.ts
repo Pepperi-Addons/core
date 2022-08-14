@@ -17,6 +17,7 @@ export class CoreSchemaService
 	public async createSchema(): Promise<any>
 	{
 		await this.validateSchemaCreationRequest();
+		
 
 		// Return the client addon's scheme (of type 'papi').
 		return this.getMergedSchema();
@@ -45,22 +46,23 @@ export class CoreSchemaService
 
 	private async validateSchemaCreationRequest()
 	{
+		await this.validateSchemaAlterationRequest();
+		this.validateSchemaType();
+
+	}
+
+	private async validateSchemaAlterationRequest()
+	{
 		// Validate that the provided secret key matches the addon's secre key, and that the addon is indeed installed.
 		await Helper.validateAddonSecretKey(this.request.header, this.client, this.request.query.addon_uuid);
 
 		// Validate that the requested schema is valid
-		this.validateSchema();
-		this.validateSchemaFields();
-	}
-	
-	private validateSchema(): void 
-	{
-		this.validateSchemaType();
 		this.validateSchemaName();
+		this.validateSchemaFields();
 	}
 
 	/**
-     * Validates that the requested schema type is 'pfs'. Throws an excpetion otherwise.
+     * Validates that the requested schema type is 'papi'. Throws an excpetion otherwise.
      */
 	private validateSchemaType() 
 	{
@@ -168,7 +170,8 @@ export class CoreSchemaService
 		// DI-20776: Implement the purgeSchema method
 		// In the future we should use “hard delete” of papi - which is not developed yet
 		// There is no way to uninstall core addons anyhow
-		return { success: true };
+
+		this.validateSchemaAlterationRequest();
 	}
 
 }
