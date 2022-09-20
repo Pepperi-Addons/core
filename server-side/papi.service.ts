@@ -102,7 +102,8 @@ export class PapiService
 	{
 		try
 		{
-			return await this.papiClient.apiCall("POST", `/${resourceName}/search`, body);
+			return await this.papiClient.post(`/${resourceName}/search`, body);
+
 		}
 		catch(error)
 		{

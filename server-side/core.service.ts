@@ -103,31 +103,20 @@ export class CoreService
 	 */
 	public async search()
 	{
-		const res: {Objects: Array<any>, Count?: number} = { Objects: [] }
 		this.validateSearchPrerequisites();
 		// Create a papi Search body
 		const papiSearchBody = this.translateBodyToPapiSeacrhBody();
 
-		const apiCallRes = await this.papi.searchResource(this.resource, papiSearchBody);
-		res.Objects = await apiCallRes.json();
+		const papiItems = await this.papi.searchResource(this.resource, papiSearchBody);
 		
-		res.Objects = res.Objects.map(papiItem => this.translatePapiItemToItem(papiItem));
+		const translatedItems = papiItems.map(papiItem => this.translatePapiItemToItem(papiItem));
 
 		// if Fields are requested, drop any other fields
 		// PAPI handles this for us, but this should be done
 		// for any fields that were added during the translation.
-		this.deleteUnwantedFieldsFromItems(res.Objects, this.request.body.Fields);
+		this.deleteUnwantedFieldsFromItems(translatedItems, this.request.body.Fields);
 
-		this.setCountOnSearchResult(res, apiCallRes)
-
-		return res;
-	}
-
-	private setCountOnSearchResult(searchResult: { Objects: Array<any>; Count?: number | undefined; }, apiCallRes: any) {
-		if(this.request.body.IncludeCount)
-		{
-			searchResult.Count = parseInt(apiCallRes.headers.get('x-pepperi-total-records'))
-		}
+		return translatedItems;
 	}
 
 	/**
