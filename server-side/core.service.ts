@@ -33,9 +33,9 @@ export class CoreService
 		this.validateKey(requestedKey);
 
 		const papiItem = await this.papi.getResourceByKey(this.resource, requestedKey);
-		const transaltedItem = this.translatePapiItemToItem(papiItem);
+		const translatedItem = this.translatePapiItemToItem(papiItem);
 
-		return transaltedItem;
+		return translatedItem;
 	}
 
 	/**
@@ -58,17 +58,17 @@ export class CoreService
 		{
 			const internalId = this.request.query.value;
 			const papiItem = await this.papi.getResourceByInternalId(this.resource, internalId);
-			const transaltedItem = this.translatePapiItemToItem(papiItem);
+			const translatedItem = this.translatePapiItemToItem(papiItem);
 
-			return transaltedItem;
+			return translatedItem;
 		}
 		case "ExternalID":
 		{
 			const externalId = this.request.query.value;
 			const papiItem = await this.papi.getResourceByExternalId(this.resource, externalId);
-			const transaltedItem = this.translatePapiItemToItem(papiItem);
+			const translatedItem = this.translatePapiItemToItem(papiItem);
 
-			return transaltedItem;
+			return translatedItem;
 		}
 		default:
 		{
@@ -106,7 +106,7 @@ export class CoreService
 		const res: {Objects: Array<any>, Count?: number} = { Objects: [] }
 		this.validateSearchPrerequisites();
 		// Create a papi Search body
-		const papiSearchBody = this.translateBodyToPapiSeacrhBody();
+		const papiSearchBody = this.translateBodyToPapiSearchBody();
 
 		const apiCallRes = await this.papi.searchResource(this.resource, papiSearchBody);
 		res.Objects = await apiCallRes.json();
@@ -184,13 +184,13 @@ export class CoreService
 	/**
 	 * Returns a papi compliant search body
 	 */
-	private translateBodyToPapiSeacrhBody()
+	private translateBodyToPapiSearchBody()
 	{
 		const papiSearchBody: any = {};
 		
 		this.translatePapiSupportedSearchFields(papiSearchBody);
 
-		this.trasnlateUniqueFieldQueriesToPapi(papiSearchBody);
+		this.translateUniqueFieldQueriesToPapi(papiSearchBody);
 
 		// If fields include property Key, remove it from the fields list and and UUID instead.
 		const fields = papiSearchBody.fields?.split(',');
@@ -206,7 +206,7 @@ export class CoreService
 		return papiSearchBody;
 	}
 
-	private trasnlateUniqueFieldQueriesToPapi(papiSearchBody: any) 
+	private translateUniqueFieldQueriesToPapi(papiSearchBody: any) 
 	{
 		let shouldDeleteUniqueFields = false;
 		if (papiSearchBody.UniqueFieldID === "ExternalID") 
@@ -299,7 +299,7 @@ export class CoreService
 		const papiItemRequestBody = this.translateItemToPapiItem(this.request.body);
 		// Create the PAPI item
 		const papiItem = await this.papi.createResource(this.resource, papiItemRequestBody);
-		// Transalte the PAPI item to an item
+		// Translate the PAPI item to an item
 		const translatedItem = this.translatePapiItemToItem(papiItem);
 
 		return translatedItem;
@@ -314,7 +314,7 @@ export class CoreService
 		this.validateBatchPrerequisites();
 
 		const batchObjects = [...this.request.body.Objects];
-		// Transalte the items to PAPI format
+		// Translate the items to PAPI format
 		const papiItems = batchObjects.map(batchObject => this.translateItemToPapiItem(batchObject));
 		const papiBatchResult: PapiBatchResponse = await this.papi.batch(this.resource, papiItems);
 		// PAPI batch objects are returned with empty UUIDs. We have to get the
