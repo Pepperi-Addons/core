@@ -66,35 +66,53 @@ describe('Search resources', async () => {
         actionUUID: mockClient.ActionUUID,
     });
 
-    papiClient.post = async (url: string, body?: any) => {
+    papiClient.apiCall = async (method: string, url: string, body?: any) => {
         if (url === `/users/search` && Object.keys(body).length === 0)
         {
-            return Promise.resolve(resourcesList.filter(resource => !resource.Hidden));
+            const res = {json: async function(){
+                return Promise.resolve(resourcesList.filter(resource => !resource.Hidden));
+            }}
+            return res;
         }
         else if(url === `/users/search` && body?.IncludeDeleted)
         {
-            return Promise.resolve(resourcesList);
+            const res = {json: async function(){
+                return Promise.resolve(resourcesList);
+            }}
+            return res;
         }
         else if(url === `/users/search` && body?.UUIDList)
         {
-            let resources = resourcesList.filter(resource => body.UUIDList.includes(resource.UUID));
-            resources = body.IncludeDeleted ? resources : resources.filter(resource => !resource.Hidden);
-            return Promise.resolve(resources);
+            const res = {json: async function(){
+                let resources = resourcesList.filter(resource => body.UUIDList.includes(resource.UUID));
+                resources = body.IncludeDeleted ? resources : resources.filter(resource => !resource.Hidden);
+                return Promise.resolve(resources);
+            }}
+            return res;
         }
         else if(url === `/users/search` && body?.InternalIDList)
         {
             let resources = resourcesList.filter(resource => body.InternalIDList.includes(resource.InternalID));
             resources = body.IncludeDeleted ? resources : resources.filter(resource => !resource.Hidden);
-            return Promise.resolve(resources);
+            const res = {json: async function(){
+                return Promise.resolve(resources);
+            }}
+            return res;
         }
         else if(url === `/users/search` && body?.where)
         {
             expect(body.where).to.include("ExternalID in ('");
-            return Promise.resolve(resourcesList);
+            const res = {json: async function(){
+                return Promise.resolve(resourcesList);
+            }}
+            return res;
         }
         else{
             console.error(url);
-            return Promise.resolve(resourcesList.filter(resource => !resource.Hidden));
+            const res = {json: async function(){
+                return Promise.resolve(resourcesList.filter(resource => !resource.Hidden));
+            }}
+            return res;
         }
     }
 
@@ -119,10 +137,11 @@ describe('Search resources', async () => {
 
         const items = await core.search();
 
-        expect(items).to.be.an('Array');
-        expect(items.length).to.equal(1);
-        expect(items[0]).to.have.property('Key');
-        expect(items[0]).to.have.property('Hidden', false);
+        expect(items).to.be.an('Object').with.property("Objects");
+        expect(items.Objects).to.be.an("Array");
+        expect(items.Objects.length).to.equal(1);
+        expect(items.Objects[0]).to.have.property('Key');
+        expect(items.Objects[0]).to.have.property('Hidden', false);
         
     });
 
@@ -134,10 +153,11 @@ describe('Search resources', async () => {
 
         const items = await core.search();
 
-        expect(items).to.be.an('Array');
-        expect(items.length).to.equal(1);
-        expect(items[0]).to.have.property('Key');
-        expect(items[0]).to.have.property('Hidden', false);
+        expect(items).to.be.an('Object').with.property("Objects");
+        expect(items.Objects).to.be.an("Array");
+        expect(items.Objects.length).to.equal(1);
+        expect(items.Objects[0]).to.have.property('Key');
+        expect(items.Objects[0]).to.have.property('Hidden', false);
         
     });
 
@@ -150,10 +170,11 @@ describe('Search resources', async () => {
 
         const items = await core.search();
 
-        expect(items).to.be.an('Array');
-        expect(items.length).to.equal(1);
-        expect(items[0]).to.have.property('Key');
-        expect(items[0]).to.have.property('Hidden', false);
+        expect(items).to.be.an('Object').with.property("Objects");
+        expect(items.Objects).to.be.an("Array");
+        expect(items.Objects.length).to.equal(1);
+        expect(items.Objects[0]).to.have.property('Key');
+        expect(items.Objects[0]).to.have.property('Hidden', false);
         
     });
 
@@ -171,10 +192,11 @@ describe('Search resources', async () => {
 
         const items = await core.search();
 
-        expect(items).to.be.an('Array');
-        expect(items.length).to.equal(1);
-        expect(items[0]).to.have.property('Key');
-        expect(items[0]).to.have.property('Hidden', false);
+        expect(items).to.be.an('Object').with.property("Objects");
+        expect(items.Objects).to.be.an("Array");
+        expect(items.Objects.length).to.equal(1);
+        expect(items.Objects[0]).to.have.property('Key');
+        expect(items.Objects[0]).to.have.property('Hidden', false);
         
     });
 
@@ -191,10 +213,11 @@ describe('Search resources', async () => {
 
         const items = await core.search();
 
-        expect(items).to.be.an('Array');
-        expect(items.length).to.equal(1);
-        expect(items[0]).to.have.property('Key');
-        expect(items[0]).to.have.property('Hidden', false);
+        expect(items).to.be.an('Object').with.property("Objects");
+        expect(items.Objects).to.be.an("Array");
+        expect(items.Objects.length).to.equal(1);
+        expect(items.Objects[0]).to.have.property('Key');
+        expect(items.Objects[0]).to.have.property('Hidden', false);
         
     });
 
@@ -227,10 +250,11 @@ describe('Search resources', async () => {
 
         const items = await core.search();
 
-        expect(items).to.be.an('Array');
-        expect(items.length).to.equal(1);
-        expect(items[0]).to.have.property('Key');
-        expect(items[0]).to.have.property('Hidden', false);
+        expect(items).to.be.an('Object').with.property("Objects");
+        expect(items.Objects).to.be.an("Array");
+        expect(items.Objects.length).to.equal(1);
+        expect(items.Objects[0]).to.have.property('Key');
+        expect(items.Objects[0]).to.have.property('Hidden', false);
         
     });
 
@@ -243,16 +267,17 @@ describe('Search resources', async () => {
         const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
 
         const items = await core.search();
+        expect(items).to.be.an('Object').with.property("Objects");
+        expect(items.Objects).to.be.an("Array");
 
-        expect(items).to.be.an('Array');
-        expect(items.length).to.equal(2);
-        for(const item of items)
+        expect(items.Objects.length).to.equal(2);
+        for(const item of items.Objects)
         {
             expect(item).to.have.property('Key');
         }
 
-        const hiddenItem = items.find(item => item.Hidden);
-        const nonHiddenItem = items.find(item => !item.Hidden);
+        const hiddenItem = items.Objects.find(item => item.Hidden);
+        const nonHiddenItem = items.Objects.find(item => !item.Hidden);
 
         // Should have a hidden item
         expect(hiddenItem).to.exist;
