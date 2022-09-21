@@ -133,18 +133,17 @@ export class CoreService
 	/**
 	 * Given a list of wanted fields and a list of items, deletes unwanted fields from the items.
 	 * @param items the items from which to delete the unwanted fields.
-	 * @param fieldsString fields string, separated by ',', represents the wanted fields.
+	 * @param fieldsArray an array of string representing the wanted fields.
 	 */
-	private deleteUnwantedFieldsFromItems(items: any, fieldsString: any) 
+	private deleteUnwantedFieldsFromItems(items: any, fieldsArray: Array<string>) 
 	{
-		if (fieldsString) 
+		if (fieldsArray) 
 		{
-			const fields = fieldsString.split(",");
 			items.forEach(item => 
 			{
 				Object.keys(item).forEach(key => 
 				{
-					if (!fields.includes(key)) 
+					if (!fieldsArray.includes(key)) 
 					{
 						delete item[key];
 					}
@@ -239,10 +238,17 @@ export class CoreService
 	{
 		// populate papiSearchBody with the properties on the request's body, keeping any existing properties on the papiSearchBody.
 		Object.keys(this.request.body).map(key => papiSearchBody[key] = this.request.body[key]);
+		// Key isn't supported by PAPI natively. We have to use UUID instead.
 		if (papiSearchBody.KeyList) 
 		{
 			papiSearchBody.UUIDList = papiSearchBody.KeyList;
 			delete papiSearchBody.KeyList;
+		}
+
+		// Fields are passed as an array of strings, while PAPI supports a string that is separated by commas.
+		if(papiSearchBody.Fields && Array.isArray(papiSearchBody.Fields))
+		{
+			papiSearchBody.Fields = (papiSearchBody.Fields as Array<string>).join(',');
 		}
 	}
 
