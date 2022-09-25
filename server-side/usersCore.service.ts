@@ -46,7 +46,7 @@ export class UsersCoreService extends BaseCoreService
 	 */
 	private async doesUserExist(): Promise<boolean>
 	{
-		let res: boolean = false;
+		let res = false;
 
 		try
 		{
@@ -86,8 +86,10 @@ export class UsersCoreService extends BaseCoreService
 		let field_id = "";
 		let value = "";
 
-		for (const uniqueField of UNIQUE_FIELDS) {
-			if (this.request.body[uniqueField]) {
+		for (const uniqueField of UNIQUE_FIELDS) 
+		{
+			if (this.request.body[uniqueField]) 
+			{
 				field_id = uniqueField;
 				value = this.request.body[uniqueField];
 

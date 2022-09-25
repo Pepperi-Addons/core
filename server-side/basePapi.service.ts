@@ -33,7 +33,8 @@ export class BasePapiService implements IPapiService
 		return await this.upsertResource(resourceName, body);
 	}
 
-	async upsertResource(resourceName: string, body: any) {
+	async upsertResource(resourceName: string, body: any) 
+	{
 		try
 		{
 			return await this.papiClient.post(`/${resourceName}`, body);

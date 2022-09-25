@@ -29,7 +29,8 @@ export class UsersPapiService extends BasePapiService implements IPapiService
 		}
 	}
 
-	async upsertResource(resourceName: string, body: any): Promise<any> {
+	async upsertResource(resourceName: string, body: any): Promise<any> 
+	{
 		throw new Error('Method not implemented.');
 	}
 }

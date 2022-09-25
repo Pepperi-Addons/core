@@ -124,7 +124,8 @@ export class BaseCoreService
 		return res;
 	}
 
-	private setCountOnSearchResult(searchResult: { Objects: Array<any>; Count?: number | undefined; }, apiCallRes: any) {
+	private setCountOnSearchResult(searchResult: { Objects: Array<any>; Count?: number | undefined; }, apiCallRes: any) 
+	{
 		if(this.request.body.IncludeCount)
 		{
 			searchResult.Count = parseInt(apiCallRes.headers.get('x-pepperi-total-records'))
@@ -339,7 +340,7 @@ export class BaseCoreService
 	 */
 	validateBatchPrerequisites()
 	{
-		let errorMessage: string = '';
+		let errorMessage = '';
 		if(!(this.request.body?.Objects && Array.isArray(this.request.body?.Objects)))
 		{
 			errorMessage = 'Missing an Objects array';
@@ -387,7 +388,8 @@ export class BaseCoreService
 		const batchObjects = [...this.request.body.Objects];
 		const batchObjectKeys = batchObjects.map(batchObject => batchObject.Key);
 
-		papiBatchResult.forEach((papiItem, index) => {
+		papiBatchResult.forEach((papiItem, index) => 
+		{
 			papiItem.UUID = batchObjectKeys[index];
 		});
 	}
