@@ -111,8 +111,7 @@ export class BasePapiService implements IPapiService
 	{
 		try
 		{
-			// return await this.papiClient.apiCall("POST", `/${resourceName}/search`, body);
-			return await this.papiClient.post(`/createUser`, body);
+			return await this.papiClient.apiCall("POST", `/${resourceName}/search`, body);
 		}
 		catch(error)
 		{
