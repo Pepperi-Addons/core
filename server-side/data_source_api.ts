@@ -81,10 +81,6 @@ export async function resources(client: Client, request: Request)
 	case "POST":
 	{
 		const coreService = getCoreService(client, request);
-		// const papiClient = Helper.getPapiClient(client);
-		// const papiService = new BasePapiService(papiClient);
-		// const papiService = new UsersPapiService(papiClient);
-		// const coreService = new BaseCoreService(request.query.resource_name, request, papiService);
 		return await coreService.upsertResource();
 	}
 	default:
