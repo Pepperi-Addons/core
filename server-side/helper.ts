@@ -1,7 +1,6 @@
 import { Client } from "@pepperi-addons/debug-server/dist";
 import { PapiClient } from "@pepperi-addons/papi-sdk";
 import { DIMX_ADDON_UUID } from "./constants";
-import PapiService from "./papi.service";
 
 export class Helper
 {

@@ -2,8 +2,9 @@ import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { PapiBatchResponse, ResourceFields } from './constants';
 import { ErrorWithStatus } from './errorWithStatus';
 import { Helper } from './helper';
+import IPapiService from './IPapi.service';
 
-export class PapiService 
+export class BasePapiService implements IPapiService
 {
 	constructor(protected papiClient: PapiClient) 
 	{}
@@ -24,6 +25,15 @@ export class PapiService
 
 	async createResource(resourceName: string, body: any)
 	{
+		return await this.upsertResource(resourceName, body);
+	}
+
+	async updateResource(resourceName: string, body: any)
+	{
+		return await this.upsertResource(resourceName, body);
+	}
+
+	async upsertResource(resourceName: string, body: any) {
 		try
 		{
 			return await this.papiClient.post(`/${resourceName}`, body);
@@ -32,7 +42,6 @@ export class PapiService
 		{
 			throw new ErrorWithStatus(error)
 		}
-		
 	}
 
 	async batch(resourceName: string, body: any): Promise<PapiBatchResponse>
@@ -102,7 +111,8 @@ export class PapiService
 	{
 		try
 		{
-			return await this.papiClient.apiCall("POST", `/${resourceName}/search`, body);
+			// return await this.papiClient.apiCall("POST", `/${resourceName}/search`, body);
+			return await this.papiClient.post(`/createUser`, body);
 		}
 		catch(error)
 		{
@@ -111,4 +121,4 @@ export class PapiService
 	}
 }
 
-export default PapiService;
+export default BasePapiService;

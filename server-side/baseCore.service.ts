@@ -1,11 +1,11 @@
 import { Request } from "@pepperi-addons/debug-server";
 import { DIMXObject } from "@pepperi-addons/papi-sdk";
 import { PapiBatchResponse, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
-import PapiService from "./papi.service";
+import IPapiService from "./IPapi.service";
 
-export class CoreService 
+export class BaseCoreService 
 {
-	constructor(protected resource: string, protected request: Request, protected papi: PapiService) 
+	constructor(protected resource: string, protected request: Request, protected papi: IPapiService) 
 	{
 		this.validateResource();
 	}
@@ -41,31 +41,32 @@ export class CoreService
 	/**
 	 * Returns an item by the unique field
 	 */
-	public async getResourceByUniqueField()
+	public async getResourceByUniqueField(field_id?: string, value?: string)
 	{
-		//validate field_id and value query parameters are present
-		this.validateUniqueKeyPrerequisites();
+		const requestedFieldId = field_id ?? this.request.query.field_id;
+		const requestedValue = value ?? this.request.query.value;
 
-		switch(this.request.query.field_id)
+		//validate field_id and value query parameters are present
+		this.validateUniqueKeyPrerequisites(requestedFieldId, requestedValue);
+
+		switch(requestedFieldId)
 		{
 		case "UUID":
 		case "Key":
 		{
-			const key = this.request.query.value;
-			return this.getResourceByKey(key);
+			return await this.getResourceByKey(requestedValue);
 		}
 		case "InternalID":
 		{
-			const internalId = this.request.query.value;
-			const papiItem = await this.papi.getResourceByInternalId(this.resource, internalId);
+
+			const papiItem = await this.papi.getResourceByInternalId(this.resource, requestedValue);
 			const translatedItem = this.translatePapiItemToItem(papiItem);
 
 			return translatedItem;
 		}
 		case "ExternalID":
 		{
-			const externalId = this.request.query.value;
-			const papiItem = await this.papi.getResourceByExternalId(this.resource, externalId);
+			const papiItem = await this.papi.getResourceByExternalId(this.resource, requestedValue);
 			const translatedItem = this.translatePapiItemToItem(papiItem);
 
 			return translatedItem;
@@ -84,14 +85,14 @@ export class CoreService
 	/**
 	 * Throws an exception if field_id and value query parameters are not present
 	 */
-	validateUniqueKeyPrerequisites()
+	validateUniqueKeyPrerequisites(requestedFieldId: string, requestedValue: string)
 	{
-		if (!(this.request.query.field_id && this.request.query.value))
+		if (!(requestedFieldId && requestedValue))
 		{
 			throw new Error(`Missing the required field_id and value query parameters.`);
 		}
 
-		if(!UNIQUE_FIELDS.includes(this.request.query.field_id))
+		if(!UNIQUE_FIELDS.includes(requestedFieldId))
 		{
 			throw new Error(`The field_id query parameter is not valid. Supported field_ids are: ${UNIQUE_FIELDS.join(", ")}`);
 		}
@@ -296,15 +297,15 @@ export class CoreService
 		}
 	}
 	/**
-	 * Create a new item
-	 * @returns the newly created item
+	 * Upserts a resource
+	 * @returns the updated resource
 	 */
-	public async createResource()
+	public async upsertResource()
 	{
 		// Translate the item to PAPI format
 		const papiItemRequestBody = this.translateItemToPapiItem(this.request.body);
 		// Create the PAPI item
-		const papiItem = await this.papi.createResource(this.resource, papiItemRequestBody);
+		const papiItem = await this.papi.upsertResource(this.resource, papiItemRequestBody);
 		// Translate the PAPI item to an item
 		const translatedItem = this.translatePapiItemToItem(papiItem);
 
