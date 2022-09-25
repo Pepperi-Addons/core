@@ -1,12 +1,12 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
+import BasePapiService from '../basePapi.service';
 import { CoreSchemaService } from '../coreSchema.service';
 import { mockClient } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import { CoreService } from '../core.service';
+import { BaseCoreService } from '../baseCore.service';
 import { UNIQUE_FIELDS } from '../constants';
 
 chai.use(promised);
@@ -159,7 +159,7 @@ describe('Batch', async () => {
 
 
 
-    const papiService = new PapiService(papiClient);
+    const papiService = new BasePapiService(papiClient);
 
     const request: Request = {
         method: 'POST',
@@ -181,7 +181,7 @@ describe('Batch', async () => {
     it('should perform batch', async () => {
 
         const requestCopy = { ...request };
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         const items = await core.batch();
 
@@ -205,7 +205,7 @@ describe('Batch', async () => {
         }
         requestCopy.body = body;
 
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         await expect(core.batch()).to.be.rejectedWith(`Missing an Objects array`);
 
@@ -219,7 +219,7 @@ describe('Batch', async () => {
         }
         requestCopy.body = body;
 
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         await expect(core.batch()).to.be.rejectedWith(`OverwriteObject parameter is not supported.`);
 
@@ -233,7 +233,7 @@ describe('Batch', async () => {
             actionUUID: mockClient.ActionUUID,
         });
 
-            const papiService = new PapiService(papiClient);
+            const papiService = new BasePapiService(papiClient);
 
             const request: Request = {
                 method: 'POST',

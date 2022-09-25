@@ -1,12 +1,12 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
+import BasePapiService from '../basePapi.service';
 import { CoreSchemaService } from '../coreSchema.service';
 import { mockClient } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import { CoreService } from '../core.service';
+import { BaseCoreService } from '../baseCore.service';
 import { doesNotReject } from 'assert';
 
 chai.use(promised);
@@ -47,7 +47,7 @@ describe('POST resource', async () => {
         return Promise.resolve(createPapiItem);
     }
 
-    const papiService = new PapiService(papiClient);
+    const papiService = new BasePapiService(papiClient);
 
     const request: Request = {
         method: 'POST',
@@ -61,9 +61,9 @@ describe('POST resource', async () => {
 
     it('should return a standard Pepperi resource item', async () => {
 
-        const core = new CoreService(request.query.resource_name ,request, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,request, papiService);
 
-        const item = await core.createResource();
+        const item = await core.upsertResource();
 
         expect(item).to.be.an('Object');
         expect(item).to.have.property('Key', createPapiItem.UUID);
@@ -74,11 +74,11 @@ describe('POST resource', async () => {
 
         const requestCopy = { ...request };
         requestCopy.body.Key = '123';
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         // expect(async () => await core.createResource()).to.throw('The UUID and Key fields are not equivalent.');
         // await core.createResource().should.be.rejectedWith('The UUID and Key fields are not equivalent.');     
-        await expect(core.createResource()).to.be.rejectedWith('The UUID and Key fields are not equivalent.'); 
+        await expect(core.upsertResource()).to.be.rejectedWith('The UUID and Key fields are not equivalent.'); 
     });
 
     it('should throw an "invalid resource" exception', async () => {
@@ -89,7 +89,7 @@ describe('POST resource', async () => {
             actionUUID: mockClient.ActionUUID,
         });
 
-            const papiService = new PapiService(papiClient);
+            const papiService = new BasePapiService(papiClient);
 
             const request: Request = {
                 method: 'POST',
