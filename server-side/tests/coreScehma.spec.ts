@@ -1,7 +1,7 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
+import BasePapiService from '../basePapi.service';
 import { CoreSchemaService } from '../coreSchema.service';
 import { mockClient } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
@@ -39,7 +39,7 @@ describe('Create schema', async () => {
     // Overried the defualt validation function to not throw an error
     Helper.validateAddonSecretKey = async () => {};
 
-    const papiService = new PapiService(papiClient);
+    const papiService = new BasePapiService(papiClient);
 
     it('should return a valid schema', async () => {
         const requestCopy = { ...request };
@@ -76,7 +76,7 @@ describe('Create schema', async () => {
             actionUUID: mockClient.ActionUUID,
         });
 
-        const papiService = new PapiService(papiClient);
+        const papiService = new BasePapiService(papiClient);
 
         const request: Request = {
             method: 'POST',

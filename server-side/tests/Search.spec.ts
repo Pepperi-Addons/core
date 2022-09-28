@@ -1,12 +1,12 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
+import BasePapiService from '../basePapi.service';
 import { CoreSchemaService } from '../coreSchema.service';
 import { mockClient } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import { CoreService } from '../core.service';
+import { BaseCoreService } from '../baseCore.service';
 import { UNIQUE_FIELDS } from '../constants';
 
 chai.use(promised);
@@ -118,7 +118,7 @@ describe('Search resources', async () => {
 
 
 
-    const papiService = new PapiService(papiClient);
+    const papiService = new BasePapiService(papiClient);
 
     const request: Request = {
         method: 'POST',
@@ -133,7 +133,7 @@ describe('Search resources', async () => {
     it('should return non-hidden items', async () => {
 
         const requestCopy = { ...request };
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         const items = await core.search();
 
@@ -149,7 +149,7 @@ describe('Search resources', async () => {
 
         const requestCopy = { ...request };
         requestCopy.body.InternalIDList = [11496119, 11443826];
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         const items = await core.search();
 
@@ -166,7 +166,7 @@ describe('Search resources', async () => {
         const requestCopy = { ...request };
         const body = {KeyList: ["cc27dfe9-e87a-4710-ab24-8f703e167213", "dd51e0a9-83f3-49b5-9074-35f13916b340"]};
         requestCopy.body = body;
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         const items = await core.search();
 
@@ -188,7 +188,7 @@ describe('Search resources', async () => {
 
         requestCopy.body = body;
 
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         const items = await core.search();
 
@@ -209,7 +209,7 @@ describe('Search resources', async () => {
         }
 
         requestCopy.body = body;
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         const items = await core.search();
 
@@ -231,7 +231,7 @@ describe('Search resources', async () => {
 
         requestCopy.body = body;
 
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         // The test is run in the papi.post function
         const items = await core.search();
@@ -246,7 +246,7 @@ describe('Search resources', async () => {
             UniqueFieldList: [11496119, 11443826]
         }
         requestCopy.body = body;
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         const items = await core.search();
 
@@ -264,7 +264,7 @@ describe('Search resources', async () => {
         const body = {IncludeDeleted: true};
         requestCopy.body = body;
 
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         const items = await core.search();
         expect(items).to.be.an('Object').with.property("Objects");
@@ -294,7 +294,7 @@ describe('Search resources', async () => {
         }
         requestCopy.body = body;
 
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         await expect(core.search()).to.be.rejectedWith(`The passed UniqueFieldID is not supported: '${requestCopy.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(UNIQUE_FIELDS)}`);
 
@@ -309,7 +309,7 @@ describe('Search resources', async () => {
         }
         requestCopy.body = body;
 
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         await expect(core.search()).to.be.rejectedWith(`Sending both KeyList and UniqueFieldList is not supported.`);
 
@@ -322,7 +322,7 @@ describe('Search resources', async () => {
         }
         requestCopy.body = body;
 
-        const core = new CoreService(request.query.resource_name ,requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
 
         await expect(core.search()).to.be.rejectedWith(`Missing UniqueFieldID parameter.`);
 
@@ -336,7 +336,7 @@ describe('Search resources', async () => {
             actionUUID: mockClient.ActionUUID,
         });
 
-            const papiService = new PapiService(papiClient);
+            const papiService = new BasePapiService(papiClient);
 
             const request: Request = {
                 method: 'POST',

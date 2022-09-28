@@ -2,11 +2,11 @@ import { Client, Request } from "@pepperi-addons/debug-server";
 import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
 import { ResourceField, ResourceFields, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import { Helper } from "./helper";
-import PapiService from "./papi.service";
+import IPapiService from "./IPapi.service";
 
 export class CoreSchemaService
 {
-	constructor(protected resource: string, protected request: Request, protected client: Client, protected papi: PapiService)
+	constructor(protected resource: string, protected request: Request, protected client: Client, protected papi: IPapiService)
 	{
 		this.validateResource();
 	}

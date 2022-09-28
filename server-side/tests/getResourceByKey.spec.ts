@@ -1,12 +1,12 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
+import BasePapiService from '../basePapi.service';
 import { CoreSchemaService } from '../coreSchema.service';
 import { mockClient } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import { CoreService } from '../core.service';
+import { BaseCoreService } from '../baseCore.service';
 
 chai.use(promised);
 
@@ -30,7 +30,7 @@ describe('GET resource by key', async () => {
             }
         }
 
-        const papiService = new PapiService(papiClient);
+        const papiService = new BasePapiService(papiClient);
 
         const request: Request = {
             method: 'GET',
@@ -43,7 +43,7 @@ describe('GET resource by key', async () => {
             }
         }
 
-        const core = new CoreService(request.query.resource_name ,request, papiService);
+        const core = new BaseCoreService(request.query.resource_name ,request, papiService);
 
         const item = await core.getResourceByKey();
 
@@ -59,7 +59,7 @@ describe('GET resource by key', async () => {
             actionUUID: mockClient.ActionUUID,
         });
 
-            const papiService = new PapiService(papiClient);
+            const papiService = new BasePapiService(papiClient);
 
             const request: Request = {
                 method: 'POST',

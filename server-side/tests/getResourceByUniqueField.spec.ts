@@ -1,12 +1,12 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
+import BasePapiService from '../basePapi.service';
 import { CoreSchemaService } from '../coreSchema.service';
 import { mockClient } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import { CoreService } from '../core.service';
+import { BaseCoreService } from '../baseCore.service';
 import { UNIQUE_FIELDS } from '../constants';
 
 chai.use(promised);
@@ -30,7 +30,7 @@ describe('GET resource by unique field', async () => {
             )
     }
 
-    const papiService = new PapiService(papiClient);
+    const papiService = new BasePapiService(papiClient);
 
     const request: Request = {
         method: 'GET',
@@ -104,7 +104,7 @@ describe('GET resource by unique field', async () => {
 
         requestCopy.query = queryCopy;
 
-        const core = new CoreService(request.query.resource_name, requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name, requestCopy, papiService);
 
         await expect(core.getResourceByUniqueField()).to.be.rejectedWith(`The field_id query parameter is not valid. Supported field_ids are: ${UNIQUE_FIELDS.join(", ")}`); 
     })
@@ -118,7 +118,7 @@ describe('GET resource by unique field', async () => {
 
         requestCopy.query = queryCopy;
 
-        const core = new CoreService(request.query.resource_name, requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name, requestCopy, papiService);
 
         await expect(core.getResourceByUniqueField()).to.be.rejectedWith(`Missing the required field_id and value query parameters.`); 
     })
@@ -132,7 +132,7 @@ describe('GET resource by unique field', async () => {
 
         requestCopy.query = queryCopy;
 
-        const core = new CoreService(request.query.resource_name, requestCopy, papiService);
+        const core = new BaseCoreService(request.query.resource_name, requestCopy, papiService);
 
         await expect(core.getResourceByUniqueField()).to.be.rejectedWith(`Missing the required field_id and value query parameters.`); 
     })
@@ -145,7 +145,7 @@ describe('GET resource by unique field', async () => {
             actionUUID: mockClient.ActionUUID,
         });
 
-            const papiService = new PapiService(papiClient);
+            const papiService = new BasePapiService(papiClient);
 
             const request: Request = {
                 method: 'POST',
@@ -163,8 +163,8 @@ describe('GET resource by unique field', async () => {
     )
 });
 
-async function getByUniqueField(request: Request, papiService: PapiService, requestedKey: string) {
-    const core = new CoreService(request.query.resource_name, request, papiService);
+async function getByUniqueField(request: Request, papiService: BasePapiService, requestedKey: string) {
+    const core = new BaseCoreService(request.query.resource_name, request, papiService);
 
     const item = await core.getResourceByUniqueField();
 

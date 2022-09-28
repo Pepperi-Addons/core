@@ -1,8 +1,11 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import { CoreService } from './core.service';
+import { BaseCoreService } from './baseCore.service';
 import { CoreSchemaService } from './coreSchema.service';
 import { Helper } from './helper';
-import PapiService from './papi.service';
+import BasePapiService from './basePapi.service';
+import { UsersCoreService } from './usersCore.service';
+import { UsersPapiService } from './usersPapi.service';
+import IPapiService from './IPapi.service';
 
 export async function create(client: Client, request: Request) 
 {
@@ -78,7 +81,7 @@ export async function resources(client: Client, request: Request)
 	case "POST":
 	{
 		const coreService = getCoreService(client, request);
-		return await coreService.createResource();
+		return await coreService.upsertResource();
 	}
 	default:
 	{
@@ -143,7 +146,7 @@ export async function search(client: Client, request: Request)
 
 function getCoreSchemaService(client: Client, request: Request)
 {
-	const papiService = getPapiService(client);
+	const papiService = getPapiService(client, request);
 	const core = new CoreSchemaService(request.body?.Name, request, client, papiService);
 	return core;
 }
@@ -151,14 +154,45 @@ function getCoreSchemaService(client: Client, request: Request)
 
 function getCoreService(client: Client, request: Request)
 {
-	const papiService = getPapiService(client);
-	const core = new CoreService(request.query?.resource_name ?? request.body.Resource, request, papiService);
+	let core: BaseCoreService | undefined = undefined;
+	const papiService: IPapiService = getPapiService(client, request);
+
+	const resourceName = request.query?.resource_name ?? request.body.Resource;
+
+	switch(request.query?.resource_name)
+	{
+		case "users":
+			{
+				core = new UsersCoreService(resourceName, request, papiService);
+				break;
+			}
+		default:
+			{
+				core = new BaseCoreService(resourceName, request, papiService);
+			}
+	}
+
 	return core;
 }
 
-function getPapiService(client: Client) 
+function getPapiService(client: Client, request: Request) : IPapiService
 {
 	const papiClient = Helper.getPapiClient(client);
-	const papiService = new PapiService(papiClient);
+	let papiService: IPapiService | undefined = undefined;
+
+	switch(request.query.resource_name)
+	{
+		case "users":
+		{
+			papiService = new UsersPapiService(papiClient);
+			break;
+		}
+		default:
+		{
+			papiService = new BasePapiService(papiClient);
+			break;
+		}
+	}
+
 	return papiService;
 }

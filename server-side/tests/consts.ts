@@ -1,6 +1,8 @@
 // import { PapiClientOptions } from '@pepperi-addons/papi-sdk';
 
-export const mockClient/*: PapiClientOptions*/ = {
+import { Client } from "@pepperi-addons/debug-server/dist";
+
+export const mockClient : Client/*: PapiClientOptions*/ = {
     AddonUUID: 'NotUsed',
     BaseURL: 'NotUsed',
     AddonSecretKey: 'NotUsed',
@@ -10,6 +12,7 @@ export const mockClient/*: PapiClientOptions*/ = {
     // Token is fake, only has distributor UUID which is mendatory for constructors
     OAuthAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZXBwZXJpLmRpc3RyaWJ1dG9ydXVpZCI6IjEyMzQ1Njc4OTAifQ.JcRiubA-ZGJsCJfDfU8eQqyZq8FAULgeLbXfm3-aQhs',
     ValidatePermission(policyName) {
-        return true;
+        // return true;
+        return Promise.resolve();
     }
 }
