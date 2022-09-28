@@ -157,16 +157,18 @@ function getCoreService(client: Client, request: Request)
 	let core: BaseCoreService | undefined = undefined;
 	const papiService: IPapiService = getPapiService(client, request);
 
+	const resourceName = request.query?.resource_name ?? request.body.Resource;
+
 	switch(request.query?.resource_name)
 	{
 		case "users":
 			{
-				core = new UsersCoreService(request.query?.resource_name ?? request.body.Resource, request, papiService);
+				core = new UsersCoreService(resourceName, request, papiService);
 				break;
 			}
 		default:
 			{
-				core = new BaseCoreService(request.query?.resource_name ?? request.body.Resource, request, papiService);
+				core = new BaseCoreService(resourceName, request, papiService);
 			}
 	}
 
