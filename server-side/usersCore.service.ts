@@ -16,20 +16,29 @@ export class UsersCoreService extends BaseCoreService
 	 */
 	public async upsertResource()
 	{
-		
+		console.log(`Core - Users - Trying to upsert the resource...`);
 		// Translate the item to PAPI format
 		const papiItemRequestBody = this.translateItemToPapiItem(this.request.body);
 
 		// Choose the appropriate papi function to call
-		// const papiFunction = await this.doesUserExist() ? this.papi.updateResource : this.papi.createResource;
 		let papiItem;
 		if(await this.doesUserExist())
 		{
+			console.log(`Core - Users - User already exist. Try to update it...`);
+			
 			papiItem = await this.papi.updateResource(this.resource, papiItemRequestBody);
+
+			console.log(`Core - Users - Successfully updated the user.`);
+
 		}
 		else
 		{
+			console.log(`Core - Users - User does not exist. Try to create it...`);
+			
 			papiItem = await this.papi.createResource(this.resource, papiItemRequestBody);
+
+			console.log(`Core - Users - Successfully created a user.`);
+			
 		}
 
 		// Create the PAPI item
@@ -46,6 +55,8 @@ export class UsersCoreService extends BaseCoreService
 	 */
 	private async doesUserExist(): Promise<boolean>
 	{
+		console.log(`Core - Users - Trying to decide whether this resource already exists or not...`);
+		
 		let res = false;
 
 		try
@@ -65,14 +76,18 @@ export class UsersCoreService extends BaseCoreService
 	 */
 	private async getUser(): Promise<any>
 	{
-		let user = undefined;
+		let user: undefined | any = undefined;
 		// If the body contains any of the unique fields, try to get the User by their value.
 		const { field_id, value } = this.extractUniqueFieldIdAndValueFromRequest();
+		console.log(`Core - Users - Upserted resource can be identified by the passed '${field_id}' value, of '${value}'. Trying to getResourceByUniqueField...`);
+
 
 		if(field_id && value)
 		{
 			user = await this.getResourceByUniqueField(field_id, value);
 		}
+
+		console.log(`Core - Users - ${user ? `Found user with Key ${user.UUID}` : 'Could not find user.'}`);
 		
 		return user;
 	}
