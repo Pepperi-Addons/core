@@ -15,7 +15,9 @@
   "PublishConfig": {
     "ClientStack": "ng10",
     "Editors": [],
-    "Dependencies": {},
+    "Dependencies": {
+      "papi": "9.5.510"
+    },
     "CPISide": []
   }
 }
