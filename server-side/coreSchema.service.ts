@@ -172,6 +172,8 @@ export class CoreSchemaService
 		// There is no way to uninstall core addons anyhow
 
 		this.validateSchemaAlterationRequest();
+
+		return {success: true};
 	}
 
 }
