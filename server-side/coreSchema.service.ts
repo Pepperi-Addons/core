@@ -53,7 +53,7 @@ export class CoreSchemaService
 
 	private async validateSchemaAlterationRequest()
 	{
-		// Validate that the provided secret key matches the addon's secre key, and that the addon is indeed installed.
+		// Validate that the provided secret key matches the addon's secret key, and that the addon is indeed installed.
 		await Helper.validateAddonSecretKey(this.request.header, this.client, this.request.query.addon_uuid);
 
 		// Validate that the requested schema is valid
@@ -62,7 +62,7 @@ export class CoreSchemaService
 	}
 
 	/**
-     * Validates that the requested schema type is 'papi'. Throws an excpetion otherwise.
+     * Validates that the requested schema type is 'papi'. Throws an exception otherwise.
      */
 	private validateSchemaType() 
 	{
