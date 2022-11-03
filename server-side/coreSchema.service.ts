@@ -36,6 +36,7 @@ export class CoreSchemaService
 		if(this.request.body.Fields)
 		{
 			result.Fields = {
+				...this.request.body.Fields,
 				...schema.Fields
 			};
 		}
