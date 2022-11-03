@@ -17,6 +17,11 @@ export async function get_users_by_key(client: Client, request: Request)
 	return await resourcesFunctionAdapter(client, request, "users");
 }
 
+export async function get_catalogs_by_key(client: Client, request: Request) 
+{
+	return await resourcesFunctionAdapter(client, request, "catalogs");
+}
+
 export async function get_account_users_by_key(client: Client, request: Request) 
 {
 	return await resourcesFunctionAdapter(client, request, "account_users");
@@ -40,6 +45,11 @@ export async function users(client: Client, request: Request)
 	return await resourcesFunctionAdapter(client, request, "users");
 }
 
+export async function catalogs(client: Client, request: Request) 
+{
+	return await resourcesFunctionAdapter(client, request, "catalogs");
+}
+
 export async function account_users(client: Client, request: Request) 
 {
 	return await resourcesFunctionAdapter(client, request, "account_users");
@@ -60,6 +70,11 @@ export async function get_accounts_by_unique_field(client: Client, request: Requ
 export async function get_users_by_unique_field(client: Client, request: Request) 
 {
 	return await getByUniqueFieldFunctionAdapter(client, request, "users");
+}
+
+export async function get_catalogs_by_unique_field(client: Client, request: Request) 
+{
+	return await getByUniqueFieldFunctionAdapter(client, request, "catalogs");
 }
 
 export async function get_account_users_by_unique_field(client: Client, request: Request) 
@@ -89,6 +104,11 @@ export async function users_search(client: Client, request: Request)
 	return await searchFunctionAdapter(client, request, "users");
 }
 
+export async function catalogs_search(client: Client, request: Request) 
+{
+	return await searchFunctionAdapter(client, request, "catalogs");
+}
+
 export async function account_users_search(client: Client, request: Request) 
 {
 	return await searchFunctionAdapter(client, request, "account_users");
@@ -114,6 +134,11 @@ export async function batch_accounts(client: Client, request: Request)
 export async function batch_users(client: Client, request: Request) 
 {
 	return await batchFunctionAdapter(client, request, "users");
+}
+
+export async function batch_catalogs(client: Client, request: Request) 
+{
+	return await batchFunctionAdapter(client, request, "catalogs");
 }
 
 export async function batch_account_users(client: Client, request: Request) 
