@@ -57,7 +57,6 @@ export class CoreSchemaService
 
 		// Validate that the requested schema is valid
 		this.validateSchemaName();
-		this.validateSchemaFields();
 	}
 
 	/**
@@ -82,39 +81,6 @@ export class CoreSchemaService
 		{
 			throw new Error("Can not create a schema for the resource '" + this.request.body.Name + "'. Supported resources are: '" + RESOURCE_TYPES.join(', ') + "'");
 		}
-	}
-
-	/**
-	 * Throws an exception if the schema fields are passed. 
-	 * Currently no custom fields are supported.
-	 */
-	private async validateSchemaFields()
-	{
-		if(!(await this.doesSchemaAlreadyExist()) && this.request.body.Fields && Object.keys(this.request.body.Fields).length > 0)
-		{
-			throw new Error("Custom fields are not supported.");
-		}
-	}
-
-	// This function is deals with the case where the schema has already been created,
-	// core resources has then been uninstalled, and Core version <= 0.5.2 was.
-	// Until 0.5.3 purging in Core didn't return a success object as expected
-	// by ADAL, and therefore didn't purge the schema.
-
-	// When again Core Resources is installed and trying to create the schemas, they already
-	// exist, and thu they reach Core with Fields property.
-
-	// Since we enforce that no Fields can be passed, this caused an exception
-	// that made installing Core Resources a second time impossible.
-
-	// Ido also said (26/10/2022) that within 3 months from Core and Core resources becoming
-	// System Addons, we can remove this check for previously existing schemas.
-	private async doesSchemaAlreadyExist(): Promise<boolean> {
-		const papiClient = Helper.getPapiClient(this.client);
-		const findOptions: FindOptions = {where: `Name=${this.request.body.Name}`, fields: ["Name"]} // Try to find a schema with same name. Fields param is just to reduce the size of the answer.
-		const papiSchemas: Array<AddonDataScheme> = await papiClient.addons.data.schemes.get(findOptions);
-
-		return papiSchemas.length > 0;
 	}
 
 	/**
