@@ -161,15 +161,15 @@ function getCoreService(client: Client, request: Request)
 
 	switch(request.query?.resource_name)
 	{
-		case "users":
-			{
-				core = new UsersCoreService(resourceName, request, papiService);
-				break;
-			}
-		default:
-			{
-				core = new BaseCoreService(resourceName, request, papiService);
-			}
+	case "users":
+	{
+		core = new UsersCoreService(resourceName, request, papiService);
+		break;
+	}
+	default:
+	{
+		core = new BaseCoreService(resourceName, request, papiService);
+	}
 	}
 
 	return core;
@@ -182,16 +182,16 @@ function getPapiService(client: Client, request: Request) : IPapiService
 
 	switch(request.query.resource_name)
 	{
-		case "users":
-		{
-			papiService = new UsersPapiService(papiClient);
-			break;
-		}
-		default:
-		{
-			papiService = new BasePapiService(papiClient);
-			break;
-		}
+	case "users":
+	{
+		papiService = new UsersPapiService(papiClient);
+		break;
+	}
+	default:
+	{
+		papiService = new BasePapiService(papiClient);
+		break;
+	}
 	}
 
 	return papiService;

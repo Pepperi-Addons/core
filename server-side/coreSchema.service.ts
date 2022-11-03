@@ -1,5 +1,5 @@
 import { Client, Request } from "@pepperi-addons/debug-server";
-import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
+import { AddonDataScheme, FindOptions } from "@pepperi-addons/papi-sdk";
 import { ResourceField, ResourceFields, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import { Helper } from "./helper";
 import IPapiService from "./IPapi.service";
@@ -36,7 +36,6 @@ export class CoreSchemaService
 		if(this.request.body.Fields)
 		{
 			result.Fields = {
-				...this.request.body.Fields,
 				...schema.Fields
 			};
 		}
@@ -53,7 +52,7 @@ export class CoreSchemaService
 
 	private async validateSchemaAlterationRequest()
 	{
-		// Validate that the provided secret key matches the addon's secre key, and that the addon is indeed installed.
+		// Validate that the provided secret key matches the addon's secret key, and that the addon is indeed installed.
 		await Helper.validateAddonSecretKey(this.request.header, this.client, this.request.query.addon_uuid);
 
 		// Validate that the requested schema is valid
@@ -62,7 +61,7 @@ export class CoreSchemaService
 	}
 
 	/**
-     * Validates that the requested schema type is 'papi'. Throws an excpetion otherwise.
+     * Validates that the requested schema type is 'papi'. Throws an exception otherwise.
      */
 	private validateSchemaType() 
 	{
@@ -89,12 +88,33 @@ export class CoreSchemaService
 	 * Throws an exception if the schema fields are passed. 
 	 * Currently no custom fields are supported.
 	 */
-	private validateSchemaFields()
+	private async validateSchemaFields()
 	{
-		if(this.request.body.Fields && Object.keys(this.request.body.Fields).length > 0)
+		if(!(await this.doesSchemaAlreadyExist()) && this.request.body.Fields && Object.keys(this.request.body.Fields).length > 0)
 		{
 			throw new Error("Custom fields are not supported.");
 		}
+	}
+
+	// This function is deals with the case where the schema has already been created,
+	// core resources has then been uninstalled, and Core version <= 0.5.2 was.
+	// Until 0.5.3 purging in Core didn't return a success object as expected
+	// by ADAL, and therefore didn't purge the schema.
+
+	// When again Core Resources is installed and trying to create the schemas, they already
+	// exist, and thu they reach Core with Fields property.
+
+	// Since we enforce that no Fields can be passed, this caused an exception
+	// that made installing Core Resources a second time impossible.
+
+	// Ido also said (26/10/2022) that within 3 months from Core and Core resources becoming
+	// System Addons, we can remove this check for previously existing schemas.
+	private async doesSchemaAlreadyExist(): Promise<boolean> {
+		const papiClient = Helper.getPapiClient(this.client);
+		const findOptions: FindOptions = {where: `Name=${this.request.body.Name}`, fields: ["Name"]} // Try to find a schema with same name. Fields param is just to reduce the size of the answer.
+		const papiSchemas: Array<AddonDataScheme> = await papiClient.addons.data.schemes.get(findOptions);
+
+		return papiSchemas.length > 0;
 	}
 
 	/**
@@ -172,6 +192,8 @@ export class CoreSchemaService
 		// There is no way to uninstall core addons anyhow
 
 		this.validateSchemaAlterationRequest();
+
+		return {success: true};
 	}
 
 }
