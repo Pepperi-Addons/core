@@ -61,7 +61,7 @@ export class UsersCoreService extends BaseCoreService
 
 		try
 		{
-		console.log(`Core - Users - Trying to get user by some unique field...`);
+			console.log(`Core - Users - Trying to get user by some unique field...`);
 			
 			res = !!(await this.getUser());
 		}
