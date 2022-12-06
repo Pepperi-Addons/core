@@ -5,8 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "npm run init && cd ./server-side && npm run test-noReport",
-		"build": " cd ./server-side && npm run build && cd ..",
-		"init": " cd ./server-side && npm install && cd ..",
+		"build": "cd ./server-side && npm run build && cd .. && cd ./cpi-side && npm run build && cd ..",
+		"init": "cd ./server-side && npm install && cd .. && cd ./cpi-side && npm install && cd ..",
 		"client:singlespa": "cd client-side && ng serve --port 4400 --configuration SingleSpa && cd..",
 		"client:standalone": "cd client-side && ng serve --port 4400 --configuration Standalone && cd..",
 		"publish-addon": "npm run build && publish-addon",
