@@ -67,6 +67,22 @@
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
             "protocol": "inspector"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha Shared",
+            "program": "${workspaceFolder}/shared/node_modules/mocha/bin/_mocha",
+            "args": [
+                "-R",
+                "mochawesome",
+                "--colors",
+                "${workspaceFolder}/shared/lib/tests/*.js",
+                "--no-timeouts"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "protocol": "inspector"
         }
     ]
 }
