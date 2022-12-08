@@ -104,13 +104,11 @@ export class BaseCoreService
 	 */
 	public async search()
 	{
-		const res: SearchResult = { Objects: [] };
 		this.validateSearchPrerequisites();
 		// Create a papi Search body
 		const papiSearchBody = this.translateBodyToPapiSearchBody();
 
-		const apiCallRes: SearchResult = await this.papi.searchResource(this.resource, papiSearchBody);
-		res.Objects = apiCallRes.Objects;
+		const res: SearchResult = await this.papi.searchResource(this.resource, papiSearchBody);
 		
 		res.Objects = res.Objects.map(papiItem => this.translatePapiItemToItem(papiItem));
 
