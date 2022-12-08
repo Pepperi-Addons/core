@@ -59,24 +59,6 @@ describe('GET resources', async () => {
         }
     ]
 
-    // papiClient.get = async (url: string) => {
-    //     if (url === `/users?`)
-    //     {
-    //         return Promise.resolve(resourcesList.filter(resource => !resource.Hidden));
-    //     }
-    //     else if(url === `/users?include_deleted=true`)
-    //     {
-    //         return Promise.resolve(resourcesList);
-    //     }
-    //     else if(url === `/users?fields=UUID`)
-    //     {
-    //         return Promise.resolve(resourcesList.filter(resource => !resource.Hidden).map(resource => resource.UUID));
-    //     }
-    //     else{
-    //         return Promise.resolve(resourcesList.filter(resource => !resource.Hidden));
-    //     }
-    // }
-
     const papiService = new MockApiService();
     papiService.getResources = async (resourceName: string, query: any) => {
         if(query.include_deleted && Object.keys(query).length === 1)

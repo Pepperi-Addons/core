@@ -15,7 +15,8 @@
     "license": "ISC",
     "dependencies": {
         "@pepperi-addons/client-api": "^1.0.16",
-        "@pepperi-addons/cpi-node": "^1.1.7"
+        "@pepperi-addons/cpi-node": "^1.1.7",
+        "core-shared": "file:../shared"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^15.1.0",
