@@ -1,4 +1,6 @@
-import '@pepperi-addons/cpi-node'
+import '@pepperi-addons/cpi-node';
+import { BaseCoreService, CatalogsCoreService, IPapiService, UsersCoreService } from 'core-shared';
+import { Request } from '@pepperi-addons/debug-server';import ClientApiService from './clientApiService';
 
 
 export const router = Router();
@@ -52,7 +54,7 @@ router.post('/:resourceName', async (req, res, next) =>
 
 router.get('/:resourceName/key/:key', async (req, res, next) => 
 {
-    req.query.key = req.params.key;
+	req.query.key = req.params.key;
 
 	try 
 	{
@@ -68,9 +70,37 @@ router.get('/:resourceName/key/:key', async (req, res, next) =>
 	}
 });
 
-function getGenericResourceService(req)
+function getCoreService(request: Request): BaseCoreService
 {
-	// const clientApi = ClientApiFactory.getClientApi(req.query.resource_name);
-	// const coreResourceService = CoreResourceServiceFactory.getResourceService(req.query?.resource_name, req, clientApi);
-	// return coreResourceService;
+	let core: BaseCoreService | undefined = undefined;
+	const papiService: IPapiService = getPapiService(request);
+
+	const resourceName = request.query?.resource_name ?? request.body.Resource;
+
+	switch(request.query?.resource_name)
+	{
+	case "users":
+	{
+		core = new UsersCoreService(resourceName, request, papiService);
+		break;
+	}
+	case "catalogs":
+	{
+		core = new CatalogsCoreService(resourceName, request, papiService);
+		break;
+	}
+	default:
+	{
+		core = new BaseCoreService(resourceName, request, papiService);
+	}
+	}
+
+	return core!;
+}
+
+function getPapiService(request: Request) : IPapiService
+{
+	const papiService: IPapiService = new ClientApiService(request.query.addon_uuid);
+
+	return papiService;
 }
