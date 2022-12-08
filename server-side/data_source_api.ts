@@ -6,6 +6,7 @@ import BasePapiService from './basePapi.service';
 import { UsersCoreService } from './usersCore.service';
 import { UsersPapiService } from './usersPapi.service';
 import IPapiService from './IPapi.service';
+import { CatalogsCoreService } from './catalogsCore.service';
 
 export async function create(client: Client, request: Request) 
 {
@@ -36,6 +37,11 @@ export async function purge(client: Client, request: Request)
 		throw new Error(`Unsupported method: ${request.method}`);
 	}
 	}
+}
+
+export async function key(client: Client, request: Request)
+{
+	return await resources(client, request);
 }
 
 export async function papi_export(client: Client, request: Request)
@@ -164,6 +170,11 @@ function getCoreService(client: Client, request: Request)
 	case "users":
 	{
 		core = new UsersCoreService(resourceName, request, papiService);
+		break;
+	}
+	case "catalogs":
+	{
+		core = new CatalogsCoreService(resourceName, request, papiService);
 		break;
 	}
 	default:
