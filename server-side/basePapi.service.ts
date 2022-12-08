@@ -1,8 +1,6 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import { PapiBatchResponse, ResourceFields } from './constants';
-import { ErrorWithStatus } from './errorWithStatus';
-import { Helper } from './helper';
-import IPapiService from './IPapi.service';
+import { ErrorWithStatus, Helper, IPapiService, PapiBatchResponse, ResourceFields, SearchResult } from 'core-shared';
+
 
 export class BasePapiService implements IPapiService
 {
@@ -60,8 +58,8 @@ export class BasePapiService implements IPapiService
 	async getResources(resourceName: string, query: any)
 	{
 		let url = `/${resourceName}`;
-		const encodedQeury = Helper.encodeQueryParams(query);
-		url = `${url}?${encodedQeury}`;
+		const encodedQuery = Helper.encodeQueryParams(query);
+		url = `${url}?${encodedQuery}`;
 		try
 		{
 			return await this.papiClient.get(url);
@@ -108,16 +106,25 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async searchResource(resourceName: string, body: void)
+	async searchResource(resourceName: string, body: any): Promise<SearchResult>
 	{
+		const res: SearchResult = {Objects:[]};
 		try
 		{
-			return await this.papiClient.apiCall("POST", `/${resourceName}/search`, body);
+			const papiRes = await this.papiClient.apiCall("POST", `/${resourceName}/search`, body);
+			res.Objects = await papiRes.json();
+
+			if(body.IncludeCount)
+			{
+				res.Count = parseInt(papiRes.headers.get('x-pepperi-total-records'))
+			}
 		}
 		catch(error)
 		{
 			throw new ErrorWithStatus(error)
 		}
+
+		return res;
 	}
 }
 

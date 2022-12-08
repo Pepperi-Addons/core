@@ -104,7 +104,7 @@ export class BaseCoreService
 	 */
 	public async search()
 	{
-		const res: {Objects: Array<any>, Count?: number} = { Objects: [] }
+		const res: SearchResult = { Objects: [] };
 		this.validateSearchPrerequisites();
 		// Create a papi Search body
 		const papiSearchBody = this.translateBodyToPapiSearchBody();
@@ -119,17 +119,7 @@ export class BaseCoreService
 		// for any fields that were added during the translation.
 		this.deleteUnwantedFieldsFromItems(res.Objects, this.request.body.Fields);
 
-		this.setCountOnSearchResult(res, apiCallRes)
-
 		return res;
-	}
-
-	private setCountOnSearchResult(searchResult: { Objects: Array<any>; Count?: number | undefined; }, apiCallRes: any) 
-	{
-		if(this.request.body.IncludeCount)
-		{
-			searchResult.Count = parseInt(apiCallRes.headers.get('x-pepperi-total-records'))
-		}
 	}
 
 	/**

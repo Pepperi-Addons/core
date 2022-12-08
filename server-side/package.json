@@ -40,7 +40,8 @@
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "^0.0.37",
-        "@pepperi-addons/papi-sdk": "^1.42.0",
+        "@pepperi-addons/papi-sdk": "^1.44.0",
+        "core-shared": "file:../shared",
         "lodash.clonedeep": "^4.5.0",
         "semver": "^7.3.7"
     }

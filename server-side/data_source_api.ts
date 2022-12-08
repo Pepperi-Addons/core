@@ -1,12 +1,8 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import { BaseCoreService } from './baseCore.service';
-import { CoreSchemaService } from './coreSchema.service';
-import { Helper } from './helper';
+import {BaseCoreService, CatalogsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper} from 'core-shared';
 import BasePapiService from './basePapi.service';
-import { UsersCoreService } from './usersCore.service';
 import { UsersPapiService } from './usersPapi.service';
-import IPapiService from './IPapi.service';
-import { CatalogsCoreService } from './catalogsCore.service';
+import { DIMXObject } from '@pepperi-addons/papi-sdk';
 
 export async function create(client: Client, request: Request) 
 {
@@ -96,7 +92,7 @@ export async function resources(client: Client, request: Request)
 	}
 }
 
-export async function batch(client: Client, request: Request) 
+export async function batch(client: Client, request: Request) : Promise<{ DIMXObjects: DIMXObject[];}>
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
 
@@ -158,7 +154,7 @@ function getCoreSchemaService(client: Client, request: Request)
 }
 
 
-function getCoreService(client: Client, request: Request)
+function getCoreService(client: Client, request: Request): BaseCoreService
 {
 	let core: BaseCoreService | undefined = undefined;
 	const papiService: IPapiService = getPapiService(client, request);
@@ -183,7 +179,7 @@ function getCoreService(client: Client, request: Request)
 	}
 	}
 
-	return core;
+	return core!;
 }
 
 function getPapiService(client: Client, request: Request) : IPapiService
