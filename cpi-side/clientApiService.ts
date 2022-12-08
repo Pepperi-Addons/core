@@ -49,14 +49,40 @@ export default class ClientApiService implements IPapiService
 		return getResult.object
     }
     async getResourceByExternalId(resourceName: string, externalId: any): Promise<any> {
-        throw new Error('Method not implemented.');
+        const searchBody = this.createAUniqueFieldRequestBody("ExternalID", externalId);
+        return await this.callSearchExpectingASingleResource(resourceName, searchBody);
+        
     }
     async getResourceByInternalId(resourceName: string, internalId: any): Promise<any> {
-        throw new Error('Method not implemented.');
+        const searchBody = this.createAUniqueFieldRequestBody("ExternalID", internalId);
+        return await this.callSearchExpectingASingleResource(resourceName, searchBody);
+    }
+
+    protected createAUniqueFieldRequestBody(uniqueFieldID: string, uniqueFieldValue: string)
+    {
+        return {UniqueFieldID: uniqueFieldID,
+                UniqueFieldList: [uniqueFieldValue]
+        };
+    }
+
+    protected async callSearchExpectingASingleResource(resourceName: string, searchBody: any)
+    {
+        const res = await this.searchResource(resourceName, searchBody);
+        if(res.Objects.length === 1)
+        {
+            return res.Objects[0];
+        }
+        else if(res.Objects.length > 1)
+        {
+            throw new Error("Something very strange happened... Found more than one instance.");
+        }
+        else
+        {
+            throw new Error("Could not find the requested resource");
+        }
     }
     async searchResource(resourceName: string, body: any): Promise<SearchResult> 
     {
-        debugger;
         let clientApiSearchResult: ClientApiSearchResult<string>;
 
         body.Fields = body.Fields?.split(',') ?? await this.getRequestedClientApiFields(resourceName);
@@ -67,7 +93,7 @@ export default class ClientApiService implements IPapiService
         // The exclusivity is defined here: https://apidesign.pepperi.com/generic-resources/introduction
         if(body.hasOwnProperty('UniqueFieldList') || body.hasOwnProperty('UUIDList')) // PAPI works with UUIDList, not KeyList.
         {
-            const uniqueField = body.hasOwnProperty('UniqueFieldList'   ) ? body.UniqueFieldID : 'UUID';
+            const uniqueField = body.hasOwnProperty('UniqueFieldList') ? body.UniqueFieldID : 'UUID';
             const valuesList = body.hasOwnProperty('UniqueFieldList') ? body.UniqueFieldList : body.UUIDList;
             clientApiSearchResult = await this.handleSearchUniqueFieldList(resourceName, uniqueField, valuesList, body.Fields, body.Page, body.PageSize);
         }
