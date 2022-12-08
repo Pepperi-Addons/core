@@ -58,10 +58,26 @@ router.get('/:resourceName/key/:key', async (req, res, next) =>
 
 	try 
 	{
-		// const genericResourceService = getGenericResourceService(req);
-		// const resource = await genericResourceService.getResourceByKey();
+		const resourceService = getCoreService(req);
+		const resource = await resourceService.getResourceByKey();
 
-		// res.json(resource);
+		res.json(resource);
+	}
+	catch (err) 
+	{
+		console.log(err);
+		next(err)
+	}
+});
+
+router.post('/:resourceName/search', async (req, res, next) => 
+{
+	try 
+	{
+		const resourceService = getCoreService(req);
+		const resource = await resourceService.search();
+
+		res.json(resource);
 	}
 	catch (err) 
 	{

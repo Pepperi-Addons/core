@@ -19,7 +19,8 @@
         "@pepperi-addons/debug-server": "^0.0.38",
         "@pepperi-addons/papi-sdk": "^1.44.0",
         "@pepperi-addons/pepperi-filters": "^1.0.17",
-        "core-shared": "file:../shared"
+        "core-shared": "file:../shared",
+        "lodash": "^4.17.21"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^15.1.0",
