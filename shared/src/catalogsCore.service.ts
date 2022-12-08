@@ -19,7 +19,7 @@ export class CatalogsCoreService extends BaseCoreService
 	 */
 	public async getResourceByKey(key?: string): Promise<any>
 	{
-		const res = await super.getResourceByKey();
+		const res = await super.getResourceByKey(key);
 
 		return (new CatalogsResourceCreationDateToCreationDateTimeResolver().resolve([res]))[0];
 	}
