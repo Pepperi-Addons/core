@@ -8,7 +8,7 @@ export default abstract class ACatalogsResolver extends AResolver implements IRe
 
     protected replaceCreationDateWithCreationDateTime(str: string): string
     {
-        const regex = /(^|\s+)(?!(CreationDate([a-zA-Z0-9])+))CreationDate/g;
-        return str.replace(regex, 'CreationDateTime');
+    	const regex = /(^|\s+)(?!(CreationDate([a-zA-Z0-9])+))CreationDate/g;
+    	return str.replace(regex, 'CreationDateTime');
     }
 }

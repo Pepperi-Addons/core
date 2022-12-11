@@ -1,6 +1,5 @@
+import { ErrorWithStatus, IPapiService } from 'core-shared';
 import BasePapiService from './basePapi.service';
-import { ErrorWithStatus } from './errorWithStatus';
-import IPapiService from './IPapi.service';
 
 export class UsersPapiService extends BasePapiService implements IPapiService
 {

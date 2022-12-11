@@ -1,0 +1,7 @@
+/publish/**
+var_sk
+/node_modules/**
+/mochawesome-report/**
+tests/**
+lib/**
+src/tests/reports/**

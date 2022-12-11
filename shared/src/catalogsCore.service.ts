@@ -1,7 +1,6 @@
 import { Request } from "@pepperi-addons/debug-server";
 import { DIMXObject } from "@pepperi-addons/papi-sdk";
 import { BaseCoreService } from "./baseCore.service";
-import { PapiBatchResponse, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import IPapiService from "./IPapi.service";
 import CatalogsGetQueryResolver from "./resolvers/catalogsGetQueryResolver";
 import CatalogsResourceCreationDateTimeToCreationDateResolver from "./resolvers/catalogsResourceCreationDateTimeToCreationDateResolver";
@@ -20,7 +19,7 @@ export class CatalogsCoreService extends BaseCoreService
 	 */
 	public async getResourceByKey(key?: string): Promise<any>
 	{
-		const res = await super.getResourceByKey();
+		const res = await super.getResourceByKey(key);
 
 		return (new CatalogsResourceCreationDateToCreationDateTimeResolver().resolve([res]))[0];
 	}

@@ -4,20 +4,20 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "npm run init && cd ./server-side && npm run test-noReport",
-		"build": " cd ./server-side && npm run build && cd ..",
-		"init": " cd ./server-side && npm install && cd ..",
+		"test": "npm run init && cd ./shared && npm run test-noReport",
+		"build": "cd ./shared && npm install && cd .. && cd ./cpi-side && npm run build && cd .. && cd ./server-side && npm run build && cd ..",
+		"init": "cd ./shared && npm install && cd .. && cd ./cpi-side && npm install && cd .. && cd ./server-side && npm install && cd ..",
 		"client:singlespa": "cd client-side && ng serve --port 4400 --configuration SingleSpa && cd..",
 		"client:standalone": "cd client-side && ng serve --port 4400 --configuration Standalone && cd..",
 		"publish-addon": "npm run build && publish-addon",
 		"cpi-publish-addon": "cd ./cpi-side && npm run build:debug && cd .. && cpi-node-debug",
-		"lint": "eslint --fix  ./server-side/*.ts"
+		"lint": "eslint --fix  ./server-side/*.ts ./shared/src/**/*.ts ./cpi-side/**/*.ts"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"@pepperi-addons/scripts": "^2.0.4"
+		"@pepperi-addons/scripts": "^2.0.13"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^5.30.6",

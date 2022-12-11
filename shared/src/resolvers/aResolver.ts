@@ -7,16 +7,17 @@ export default abstract class AResolver implements IResolver
 
     protected applyFunctionToAllObjects(objectManipulator: (object: any) => void, objects: Array<any>) : Array<any>
     {
-        const resolvedObjects = new Array<any>();
+    	const resolvedObjects = new Array<any>();
         
-        for (const obj of objects) {
-            const objCopy = cloneDeep(obj);
+    	for (const obj of objects) 
+    	{
+    		const objCopy = cloneDeep(obj);
 
-            objectManipulator(objCopy);
+    		objectManipulator(objCopy);
 
-            resolvedObjects.push(objCopy);
-        }
+    		resolvedObjects.push(objCopy);
+    	}
 
-        return resolvedObjects;
+    	return resolvedObjects;
     }
 }

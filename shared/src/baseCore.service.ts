@@ -1,6 +1,6 @@
 import { Request } from "@pepperi-addons/debug-server";
 import { DIMXObject } from "@pepperi-addons/papi-sdk";
-import { PapiBatchResponse, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
+import { PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from "./constants";
 import IPapiService from "./IPapi.service";
 
 export class BaseCoreService 
@@ -13,7 +13,7 @@ export class BaseCoreService
 	/**
 	 * Throws an error if the requested resource is not supported
 	 */
-	private validateResource() 
+	protected validateResource() 
 	{
 		if (!RESOURCE_TYPES.includes(this.resource)) 
 		{
@@ -85,7 +85,7 @@ export class BaseCoreService
 	/**
 	 * Throws an exception if field_id and value query parameters are not present
 	 */
-	validateUniqueKeyPrerequisites(requestedFieldId: string, requestedValue: string)
+	protected validateUniqueKeyPrerequisites(requestedFieldId: string, requestedValue: string)
 	{
 		if (!(requestedFieldId && requestedValue))
 		{
@@ -104,13 +104,11 @@ export class BaseCoreService
 	 */
 	public async search()
 	{
-		const res: {Objects: Array<any>, Count?: number} = { Objects: [] }
 		this.validateSearchPrerequisites();
 		// Create a papi Search body
 		const papiSearchBody = this.translateBodyToPapiSearchBody();
 
-		const apiCallRes = await this.papi.searchResource(this.resource, papiSearchBody);
-		res.Objects = await apiCallRes.json();
+		const res: SearchResult = await this.papi.searchResource(this.resource, papiSearchBody);
 		
 		res.Objects = res.Objects.map(papiItem => this.translatePapiItemToItem(papiItem));
 
@@ -119,17 +117,7 @@ export class BaseCoreService
 		// for any fields that were added during the translation.
 		this.deleteUnwantedFieldsFromItems(res.Objects, this.request.body.Fields);
 
-		this.setCountOnSearchResult(res, apiCallRes)
-
 		return res;
-	}
-
-	private setCountOnSearchResult(searchResult: { Objects: Array<any>; Count?: number | undefined; }, apiCallRes: any) 
-	{
-		if(this.request.body.IncludeCount)
-		{
-			searchResult.Count = parseInt(apiCallRes.headers.get('x-pepperi-total-records'))
-		}
 	}
 
 	/**
@@ -158,7 +146,7 @@ export class BaseCoreService
 	/**
 	 * Throws an exception if the search body is not valid
 	 */
-	validateSearchPrerequisites()
+	protected validateSearchPrerequisites()
 	{
 		if(this.request.body.UniqueFieldID && !UNIQUE_FIELDS.includes(this.request.body.UniqueFieldID))
 		{
@@ -338,7 +326,7 @@ export class BaseCoreService
 	/**
 	 * Throws an error in case the body is missing an Objects array, or if a OverwriteObject=true is passed.
 	 */
-	validateBatchPrerequisites()
+	protected validateBatchPrerequisites()
 	{
 		let errorMessage = '';
 		if(!(this.request.body?.Objects && Array.isArray(this.request.body?.Objects)))
@@ -369,7 +357,7 @@ export class BaseCoreService
 		res.DIMXObjects = papiBatchResult.map(papiItem => 
 		{
 			return {
-				Key: papiItem.UUID,
+				Key: papiItem.UUID!,
 				Status: papiItem.Status,
 				...(papiItem.Status === "Error" && {Details: papiItem.Message})
 			}
