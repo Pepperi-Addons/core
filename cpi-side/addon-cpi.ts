@@ -53,6 +53,26 @@ router.get('/:resourceName/key/:key', async (req, res, next) =>
 	}
 });
 
+router.get('/:resourceName/unique/:fieldID/:fieldValue', async (req, res, next) => 
+{
+	req.query.field_id = req.params.fieldID;
+	req.query.value = req.params.fieldValue;
+
+	try 
+	{
+		const resourceService = getCoreService(req);
+		const resource = await resourceService.getResourceByUniqueField();
+
+		res.json(resource);
+	}
+	catch (err) 
+	{
+		console.log(err);
+		next(err)
+	}
+});
+
+
 router.post('/:resourceName/search', async (req, res, next) => 
 {
 	try 
