@@ -11,7 +11,7 @@ export async function load(configuration: any)
 
 router.use('/:resourceName', async (req, res, next) => 
 {
-    try
+	try
 	{
 		validateResourceSupportedInCpiSide(req.params.resourceName);
 	} 
@@ -111,7 +111,7 @@ function getCoreService(request: Request): BaseCoreService
 	}
 	}
 
-	return core!;
+	return core;
 }
 
 function getPapiService(request: Request) : IPapiService

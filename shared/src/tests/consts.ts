@@ -5,18 +5,21 @@ import { ResourceFields, PapiBatchResponse, SearchResult } from "../constants";
 import IPapiService from "../IPapi.service";
 
 export const mockClient : Client/*: PapiClientOptions*/ = {
-    AddonUUID: 'NotUsed',
-    BaseURL: 'NotUsed',
-    AddonSecretKey: 'NotUsed',
-    ActionUUID: 'NotUsed',
-    AssetsBaseUrl: 'NotUsed',
-    Retry: () => { return 'NotUsed' },
-    // Token is fake, only has distributor UUID which is mendatory for constructors
-    OAuthAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZXBwZXJpLmRpc3RyaWJ1dG9ydXVpZCI6IjEyMzQ1Njc4OTAifQ.JcRiubA-ZGJsCJfDfU8eQqyZq8FAULgeLbXfm3-aQhs',
-    ValidatePermission(policyName) {
-        // return true;
-        return Promise.resolve();
-    }
+	AddonUUID: 'NotUsed',
+	BaseURL: 'NotUsed',
+	AddonSecretKey: 'NotUsed',
+	ActionUUID: 'NotUsed',
+	AssetsBaseUrl: 'NotUsed',
+	Retry: () => 
+	{
+		return 'NotUsed' 
+	},
+	// Token is fake, only has distributor UUID which is mandatory for constructors
+	OAuthAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZXBwZXJpLmRpc3RyaWJ1dG9ydXVpZCI6IjEyMzQ1Njc4OTAifQ.JcRiubA-ZGJsCJfDfU8eQqyZq8FAULgeLbXfm3-aQhs',
+	ValidatePermission(policyName) 
+	{
+		return Promise.resolve();
+	}
 }
 
 export class MockApiService implements IPapiService

@@ -179,7 +179,7 @@ function getCoreService(client: Client, request: Request): BaseCoreService
 	}
 	}
 
-	return core!;
+	return core;
 }
 
 function getPapiService(client: Client, request: Request) : IPapiService

@@ -13,7 +13,7 @@ export class BaseCoreService
 	/**
 	 * Throws an error if the requested resource is not supported
 	 */
-	private validateResource() 
+	protected validateResource() 
 	{
 		if (!RESOURCE_TYPES.includes(this.resource)) 
 		{
@@ -85,7 +85,7 @@ export class BaseCoreService
 	/**
 	 * Throws an exception if field_id and value query parameters are not present
 	 */
-	validateUniqueKeyPrerequisites(requestedFieldId: string, requestedValue: string)
+	protected validateUniqueKeyPrerequisites(requestedFieldId: string, requestedValue: string)
 	{
 		if (!(requestedFieldId && requestedValue))
 		{
@@ -146,7 +146,7 @@ export class BaseCoreService
 	/**
 	 * Throws an exception if the search body is not valid
 	 */
-	validateSearchPrerequisites()
+	protected validateSearchPrerequisites()
 	{
 		if(this.request.body.UniqueFieldID && !UNIQUE_FIELDS.includes(this.request.body.UniqueFieldID))
 		{
@@ -326,7 +326,7 @@ export class BaseCoreService
 	/**
 	 * Throws an error in case the body is missing an Objects array, or if a OverwriteObject=true is passed.
 	 */
-	validateBatchPrerequisites()
+	protected validateBatchPrerequisites()
 	{
 		let errorMessage = '';
 		if(!(this.request.body?.Objects && Array.isArray(this.request.body?.Objects)))
