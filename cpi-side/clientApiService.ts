@@ -2,7 +2,7 @@ import {IPapiService, PapiBatchResponse, ResourceFields, SearchResult} from 'cor
 import { GetParams, GetResult, SearchParams, SearchResult as ClientApiSearchResult } from "@pepperi-addons/client-api";
 import { FieldType } from "@pepperi-addons/pepperi-filters";
 import { parse as transformSqlToJson } from '@pepperi-addons/pepperi-filters';
-import _ from 'lodash';
+import pick from 'lodash.pick';
 
 
 export default class ClientApiService implements IPapiService
@@ -44,7 +44,7 @@ export default class ClientApiService implements IPapiService
         // CreationDate ins't synced for Catalogs.
         getParams.fields = getParams.fields.filter(field => field !== 'CreationDate');
 
-		const getResult: GetResult<string> = await this.executeFunctionByName(`pepperi.api.${resourceName}.get`, globalThis, getParams);
+        const getResult: GetResult<string> = await pepperi.api[resourceName].get(getParams);
         
 		return getResult.object
     }
@@ -86,6 +86,7 @@ export default class ClientApiService implements IPapiService
         let clientApiSearchResult: ClientApiSearchResult<string>;
 
         body.Fields = body.Fields?.split(',') ?? await this.getRequestedClientApiFields(resourceName);
+        // CreationDate isn't synced for catalogs on CPI-side.
         body.Fields = body.Fields.filter(field => field !== 'CreationDate');
 
         // Due to the lack of time, I'm not validating the mutual exclusivity between Where, UniqueFieldList and KeyList.
@@ -106,7 +107,7 @@ export default class ClientApiService implements IPapiService
                 ...(body.hasOwnProperty('Where')) && {filter: transformSqlToJson(body.Where, await this.getClientApiFieldsTypes(resourceName))},
             };
 
-            clientApiSearchResult = await this.executeFunctionByName(`pepperi.api.${resourceName}.search`, globalThis, searchParams);
+            clientApiSearchResult = await pepperi.api[resourceName].search(searchParams);
         }
 
          // Build the SearchResult object to return
@@ -118,15 +119,20 @@ export default class ClientApiService implements IPapiService
 		return searchResult!;
     }
 
-    async handleSearchUniqueFieldList(resourceName: string, uniqueField: string, valuesList: string[], fields: string[], page: number = 0, pageSize?: number): Promise<ClientApiSearchResult<string>>
+    async handleSearchUniqueFieldList(resourceName: string, uniqueField: string, valuesList: string[], requestedFields: string[], page: number = 0, pageSize?: number): Promise<ClientApiSearchResult<string>>
     {
-        debugger;
         // There's no 'in' operator in ClientApi. A "manual" implementation of this functionality is required.
 
-        // 1. Get all of the resources.
-        const searchParams: SearchParams<string> = {fields: fields};
+        // 1. Get all of the resources, including the uniqueField (it might not be included in requestedFields).
+        const searchFields = [...requestedFields];
+        if(!searchFields.includes(uniqueField))
+        {
+            searchFields.push(uniqueField);
+        }
+
+        const searchParams: SearchParams<string> = {fields: searchFields};
         
-        const clientApiSearchResult: ClientApiSearchResult<string> = await this.executeFunctionByName(`pepperi.api.${resourceName}.search`, globalThis, searchParams);
+        const clientApiSearchResult: ClientApiSearchResult<string> = await pepperi.api[resourceName].search(searchParams);
 
         // 2. Filter the resources that fit the valuesList.
         // Assuming the resources.length is bigger than valuesList.length
@@ -170,22 +176,13 @@ export default class ClientApiService implements IPapiService
         const requestedPageResourceWithFields: Array<any> = [];
         for (const resource of requestedPageResources)
         {
-            requestedPageResourceWithFields.push(_.pick(resource, fields));
+            // For explanation about lodash.pick, see: https://lodash.com/docs/4.17.15#pick
+            requestedPageResourceWithFields.push(pick(resource, requestedFields));
         }
 
         clientApiSearchResult.objects = requestedPageResourceWithFields;
 
         return clientApiSearchResult;
-    }
-
-    protected executeFunctionByName(functionName: string, context: any, ...args: any[]): any 
-    {
-    const namespaces = functionName.split(".");
-    const func = namespaces.pop();
-    for (let i = 0; i < namespaces.length; i++) {
-        context = context[namespaces[i]];
-    }
-    return context[func!].apply(context, args);
     }
 
     protected async getRequestedClientApiFields(resourceName: string)

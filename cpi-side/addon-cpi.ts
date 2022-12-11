@@ -35,23 +35,6 @@ function validateResourceSupportedInCpiSide(resourceName: string)
 	}
 }
 
-router.post('/:resourceName', async (req, res, next) => 
-{
-    
-	try 
-	{
-		// const genericResourceService = getGenericResourceService(req);
-		// const createdResource = await genericResourceService.createResource();
-
-		// res.json(createdResource);
-	}
-	catch (err) 
-	{
-		console.log(err);
-		next(err)
-	}
-});
-
 router.get('/:resourceName/key/:key', async (req, res, next) => 
 {
 	req.query.key = req.params.key;
@@ -78,6 +61,23 @@ router.post('/:resourceName/search', async (req, res, next) =>
 		const resource = await resourceService.search();
 
 		res.json(resource);
+	}
+	catch (err) 
+	{
+		console.log(err);
+		next(err)
+	}
+});
+
+router.post('/:resourceName', async (req, res, next) => 
+{
+    
+	try 
+	{
+		const genericResourceService = getCoreService(req);
+		const createdResource = await genericResourceService.upsertResource();
+
+		res.json(createdResource);
 	}
 	catch (err) 
 	{

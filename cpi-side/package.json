@@ -20,7 +20,7 @@
         "@pepperi-addons/papi-sdk": "^1.44.0",
         "@pepperi-addons/pepperi-filters": "^1.0.17",
         "core-shared": "file:../shared",
-        "lodash": "^4.17.21"
+        "lodash.pick": "^4.4.0"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^15.1.0",
