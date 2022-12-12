@@ -52,6 +52,11 @@ export async function papi_export(client: Client, request: Request)
 	resourcesRequest.query['resource_name'] = request.body["Resource"];
 	resourcesRequest.query['addon_uuid'] = request.body["AddonUUID"];
 
+	if(request.body.DataSourceExportParams?.ForcedWhereClauseAddition)
+	{
+		request.query.where = `${request.body.DataSourceExportParams?.ForcedWhereClauseAddition} AND (${request.query.where})`;
+	}
+
 	resourcesRequest.method = 'GET';
 
 	resourcesRequest.body = {};
