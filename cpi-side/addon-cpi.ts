@@ -2,7 +2,7 @@ import '@pepperi-addons/cpi-node';
 import { BaseCoreService, CatalogsAndAccountsCoreService, IPapiService, UsersCoreService } from 'core-shared';
 import { Request } from '@pepperi-addons/debug-server';import BaseCpiSideApiService from './baseCpiSideApiService';
 import { IClientApiService } from './iClientApiService';
-import ClientApiService from './ClientApiService';
+import ClientApiService from './clientApiService';
 import CatalogsCpiSideApiService from './catalogsCpiSideApiService';
 import AccountsCpiSideApiService from './accountsCpiSideApiService';
 
