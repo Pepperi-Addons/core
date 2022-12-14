@@ -7,7 +7,7 @@ import { IClientApiService } from './iClientApiService';
 import { CreateResourceParams } from './constants';
 
 
-export default class CpiSideApiService implements IPapiService
+export default class BaseCpiSideApiService implements IPapiService
 {
 	constructor(protected clientAddonUUID: string, protected iClientApi: IClientApiService)
 	{}
@@ -111,19 +111,12 @@ export default class CpiSideApiService implements IPapiService
 	async getResourceByKey(resourceName: string, key: string): Promise<any> 
 	{
 		const schemaFields = await this.getRequestedClientApiFields(resourceName);
-
 		const getParams: GetParams<string> = {
 			key: {  
 				UUID: key
 			}, 
 			fields: schemaFields
 		};
-
-		// CreationDate ins't synced for Catalogs.
-		if(resourceName === 'catalogs')
-		{
-			getParams.fields = getParams.fields.filter(field => field !== 'CreationDate');
-		}
 		
 		const getResult = await this.iClientApi.get(resourceName, getParams);
         
@@ -134,7 +127,6 @@ export default class CpiSideApiService implements IPapiService
 	{
 		const searchBody = this.createAUniqueFieldRequestBody("ExternalID", externalId);
 		return await this.callSearchExpectingASingleResource(resourceName, searchBody);
-        
 	}
 
 	async getResourceByInternalId(resourceName: string, internalId: any): Promise<any> 
@@ -166,13 +158,11 @@ export default class CpiSideApiService implements IPapiService
 			throw new Error("Could not find the requested resource");
 		}
 	}
+
 	async searchResource(resourceName: string, body: any): Promise<SearchResult> 
 	{
 		let clientApiSearchResult: ClientApiSearchResult<string>;
-
-		body.Fields = body.Fields?.split(',') ?? await this.getRequestedClientApiFields(resourceName);
-		// CreationDate isn't synced for catalogs on CPI-side.
-		body.Fields = body.Fields.filter(field => field !== 'CreationDate');
+		body.Fields = body.Fields ? this.filterFieldsToMatchCpi(body.Fields.split(',')) : await this.getRequestedClientApiFields(resourceName);
 
 		// Due to the lack of time, I'm not validating the mutual exclusivity between Where, UniqueFieldList and KeyList.
 		// This is promised in the API, and I'm counting on the api to hold to it's definition.
@@ -276,8 +266,8 @@ export default class CpiSideApiService implements IPapiService
 		{
 			const schema = await pepperi.addons.data.schemes.uuid(this.clientAddonUUID).name(resourceName).get();
 			let schemaFields = Object.keys(schema.Fields);
-			// ModificationDateTime isn't supported in cpi-side
-			schemaFields = schemaFields.filter(field => field !== 'ModificationDateTime');
+
+			schemaFields = this.filterFieldsToMatchCpi(schemaFields);
 			return schemaFields;
 		}
 		catch(error)
@@ -285,6 +275,12 @@ export default class CpiSideApiService implements IPapiService
 			console.error(error instanceof Error ? error.message : 'Unknown error occurred.');
 			throw error;
 		}
+	}
+
+	protected filterFieldsToMatchCpi(schemaFields: string[]): string[] 
+	{
+		// ModificationDateTime isn't supported in cpi-side
+		return schemaFields.filter(field => field !== 'ModificationDateTime');
 	}
 
 	protected async getClientApiFieldsTypes(resourceName: string) : Promise<{[key: string]: FieldType}>
@@ -299,5 +295,4 @@ export default class CpiSideApiService implements IPapiService
 
     	return res;
 	}
-
 }

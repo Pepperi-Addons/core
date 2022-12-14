@@ -1,8 +1,10 @@
 import '@pepperi-addons/cpi-node';
 import { BaseCoreService, CatalogsAndAccountsCoreService, IPapiService, UsersCoreService } from 'core-shared';
-import { Request } from '@pepperi-addons/debug-server';import CpiSideApiService from './cpiSideApiService';
+import { Request } from '@pepperi-addons/debug-server';import BaseCpiSideApiService from './baseCpiSideApiService';
 import { IClientApiService } from './iClientApiService';
 import ClientApiService from './ClientApiService';
+import CatalogsCpiSideApiService from './catalogsCpiSideApiService';
+import AccountsCpiSideApiService from './accountsCpiSideApiService';
 
 
 export const router = Router();
@@ -10,30 +12,25 @@ export const router = Router();
 export async function load(configuration: any) 
 {
 }
-router.get('/hello', async (req, res, next) => 
-{
-	debugger;
-	res.json({});
-});
-// router.use('/:resourceName', async (req, res, next) => 
-// {
-// 	try
-// 	{
-// 		validateResourceSupportedInCpiSide(req.params.resourceName);
-// 	} 
-// 	catch (err)
-// 	{
-// 		console.log(err);
-// 		next(err)
-// 	}
 
-// 	req.query.resource_name = req.params.resourceName;
-// 	next();
-// });
+router.use('/:resourceName', async (req, res, next) => 
+{
+	try
+	{
+		validateResourceSupportedInCpiSide(req.params.resourceName);
+	} 
+	catch (err)
+	{
+		console.log(err);
+		next(err)
+	}
+
+	req.query.resource_name = req.params.resourceName;
+	next();
+});
 
 function validateResourceSupportedInCpiSide(resourceName: string)
 {
-	debugger;
 	const supportedResources = ['catalogs', 'accounts'];
 
 	if(!supportedResources.includes(resourceName))
@@ -44,7 +41,6 @@ function validateResourceSupportedInCpiSide(resourceName: string)
 
 router.get('/:resourceName/key/:key', async (req, res, next) => 
 {
-	debugger;
 	req.query.key = req.params.key;
 
 	try 
@@ -99,7 +95,6 @@ router.post('/:resourceName/search', async (req, res, next) =>
 
 router.post('/:resourceName', async (req, res, next) => 
 {
-    
 	try 
 	{
 		const genericResourceService = getCoreService(req);
@@ -146,7 +141,26 @@ function getCoreService(request: Request): BaseCoreService
 function getPapiService(request: Request) : IPapiService
 {
 	const iClientApi: IClientApiService = new ClientApiService();
-	const papiService: IPapiService = new CpiSideApiService(request.query.addon_uuid, iClientApi);
+
+	let papiService: IPapiService;
+
+	switch(request.query?.resource_name)
+	{
+	case "catalogs":
+	{
+		papiService = new CatalogsCpiSideApiService(request.query.addon_uuid, iClientApi);
+		break;
+	}
+	case "accounts":
+	{
+		papiService = new AccountsCpiSideApiService(request.query.addon_uuid, iClientApi);
+		break;
+	}
+	default:
+	{
+		papiService = new BaseCpiSideApiService(request.query.addon_uuid, iClientApi);
+	}
+	}
 
 	return papiService;
 }
