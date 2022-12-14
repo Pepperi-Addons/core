@@ -33,7 +33,7 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 		const requestedValue = value ?? this.request.query.value;
 
 		const res = await super.getResourceByUniqueField(requestedFieldId, requestedValue)
-		return (new CatalogsResourceCreationDateToCreationDateTimeResolver().resolve([res]));
+		return (new CatalogsResourceCreationDateToCreationDateTimeResolver().resolve([res]))[0];
 	}
 
 	/**
