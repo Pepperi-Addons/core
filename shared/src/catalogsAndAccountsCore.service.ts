@@ -7,7 +7,7 @@ import CatalogsResourceCreationDateTimeToCreationDateResolver from "./resolvers/
 import CatalogsResourceCreationDateToCreationDateTimeResolver from "./resolvers/catalogsResourceCreationDateToCreationDateTimeResolver";
 import CatalogsSearchBodyResolver from "./resolvers/catalogsSearchBodyResolver";
 
-export class CatalogsCoreService extends BaseCoreService
+export class CatalogsAndAccountsCoreService extends BaseCoreService
 {
 	constructor(protected resource: string, protected request: Request, protected papi: IPapiService) 
 	{

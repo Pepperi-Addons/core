@@ -1,5 +1,5 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import {BaseCoreService, CatalogsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper} from 'core-shared';
+import {BaseCoreService, CatalogsAndAccountsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper} from 'core-shared';
 import BasePapiService from './basePapi.service';
 import { UsersPapiService } from './usersPapi.service';
 import { DIMXObject } from '@pepperi-addons/papi-sdk';
@@ -174,8 +174,9 @@ function getCoreService(client: Client, request: Request): BaseCoreService
 		break;
 	}
 	case "catalogs":
+	case "accounts":
 	{
-		core = new CatalogsCoreService(resourceName, request, papiService);
+		core = new CatalogsAndAccountsCoreService(resourceName, request, papiService);
 		break;
 	}
 	default:
