@@ -179,8 +179,6 @@ export class BaseCoreService
 		
 		this.translatePapiSupportedSearchFields(papiSearchBody);
 
-		this.translateUniqueFieldQueriesToPapi(papiSearchBody);
-
 		// If fields include property Key, remove it from the fields list and and UUID instead.
 		const fields = papiSearchBody.fields?.split(',');
 		if(fields?.includes("Key"))
@@ -193,35 +191,6 @@ export class BaseCoreService
 		}
 
 		return papiSearchBody;
-	}
-
-	private translateUniqueFieldQueriesToPapi(papiSearchBody: any) 
-	{
-		let shouldDeleteUniqueFields = false;
-		if (papiSearchBody.UniqueFieldID === "ExternalID") 
-		{
-			papiSearchBody.where = `ExternalID in ('${papiSearchBody.UniqueFieldList.join('\',')}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
-			shouldDeleteUniqueFields = true;
-		}
-
-		if (papiSearchBody.UniqueFieldID === "InternalID") 
-		{
-			papiSearchBody.InternalIDList = papiSearchBody.UniqueFieldList;
-			shouldDeleteUniqueFields = true;
-		}
-
-		if (papiSearchBody.UniqueFieldID === "UUID" || papiSearchBody.UniqueFieldID === "Key") 
-		{
-			papiSearchBody.UUIDList = papiSearchBody.UniqueFieldList;
-			shouldDeleteUniqueFields = true;
-		}
-
-		if (shouldDeleteUniqueFields) 
-		{
-			delete papiSearchBody.UniqueFieldID;
-			delete papiSearchBody.UniqueFieldList;
-		}
-		
 	}
 
 	private translatePapiSupportedSearchFields(papiSearchBody: any) 

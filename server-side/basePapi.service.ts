@@ -109,6 +109,9 @@ export class BasePapiService implements IPapiService
 	async searchResource(resourceName: string, body: any): Promise<SearchResult>
 	{
 		const res: SearchResult = {Objects:[]};
+
+		this.translateUniqueFieldQueriesToPapi(body);
+
 		try
 		{
 			const papiRes = await this.papiClient.apiCall("POST", `/${resourceName}/search`, body);
@@ -125,6 +128,35 @@ export class BasePapiService implements IPapiService
 		}
 
 		return res;
+	}
+
+	private translateUniqueFieldQueriesToPapi(papiSearchBody: any) 
+	{
+		let shouldDeleteUniqueFields = false;
+		if (papiSearchBody.UniqueFieldID === "ExternalID") 
+		{
+			papiSearchBody.Where = `ExternalID in ('${papiSearchBody.UniqueFieldList.join("\',\'")}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
+			shouldDeleteUniqueFields = true;
+		}
+
+		if (papiSearchBody.UniqueFieldID === "InternalID") 
+		{
+			papiSearchBody.InternalIDList = papiSearchBody.UniqueFieldList;
+			shouldDeleteUniqueFields = true;
+		}
+
+		if (papiSearchBody.UniqueFieldID === "UUID" || papiSearchBody.UniqueFieldID === "Key") 
+		{
+			papiSearchBody.UUIDList = papiSearchBody.UniqueFieldList;
+			shouldDeleteUniqueFields = true;
+		}
+
+		if (shouldDeleteUniqueFields) 
+		{
+			delete papiSearchBody.UniqueFieldID;
+			delete papiSearchBody.UniqueFieldList;
+		}
+		
 	}
 }
 

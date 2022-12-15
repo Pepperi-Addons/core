@@ -6,6 +6,7 @@ import { MockApiService, mockClient } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { BaseCoreService } from '../baseCore.service';
 import { UNIQUE_FIELDS } from '../constants';
+import { chmodSync } from 'fs';
 
 chai.use(promised);
 
@@ -82,10 +83,20 @@ describe('Search resources', async () =>
 			return Promise.resolve({Objects: resources});
 
 		}
-		else if(body?.where)
+		else if(body?.UniqueFieldID)
 		{
-			expect(body.where).to.include("ExternalID in ('");
-			return Promise.resolve({Objects: resourcesList});
+			let resources;
+
+			if(body.UniqueFieldID === 'Key')
+			{
+				resources = resourcesList.filter(resource => body.UniqueFieldList.includes(resource['UUID']));
+			}
+			else{
+				resources = resourcesList.filter(resource => body.UniqueFieldList.includes(resource[body.UniqueFieldID]));
+			}
+
+			resources = body.IncludeDeleted ? resources : resources.filter(resource => !resource.Hidden);
+			return Promise.resolve({Objects: resources});
 		}
 		else
 		{

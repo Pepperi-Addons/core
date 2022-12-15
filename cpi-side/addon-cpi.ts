@@ -1,6 +1,10 @@
 import '@pepperi-addons/cpi-node';
-import { BaseCoreService, CatalogsCoreService, IPapiService, UsersCoreService } from 'core-shared';
-import { Request } from '@pepperi-addons/debug-server';import ClientApiService from './clientApiService';
+import { BaseCoreService, CatalogsAndAccountsCoreService, IPapiService, UsersCoreService } from 'core-shared';
+import { Request } from '@pepperi-addons/debug-server';import BaseCpiSideApiService from './baseCpiSideApiService';
+import { IClientApiService } from './iClientApiService';
+import ClientApiService from './clientApiService';
+import CatalogsCpiSideApiService from './catalogsCpiSideApiService';
+import AccountsCpiSideApiService from './accountsCpiSideApiService';
 
 
 export const router = Router();
@@ -27,7 +31,7 @@ router.use('/:resourceName', async (req, res, next) =>
 
 function validateResourceSupportedInCpiSide(resourceName: string)
 {
-	const supportedResources = ['catalogs'];
+	const supportedResources = ['catalogs', 'accounts'];
 
 	if(!supportedResources.includes(resourceName))
 	{
@@ -91,7 +95,6 @@ router.post('/:resourceName/search', async (req, res, next) =>
 
 router.post('/:resourceName', async (req, res, next) => 
 {
-    
 	try 
 	{
 		const genericResourceService = getCoreService(req);
@@ -121,8 +124,9 @@ function getCoreService(request: Request): BaseCoreService
 		break;
 	}
 	case "catalogs":
+	case "accounts":
 	{
-		core = new CatalogsCoreService(resourceName, request, papiService);
+		core = new CatalogsAndAccountsCoreService(resourceName, request, papiService);
 		break;
 	}
 	default:
@@ -136,7 +140,27 @@ function getCoreService(request: Request): BaseCoreService
 
 function getPapiService(request: Request) : IPapiService
 {
-	const papiService: IPapiService = new ClientApiService(request.query.addon_uuid);
+	const iClientApi: IClientApiService = new ClientApiService();
+
+	let papiService: IPapiService;
+
+	switch(request.query?.resource_name)
+	{
+	case "catalogs":
+	{
+		papiService = new CatalogsCpiSideApiService(request.query.addon_uuid, iClientApi);
+		break;
+	}
+	case "accounts":
+	{
+		papiService = new AccountsCpiSideApiService(request.query.addon_uuid, iClientApi);
+		break;
+	}
+	default:
+	{
+		papiService = new BaseCpiSideApiService(request.query.addon_uuid, iClientApi);
+	}
+	}
 
 	return papiService;
 }

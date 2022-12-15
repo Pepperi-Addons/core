@@ -1,6 +1,6 @@
 export * from './IPapi.service'
 export * from './baseCore.service'
-export * from './catalogsCore.service'
+export * from './catalogsAndAccountsCore.service'
 export * from './constants'
 export * from './coreSchema.service'
 export * from './errorWithStatus'

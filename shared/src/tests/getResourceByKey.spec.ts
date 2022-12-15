@@ -5,7 +5,7 @@ import { CoreSchemaService } from '../coreSchema.service';
 import { MockApiService, mockClient } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { BaseCoreService } from '../baseCore.service';
-import { CatalogsCoreService } from '../catalogsCore.service';
+import { CatalogsAndAccountsCoreService } from '../catalogsAndAccountsCore.service';
 
 chai.use(promised);
 
@@ -110,7 +110,7 @@ describe('GET resource by key', async () =>
             }
 		}
 
-		const core = new CatalogsCoreService(request.query.resource_name ,request, papiService);
+		const core = new CatalogsAndAccountsCoreService(request.query.resource_name ,request, papiService);
 
 		const item = await core.getResourceByKey();
 

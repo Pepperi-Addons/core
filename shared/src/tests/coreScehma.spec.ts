@@ -22,7 +22,9 @@ describe('Create schema', async () =>
 
 	// Override the default validation function to not throw an error
 	Helper.validateAddonSecretKey = async () => 
-	{};
+	{
+		return Promise.resolve()
+	};
 
 	const papiService = new MockApiService();
 
