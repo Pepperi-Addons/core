@@ -194,13 +194,13 @@ export class BaseCoreService
 		this.translateUniqueFieldQueriesToPapi(papiSearchBody);
 
 		// If fields include property Key, remove it from the fields list and and UUID instead.
-		const fields = papiSearchBody.fields?.split(',');
+		const fields = papiSearchBody.Fields?.split(',');
 		if(fields?.includes("Key"))
 		{
 			fields.splice(fields.indexOf("Key"), 1);
 			fields.push("UUID");
 
-			papiSearchBody.fields = fields.join(',');
+			papiSearchBody.Fields = fields.join(',');
 
 		}
 
