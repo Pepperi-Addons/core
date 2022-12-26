@@ -180,14 +180,25 @@ export class BaseCoreService
 		this.translatePapiSupportedSearchFields(papiSearchBody);
 
 		// If fields include property Key, remove it from the fields list and and UUID instead.
-		const fields = papiSearchBody.Fields?.split(',');
+		let fields = papiSearchBody.Fields?.split(',');
+
+		// Remove possible duplicates in Fields
+		fields = fields?.filter((item,index) => fields.indexOf(item) === index);
+
 		if(fields?.includes("Key"))
 		{
 			fields.splice(fields.indexOf("Key"), 1);
 			fields.push("UUID");
 
 			papiSearchBody.Fields = fields.join(',');
+		}
 
+		// If the query passed a page_size=-1, remove it.
+		// Resources with a lot of objects might time out otherwise.
+		// For more information see: https://pepperi.atlassian.net/browse/DI-21943
+		if(papiSearchBody.PageSize === -1)
+		{
+			delete papiSearchBody.PageSize;
 		}
 
 		return papiSearchBody;
@@ -224,6 +235,14 @@ export class BaseCoreService
 		// Since PAPI does not have a Key field, we need to remove it from the query
 		// And add the equivalent UUID field to the query
 		this.changeKeyFieldQueryToUuidFieldQuery(queryCopy);
+
+		// If the query passed a page_size=-1, remove it.
+		// Resources with a lot of objects might time out otherwise.
+		// For more information see: https://pepperi.atlassian.net/browse/DI-21943
+		if(queryCopy.page_size === "-1")
+		{
+			delete queryCopy.page_size;
+		}
 
 		const papiItems = await this.papi.getResources(this.resource, queryCopy);
 
