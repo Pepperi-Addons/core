@@ -183,8 +183,8 @@ export class BaseCoreService
 		let fields = papiSearchBody.Fields?.split(',');
 
 		// Remove possible duplicates in Fields
-		fields = fields.filter((item,index) => fields.indexOf(item) === index);
-		
+		fields = fields?.filter((item,index) => fields.indexOf(item) === index);
+
 		if(fields?.includes("Key"))
 		{
 			fields.splice(fields.indexOf("Key"), 1);
