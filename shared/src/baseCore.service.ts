@@ -180,7 +180,11 @@ export class BaseCoreService
 		this.translatePapiSupportedSearchFields(papiSearchBody);
 
 		// If fields include property Key, remove it from the fields list and and UUID instead.
-		const fields = papiSearchBody.Fields?.split(',');
+		let fields = papiSearchBody.Fields?.split(',');
+
+		// Remove possible duplicates in Fields
+		fields = fields.filter((item,index) => fields.indexOf(item) === index);
+		
 		if(fields?.includes("Key"))
 		{
 			fields.splice(fields.indexOf("Key"), 1);
