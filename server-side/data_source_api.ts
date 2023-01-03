@@ -2,7 +2,7 @@ import { Client, Request } from '@pepperi-addons/debug-server';
 import {BaseCoreService, CatalogsAndAccountsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper} from 'core-shared';
 import BasePapiService from './basePapi.service';
 import { UsersPapiService } from './usersPapi.service';
-import { DIMXObject } from '@pepperi-addons/papi-sdk';
+import { DIMXObject, AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 export async function create(client: Client, request: Request) 
 {
@@ -79,7 +79,7 @@ export async function resources(client: Client, request: Request)
 	{
 	case "GET":
 	{
-		const coreService = getCoreService(client, request);
+		const coreService = await getCoreService(client, request);
 
 		if(request.query.key)
 		{
@@ -92,7 +92,7 @@ export async function resources(client: Client, request: Request)
 	}
 	case "POST":
 	{
-		const coreService = getCoreService(client, request);
+		const coreService = await getCoreService(client, request);
 		return await coreService.upsertResource();
 	}
 	default:
@@ -110,7 +110,7 @@ export async function batch(client: Client, request: Request) : Promise<{ DIMXOb
 	{
 	case "POST":
 	{
-		const coreService = getCoreService(client, request);
+		const coreService = await getCoreService(client, request);
 		return await coreService.batch();
 	}
 	default:
@@ -128,7 +128,7 @@ export async function get_by_unique_field(client: Client, request: Request)
 	{
 	case "GET":
 	{
-		const coreService = getCoreService(client, request);
+		const coreService = await getCoreService(client, request);
 		return await coreService.getResourceByUniqueField();
 	}
 	default:
@@ -146,7 +146,7 @@ export async function search(client: Client, request: Request)
 	{
 	case "POST":
 	{
-		const coreService = getCoreService(client, request);
+		const coreService = await getCoreService(client, request);
 		return coreService.search();
 	}
 	default:
@@ -164,29 +164,28 @@ function getCoreSchemaService(client: Client, request: Request)
 }
 
 
-function getCoreService(client: Client, request: Request): BaseCoreService
+async function getCoreService(client: Client, request: Request): Promise<BaseCoreService>
 {
 	let core: BaseCoreService | undefined = undefined;
 	const papiService: IPapiService = getPapiService(client, request);
-
-	const resourceName = request.query?.resource_name ?? request.body.Resource;
+	const resourceSchema: AddonDataScheme = await getResourceSchema(client, request);
 
 	switch(request.query?.resource_name)
 	{
 	case "users":
 	{
-		core = new UsersCoreService(resourceName, request, papiService);
+		core = new UsersCoreService(resourceSchema, request, papiService);
 		break;
 	}
 	case "catalogs":
 	case "accounts":
 	{
-		core = new CatalogsAndAccountsCoreService(resourceName, request, papiService);
+		core = new CatalogsAndAccountsCoreService(resourceSchema, request, papiService);
 		break;
 	}
 	default:
 	{
-		core = new BaseCoreService(resourceName, request, papiService);
+		core = new BaseCoreService(resourceSchema, request, papiService);
 	}
 	}
 
@@ -213,4 +212,13 @@ function getPapiService(client: Client, request: Request) : IPapiService
 	}
 
 	return papiService;
+}
+
+async function getResourceSchema(client: Client, request: Request): Promise<AddonDataScheme>
+{
+	const papiClient = Helper.getPapiClient(client, request.query.addon_uuid);
+	const schemaOwnerPapiService = new BasePapiService(papiClient);
+	const resourceSchema = await schemaOwnerPapiService.getResourceSchema(request.query?.resource_name ?? request.body.Resource);
+
+	return resourceSchema;
 }

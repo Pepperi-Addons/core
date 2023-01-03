@@ -91,7 +91,8 @@ describe('Search resources', async () =>
 			{
 				resources = resourcesList.filter(resource => body.UniqueFieldList.includes(resource['UUID']));
 			}
-			else{
+			else
+			{
 				resources = resourcesList.filter(resource => body.UniqueFieldList.includes(resource[body.UniqueFieldID]));
 			}
 

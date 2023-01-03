@@ -5,6 +5,7 @@ import { IClientApiService } from './iClientApiService';
 import ClientApiService from './clientApiService';
 import CatalogsCpiSideApiService from './catalogsCpiSideApiService';
 import AccountsCpiSideApiService from './accountsCpiSideApiService';
+import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 
 export const router = Router();
@@ -45,7 +46,7 @@ router.get('/:resourceName/key/:key', async (req, res, next) =>
 
 	try 
 	{
-		const resourceService = getCoreService(req);
+		const resourceService = await getCoreService(req);
 		const resource = await resourceService.getResourceByKey();
 
 		res.json(resource);
@@ -64,7 +65,7 @@ router.get('/:resourceName/unique/:fieldID/:fieldValue', async (req, res, next) 
 
 	try 
 	{
-		const resourceService = getCoreService(req);
+		const resourceService = await getCoreService(req);
 		const resource = await resourceService.getResourceByUniqueField();
 
 		res.json(resource);
@@ -81,7 +82,7 @@ router.post('/:resourceName/search', async (req, res, next) =>
 {
 	try 
 	{
-		const resourceService = getCoreService(req);
+		const resourceService = await getCoreService(req);
 		const resource = await resourceService.search();
 
 		res.json(resource);
@@ -97,7 +98,7 @@ router.post('/:resourceName', async (req, res, next) =>
 {
 	try 
 	{
-		const genericResourceService = getCoreService(req);
+		const genericResourceService = await getCoreService(req);
 		const createdResource = await genericResourceService.upsertResource();
 
 		res.json(createdResource);
@@ -109,29 +110,28 @@ router.post('/:resourceName', async (req, res, next) =>
 	}
 });
 
-function getCoreService(request: Request): BaseCoreService
+async function getCoreService(request: Request): Promise<BaseCoreService>
 {
 	let core: BaseCoreService | undefined = undefined;
 	const papiService: IPapiService = getPapiService(request);
-
-	const resourceName = request.query?.resource_name ?? request.body.Resource;
+	const resourceSchema: AddonDataScheme = await papiService.getResourceSchema(request.query?.resource_name ?? request.body.Resource);
 
 	switch(request.query?.resource_name)
 	{
 	case "users":
 	{
-		core = new UsersCoreService(resourceName, request, papiService);
+		core = new UsersCoreService(resourceSchema, request, papiService);
 		break;
 	}
 	case "catalogs":
 	case "accounts":
 	{
-		core = new CatalogsAndAccountsCoreService(resourceName, request, papiService);
+		core = new CatalogsAndAccountsCoreService(resourceSchema, request, papiService);
 		break;
 	}
 	default:
 	{
-		core = new BaseCoreService(resourceName, request, papiService);
+		core = new BaseCoreService(resourceSchema, request, papiService);
 	}
 	}
 

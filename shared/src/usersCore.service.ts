@@ -1,15 +1,8 @@
-import { Request } from "@pepperi-addons/debug-server";
 import { BaseCoreService } from "./baseCore.service";
 import { UNIQUE_FIELDS } from "./constants";
-import IPapiService from "./IPapi.service";
 
 export class UsersCoreService extends BaseCoreService
 {
-	constructor(protected resource: string, protected request: Request, protected papi: IPapiService) 
-	{
-		super(resource, request, papi);
-	}
-
 	/**
 	 * Create a new item
 	 * @returns the newly created item
@@ -26,7 +19,7 @@ export class UsersCoreService extends BaseCoreService
 		{
 			console.log(`Core - Users - User already exist. Try to update it...`);
 			
-			papiItem = await this.papi.updateResource(this.resource, papiItemRequestBody);
+			papiItem = await this.papi.updateResource(this.schema.Name, papiItemRequestBody);
 
 			console.log(`Core - Users - Successfully updated the user.`);
 
@@ -35,7 +28,7 @@ export class UsersCoreService extends BaseCoreService
 		{
 			console.log(`Core - Users - User does not exist. Try to create it...`);
 			
-			papiItem = await this.papi.createResource(this.resource, papiItemRequestBody);
+			papiItem = await this.papi.createResource(this.schema.Name, papiItemRequestBody);
 
 			console.log(`Core - Users - Successfully created a user.`);
 			
