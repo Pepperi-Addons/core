@@ -216,6 +216,12 @@ function getPapiService(client: Client, request: Request) : IPapiService
 
 async function getResourceSchema(client: Client, request: Request): Promise<AddonDataScheme>
 {
+	if(!request.query.addon_uuid)
+	{
+		const errorMessage = "Missing addon_uuid query parameter.";
+		console.error(errorMessage);
+		throw new Error(errorMessage);
+	}
 	const papiClient = Helper.getPapiClient(client, request.query.addon_uuid);
 	const schemaOwnerPapiService = new BasePapiService(papiClient);
 	const resourceSchema = await schemaOwnerPapiService.getResourceSchema(request.query?.resource_name ?? request.body.Resource);
