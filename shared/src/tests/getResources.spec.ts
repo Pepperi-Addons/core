@@ -4,7 +4,6 @@ import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
 import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
-import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { BaseCoreService } from '../baseCore.service';
 import deepClone from 'lodash.clonedeep'
 
@@ -159,12 +158,6 @@ describe('GET resources', async () =>
 
 	it('should throw an "invalid resource" exception', async () => 
 	{
-		const papiClient = new PapiClient({
-			baseURL: mockClient.BaseURL,
-			token: mockClient.OAuthAccessToken,
-			addonUUID: mockClient.AddonUUID,
-			actionUUID: mockClient.ActionUUID,
-		});
 
 		const papiService = new MockApiService();
 
