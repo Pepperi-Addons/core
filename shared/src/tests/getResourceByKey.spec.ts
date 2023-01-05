@@ -2,7 +2,7 @@ import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
-import { MockApiService, mockClient } from './consts';
+import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { BaseCoreService } from '../baseCore.service';
 import { CatalogsAndAccountsCoreService } from '../catalogsAndAccountsCore.service';
@@ -74,7 +74,7 @@ describe('GET resource by key', async () =>
             }
 		}
 
-		const core = new BaseCoreService(request.query.resource_name ,request, papiService);
+		const core = new BaseCoreService(usersSchema ,request, papiService);
 
 		const item = await core.getResourceByKey();
 
@@ -110,7 +110,9 @@ describe('GET resource by key', async () =>
             }
 		}
 
-		const core = new CatalogsAndAccountsCoreService(request.query.resource_name ,request, papiService);
+		const catalogsSchema = {...usersSchema};
+		catalogsSchema.Name = 'catalogs'
+		const core = new CatalogsAndAccountsCoreService(catalogsSchema ,request, papiService);
 
 		const item = await core.getResourceByKey();
 
