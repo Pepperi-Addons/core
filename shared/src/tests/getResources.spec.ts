@@ -6,6 +6,8 @@ import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { BaseCoreService } from '../baseCore.service';
+import deepClone from 'lodash.clonedeep'
+
 
 chai.use(promised);
 
@@ -28,6 +30,7 @@ describe('GET resources', async () =>
 			"Profile": {
 				"Data": {
 					"InternalID": 69005,
+					"UUID": "cc27dfe9-e87a-4710-ab24-8f703e167213", 
 					"Name": "Admin"
 				},
 				"URI": "/profiles/69005"
@@ -51,6 +54,7 @@ describe('GET resources', async () =>
 			"Profile": {
 				"Data": {
 					"InternalID": 69004,
+					"UUID": "dd51e0a9-83f3-49b5-9074-35f13916b340", 
 					"Name": "Rep"
 				},
 				"URI": "/profiles/69004"
@@ -104,7 +108,7 @@ describe('GET resources', async () =>
 	it('should return hidden and non-hidden items', async () => 
 	{
 
-		const requestCopy = {...request};
+		const requestCopy = deepClone(request);
 		requestCopy.query.include_deleted = true;
 		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
@@ -125,9 +129,8 @@ describe('GET resources', async () =>
 	it("should return a non-hidden item's Key only", async () => 
 	{
 
-		const requestCopy = {...request};
+		const requestCopy = deepClone(request);
 		requestCopy.query.fields = 'Key';
-		delete request.query.include_deleted
 		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
 		const items = await core.getResources();
@@ -138,6 +141,19 @@ describe('GET resources', async () =>
 		expect(Object.keys(items[0]).length).to.equal(1);
 		expect(items[0]).to.have.property('Key');
 
+        
+	});
+
+	it('should return an ADAL compliant reference field', async () => 
+	{
+
+		const core = new BaseCoreService(usersSchema ,request, papiService);
+
+		const items = await core.getResources();
+
+		expect(items).to.be.an('Array');
+		expect(items.length).to.equal(1);
+		expect(items[0]).to.have.property('Profile', resourcesList[1].Profile.Data.UUID );
         
 	});
 

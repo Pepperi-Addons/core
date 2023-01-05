@@ -5,6 +5,8 @@ import { CoreSchemaService } from '../coreSchema.service';
 import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { BaseCoreService } from '../baseCore.service';
+import deepClone from 'lodash.clonedeep'
+
 
 chai.use(promised);
 
@@ -24,32 +26,24 @@ describe('POST resource', async () =>
         	"Mobile": "",
         	"ModificationDateTime": "2022-03-22T01:07:25Z",
         	"Phone": "",
-        	"Profile": {
-        		"Data": {
-        			"InternalID": 69005,
-        			"Name": "Admin"
-        		},
-        		"URI": "/profiles/69005"
-        	},
+        	"Profile": "cc27dfe9-e87a-4710-ab24-8f703e167213",
         	"Role": null,
         };
-
-	// const papiClient = new PapiClient({
-	//     baseURL: mockClient.BaseURL,
-	//     token: mockClient.OAuthAccessToken,
-	//     addonUUID: mockClient.AddonUUID,
-	//     actionUUID: mockClient.ActionUUID,
-	// });
-
-	// papiClient.post = async (url: string) => {
-	//     return Promise.resolve(createPapiItem);
-	// }
 
 	const papiService = new MockApiService();
 
 	papiService.upsertResource = async (resourceName: string, body: any) => 
 	{
-		return Promise.resolve(createPapiItem);
+		const papiItem = deepClone(createPapiItem);
+		papiItem.Profile = 
+		{
+			Data: 
+			{
+				UUID: papiItem.Profile
+			}
+		};
+
+		return Promise.resolve(papiItem);
 	}
 
 	const request: Request = {
@@ -74,15 +68,25 @@ describe('POST resource', async () =>
         
 	});
 
+	it('should return an ADAL compliant reference', async () => 
+	{
+
+		const core = new BaseCoreService(usersSchema ,request, papiService);
+
+		const item = await core.upsertResource();
+
+		expect(item).to.be.an('Object');
+		expect(item).to.have.property('Profile', createPapiItem.Profile);
+        
+	});
+
 	it('should throw "The UUID and Key fields are not equivalent." exception', async () => 
 	{
 
-		const requestCopy = { ...request };
+		const requestCopy = deepClone(request);
 		requestCopy.body.Key = '123';
 		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
-
-		// expect(async () => await core.createResource()).to.throw('The UUID and Key fields are not equivalent.');
-		// await core.createResource().should.be.rejectedWith('The UUID and Key fields are not equivalent.');     
+   
 		await expect(core.upsertResource()).to.be.rejectedWith('The UUID and Key fields are not equivalent.'); 
 	});
 

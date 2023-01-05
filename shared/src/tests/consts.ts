@@ -61,6 +61,12 @@ export const usersSchema: AddonDataScheme = {
 		"Key": {
 			"Type": "String",
 			"Unique": true
+		},
+		"Profile":
+		{
+			"Resource": "accounts",
+			"Type": "Resource",
+			"AddonUUID": "fc5a5974-3b30-4430-8feb-7d5b9699bc9f"
 		}
 	},
 	"Type": "papi",
