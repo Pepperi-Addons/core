@@ -2,7 +2,7 @@ import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
-import { MockApiService, mockClient } from './consts';
+import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { BaseCoreService } from '../baseCore.service';
@@ -90,7 +90,7 @@ describe('GET resources', async () =>
 	it('should return non-hidden items', async () => 
 	{
 
-		const core = new BaseCoreService(request.query.resource_name ,request, papiService);
+		const core = new BaseCoreService(usersSchema ,request, papiService);
 
 		const items = await core.getResources();
 
@@ -106,7 +106,7 @@ describe('GET resources', async () =>
 
 		const requestCopy = {...request};
 		requestCopy.query.include_deleted = true;
-		const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
+		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
 		const items = await core.getResources();
 
@@ -128,7 +128,7 @@ describe('GET resources', async () =>
 		const requestCopy = {...request};
 		requestCopy.query.fields = 'Key';
 		delete request.query.include_deleted
-		const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
+		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
 		const items = await core.getResources();
 

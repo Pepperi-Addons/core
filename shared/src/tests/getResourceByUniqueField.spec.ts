@@ -2,7 +2,7 @@ import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
-import { MockApiService, mockClient } from './consts';
+import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { BaseCoreService } from '../baseCore.service';
 import { UNIQUE_FIELDS } from '../constants';
@@ -109,7 +109,7 @@ describe('GET resource by unique field', async () =>
 
 		requestCopy.query = queryCopy;
 
-		const core = new BaseCoreService(request.query.resource_name, requestCopy, papiService);
+		const core = new BaseCoreService(usersSchema, requestCopy, papiService);
 
 		await expect(core.getResourceByUniqueField()).to.be.rejectedWith(`The field_id query parameter is not valid. Supported field_ids are: ${UNIQUE_FIELDS.join(", ")}`); 
 	})
@@ -124,7 +124,7 @@ describe('GET resource by unique field', async () =>
 
 		requestCopy.query = queryCopy;
 
-		const core = new BaseCoreService(request.query.resource_name, requestCopy, papiService);
+		const core = new BaseCoreService(usersSchema, requestCopy, papiService);
 
 		await expect(core.getResourceByUniqueField()).to.be.rejectedWith(`Missing the required field_id and value query parameters.`); 
 	})
@@ -139,7 +139,7 @@ describe('GET resource by unique field', async () =>
 
 		requestCopy.query = queryCopy;
 
-		const core = new BaseCoreService(request.query.resource_name, requestCopy, papiService);
+		const core = new BaseCoreService(usersSchema, requestCopy, papiService);
 
 		await expect(core.getResourceByUniqueField()).to.be.rejectedWith(`Missing the required field_id and value query parameters.`); 
 	})
@@ -166,7 +166,7 @@ describe('GET resource by unique field', async () =>
 
 async function getByUniqueField(request: Request, papiService: MockApiService, requestedKey: string) 
 {
-	const core = new BaseCoreService(request.query.resource_name, request, papiService);
+	const core = new BaseCoreService(usersSchema, request, papiService);
 
 	const item = await core.getResourceByUniqueField();
 

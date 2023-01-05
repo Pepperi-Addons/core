@@ -452,10 +452,15 @@ export class BaseCoreService
 		const schemaFields = Object.keys(this.schema.Fields!);
 
 		// Keep only fields that listed on the schema, or TSA fields.
-		const fieldsToDelete = resItemFields.filter(field => field !== 'Key' && !(schemaFields.includes(field) || field.startsWith('TSA') || field.startsWith('PSA')));
+		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
 		fieldsToDelete.map(absentField => delete resItem[absentField]);
 		
 		return resItem;
+	}
+
+	protected shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean
+	{
+		return !(schemaFields.includes(field) || field.startsWith('TSA') || field.startsWith('PSA'));
 	}
 
 	private translatePapiReferencesToAdalReferences(papiItem: any): any

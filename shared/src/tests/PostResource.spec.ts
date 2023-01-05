@@ -2,7 +2,7 @@ import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
-import { MockApiService, mockClient } from './consts';
+import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { BaseCoreService } from '../baseCore.service';
 
@@ -65,7 +65,7 @@ describe('POST resource', async () =>
 	it('should return a standard Pepperi resource item', async () => 
 	{
 
-		const core = new BaseCoreService(request.query.resource_name ,request, papiService);
+		const core = new BaseCoreService(usersSchema ,request, papiService);
 
 		const item = await core.upsertResource();
 
@@ -79,7 +79,7 @@ describe('POST resource', async () =>
 
 		const requestCopy = { ...request };
 		requestCopy.body.Key = '123';
-		const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
+		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
 		// expect(async () => await core.createResource()).to.throw('The UUID and Key fields are not equivalent.');
 		// await core.createResource().should.be.rejectedWith('The UUID and Key fields are not equivalent.');     
