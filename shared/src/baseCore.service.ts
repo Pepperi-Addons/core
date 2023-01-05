@@ -412,6 +412,7 @@ export class BaseCoreService
 		requestedSchemaFields.map(field => {
 			if (this.schema.Fields![field].Resource) {
 				resItem[`${field}.UUID`] = resItem[field];
+				delete resItem[field];
 			}
 		});
 
