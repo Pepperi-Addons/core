@@ -1,7 +1,5 @@
-import { Request } from "@pepperi-addons/debug-server";
 import { DIMXObject } from "@pepperi-addons/papi-sdk";
 import { BaseCoreService } from "./baseCore.service";
-import IPapiService from "./IPapi.service";
 import CatalogsGetQueryResolver from "./resolvers/catalogsGetQueryResolver";
 import CatalogsResourceCreationDateTimeToCreationDateResolver from "./resolvers/catalogsResourceCreationDateTimeToCreationDateResolver";
 import CatalogsResourceCreationDateToCreationDateTimeResolver from "./resolvers/catalogsResourceCreationDateToCreationDateTimeResolver";
@@ -9,11 +7,6 @@ import CatalogsSearchBodyResolver from "./resolvers/catalogsSearchBodyResolver";
 
 export class CatalogsAndAccountsCoreService extends BaseCoreService
 {
-	constructor(protected resource: string, protected request: Request, protected papi: IPapiService) 
-	{
-		super(resource, request, papi);
-	}
-
 	/**
 	 * Return the item with the given key
 	 */
@@ -81,5 +74,11 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 		this.request.body.Objects = (new CatalogsResourceCreationDateTimeToCreationDateResolver().resolve(this.request.body.Objects));
 
 		return await super.batch();
+	}
+
+	// CreationDate shouldn't be deleted, as it will be translated to CreationDateTime, which is a part of the schema.
+	protected shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean
+	{
+		return super.shouldFieldBeDeleted(field, schemaFields) && field !== 'CreationDate'
 	}
 }

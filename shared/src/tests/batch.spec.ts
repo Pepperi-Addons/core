@@ -2,10 +2,11 @@ import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
-import { MockApiService, mockClient } from './consts';
+import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { BaseCoreService } from '../baseCore.service';
 import { PapiBatchResponse } from '../constants';
+import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 chai.use(promised);
 
@@ -165,7 +166,7 @@ describe('Batch', async () =>
 	{
 
 		const requestCopy = { ...request };
-		const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
+		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
 		const items = await core.batch();
 
@@ -190,7 +191,7 @@ describe('Batch', async () =>
 		}
 		requestCopy.body = body;
 
-		const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
+		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
 		await expect(core.batch()).to.be.rejectedWith(`Missing an Objects array`);
 
@@ -205,7 +206,7 @@ describe('Batch', async () =>
 		}
 		requestCopy.body = body;
 
-		const core = new BaseCoreService(request.query.resource_name ,requestCopy, papiService);
+		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
 		await expect(core.batch()).to.be.rejectedWith(`OverwriteObject parameter is not supported.`);
 

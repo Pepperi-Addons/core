@@ -5,6 +5,7 @@ import { parse as transformSqlToJson } from '@pepperi-addons/pepperi-filters';
 import pick from 'lodash.pick';
 import { IClientApiService } from './iClientApiService';
 import { CreateResourceParams } from './constants';
+import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 
 export default class BaseCpiSideApiService implements IPapiService
@@ -286,7 +287,7 @@ export default class BaseCpiSideApiService implements IPapiService
 	protected async getClientApiFieldsTypes(resourceName: string) : Promise<{[key: string]: FieldType}>
 	{
     	const res: {[key: string]: FieldType} = {}
-    	const schema = await pepperi.addons.data.schemes.uuid(this.clientAddonUUID).name(resourceName).get();
+    	const schema = (await this.getResourceSchema(resourceName)) as unknown as {[key: string]: any, Key: string};
         
     	for(const fieldName in schema.Fields)
     	{
@@ -294,5 +295,10 @@ export default class BaseCpiSideApiService implements IPapiService
     	}
 
     	return res;
+	}
+
+	async getResourceSchema(resourceName: string): Promise<AddonDataScheme>
+	{
+		return await pepperi.addons.data.schemes.uuid(this.clientAddonUUID).name(resourceName).get() as unknown as AddonDataScheme;
 	}
 }

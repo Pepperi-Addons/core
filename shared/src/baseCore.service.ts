@@ -1,11 +1,11 @@
 import { Request } from "@pepperi-addons/debug-server";
-import { DIMXObject } from "@pepperi-addons/papi-sdk";
+import { DIMXObject, AddonDataScheme } from "@pepperi-addons/papi-sdk";
 import { PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from "./constants";
 import IPapiService from "./IPapi.service";
 
 export class BaseCoreService 
 {
-	constructor(protected resource: string, protected request: Request, protected papi: IPapiService) 
+	constructor(protected schema: AddonDataScheme, protected request: Request, protected papi: IPapiService) 
 	{
 		this.validateResource();
 	}
@@ -15,7 +15,7 @@ export class BaseCoreService
 	 */
 	protected validateResource() 
 	{
-		if (!RESOURCE_TYPES.includes(this.resource)) 
+		if (!RESOURCE_TYPES.includes(this.schema.Name)) 
 		{
 			const errorMessage = `The resource name is not valid. Please provide a valid resource name.`;
 			console.error(errorMessage);
@@ -32,7 +32,7 @@ export class BaseCoreService
 
 		this.validateKey(requestedKey);
 
-		const papiItem = await this.papi.getResourceByKey(this.resource, requestedKey);
+		const papiItem = await this.papi.getResourceByKey(this.schema.Name, requestedKey);
 		const translatedItem = this.translatePapiItemToItem(papiItem);
 
 		return translatedItem;
@@ -59,14 +59,14 @@ export class BaseCoreService
 		case "InternalID":
 		{
 
-			const papiItem = await this.papi.getResourceByInternalId(this.resource, requestedValue);
+			const papiItem = await this.papi.getResourceByInternalId(this.schema.Name, requestedValue);
 			const translatedItem = this.translatePapiItemToItem(papiItem);
 
 			return translatedItem;
 		}
 		case "ExternalID":
 		{
-			const papiItem = await this.papi.getResourceByExternalId(this.resource, requestedValue);
+			const papiItem = await this.papi.getResourceByExternalId(this.schema.Name, requestedValue);
 			const translatedItem = this.translatePapiItemToItem(papiItem);
 
 			return translatedItem;
@@ -108,7 +108,7 @@ export class BaseCoreService
 		// Create a papi Search body
 		const papiSearchBody = this.translateBodyToPapiSearchBody();
 
-		const res: SearchResult = await this.papi.searchResource(this.resource, papiSearchBody);
+		const res: SearchResult = await this.papi.searchResource(this.schema.Name, papiSearchBody);
 		
 		res.Objects = res.Objects.map(papiItem => this.translatePapiItemToItem(papiItem));
 
@@ -244,7 +244,7 @@ export class BaseCoreService
 			delete queryCopy.page_size;
 		}
 
-		const papiItems = await this.papi.getResources(this.resource, queryCopy);
+		const papiItems = await this.papi.getResources(this.schema.Name, queryCopy);
 
 		const translatedItems = papiItems.map(papiItem => this.translatePapiItemToItem(papiItem));
 
@@ -282,7 +282,7 @@ export class BaseCoreService
 		// Translate the item to PAPI format
 		const papiItemRequestBody = this.translateItemToPapiItem(this.request.body);
 		// Create the PAPI item
-		const papiItem = await this.papi.upsertResource(this.resource, papiItemRequestBody);
+		const papiItem = await this.papi.upsertResource(this.schema.Name, papiItemRequestBody);
 		// Translate the PAPI item to an item
 		const translatedItem = this.translatePapiItemToItem(papiItem);
 
@@ -300,7 +300,7 @@ export class BaseCoreService
 		const batchObjects = [...this.request.body.Objects];
 		// Translate the items to PAPI format
 		const papiItems = batchObjects.map(batchObject => this.translateItemToPapiItem(batchObject));
-		const papiBatchResult: PapiBatchResponse = await this.papi.batch(this.resource, papiItems);
+		const papiBatchResult: PapiBatchResponse = await this.papi.batch(this.schema.Name, papiItems);
 		// PAPI batch objects are returned with empty UUIDs. We have to get the
 		// actual UUIDs from PAPI and replace the empty UUIDs with the actual UUIDs.
 		await this.fillPapiBatchResultWithUUIDs(papiBatchResult);
@@ -376,20 +376,44 @@ export class BaseCoreService
 	 */
 	protected translateItemToPapiItem(item: any)
 	{
-		const resItem = {...item};
+		// Add a UUID property equal to Key.
+		let resItem = this.AddUUIDPropertyEqualToKey(item);
+
+		// Translate ADAL references to PAPI references.
+		resItem = this.translateAdalReferencesToPapiReferences(resItem);
+
+		return resItem;
+	}
+
+	private AddUUIDPropertyEqualToKey(item: any)
+	{
+		const resItem = { ...item };
 
 		// If item has both UUID and Key fields, make sure they are equivalent
-		if (resItem.UUID && resItem.Key && resItem.UUID !== resItem.Key) 
-		{
+		if (resItem.UUID && resItem.Key && resItem.UUID !== resItem.Key) {
 			throw new Error("The UUID and Key fields are not equivalent.");
 		}
 
 		// If item has a Key field, set the UUID field to the same value and delete the Key field
-		if (resItem.Key)
-		{
+		if (resItem.Key) {
 			resItem.UUID = resItem.Key;
 			delete resItem.Key;
 		}
+		return resItem;
+	}
+
+	private translateAdalReferencesToPapiReferences(adalItem: any): any
+	{
+		const resItem = { ...adalItem };
+
+		const resItemFields = Object.keys(resItem);
+		const requestedSchemaFields = Object.keys(this.schema.Fields!).filter(schemaField => resItemFields.includes(schemaField));
+
+		requestedSchemaFields.map(field => {
+			if (this.schema.Fields![field].Resource) {
+				resItem[`${field}.UUID`] = resItem[field];
+			}
+		});
 
 		return resItem;
 	}
@@ -401,8 +425,56 @@ export class BaseCoreService
 	 */
 	protected translatePapiItemToItem(papiItem: any) 
 	{
+		// Add Key property, equal to UUID.
+		let resItem = this.addKeyPropertyEqualToUUID(papiItem);
+
+		// Remove properties that are not part of the schema.
+		resItem = this.removePropertiesNotListedOnSchema(resItem);
+
+		// Translate PAPI references to ADAL references.
+		resItem = this.translatePapiReferencesToAdalReferences(resItem);
+
+		return resItem;
+	}
+
+	private addKeyPropertyEqualToUUID(papiItem: any): any
+	{
 		const resItem = { ...papiItem };
 		resItem.Key = resItem.UUID;
+		return resItem;
+	}
+
+	removePropertiesNotListedOnSchema(item: any): any 
+	{
+		const resItem = { ...item };
+
+		const resItemFields = Object.keys(resItem);
+		const schemaFields = Object.keys(this.schema.Fields!);
+
+		// Keep only fields that listed on the schema, or TSA fields.
+		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
+		fieldsToDelete.map(absentField => delete resItem[absentField]);
+		
+		return resItem;
+	}
+
+	protected shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean
+	{
+		return !(schemaFields.includes(field) || field.startsWith('TSA') || field.startsWith('PSA'));
+	}
+
+	private translatePapiReferencesToAdalReferences(papiItem: any): any
+	{
+		const resItem = { ...papiItem };
+
+		const resItemFields = Object.keys(resItem);
+		const requestedSchemaFields = Object.keys(this.schema.Fields!).filter(schemaField => resItemFields.includes(schemaField));
+
+		requestedSchemaFields.map(field => {
+			if (this.schema.Fields![field].Resource) {
+				resItem[field] = resItem[field].Data.UUID;
+			}
+		});
 
 		return resItem;
 	}

@@ -1,3 +1,4 @@
+import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 import { PapiBatchResponse, ResourceFields, SearchResult } from './constants';
 
 export interface IPapiService 
@@ -22,6 +23,8 @@ export interface IPapiService
 	getResourceByInternalId(resourceName: string, internalId: any): Promise<any>;
 
 	searchResource(resourceName: string, body: void): Promise<SearchResult>;
+
+	getResourceSchema(resourceName: string): Promise<AddonDataScheme>
 }
 
 export default IPapiService;

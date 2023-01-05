@@ -1,4 +1,4 @@
-import { PapiClient } from '@pepperi-addons/papi-sdk';
+import { AddonDataScheme, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ErrorWithStatus, Helper, IPapiService, PapiBatchResponse, ResourceFields, SearchResult } from 'core-shared';
 
 
@@ -157,6 +157,11 @@ export class BasePapiService implements IPapiService
 			delete papiSearchBody.UniqueFieldList;
 		}
 		
+	}
+
+	async getResourceSchema(resourceName: string): Promise<AddonDataScheme> 
+	{
+		return await this.papiClient.get(`/addons/data/schemes/${resourceName}`);
 	}
 }
 
