@@ -105,6 +105,8 @@ export async function resources(client: Client, request: Request)
 export async function batch(client: Client, request: Request) : Promise<{ DIMXObjects: DIMXObject[];}>
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
+	request.query.addon_uuid = request.body.AddonUUID;
+	request.query.resource_name = request.body.Resource;
 
 	switch (request.method) 
 	{
