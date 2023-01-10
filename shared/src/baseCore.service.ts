@@ -443,7 +443,12 @@ export class BaseCoreService
 
 		requestedSchemaFields.map(field => {
 			if (this.schema.Fields![field].Resource) {
-				resItem[`${field}.UUID`] = resItem[field];
+				resItem[field] = {
+					Data:
+					{
+						UUID :resItem[field]
+					}
+				}
 			}
 		});
 
