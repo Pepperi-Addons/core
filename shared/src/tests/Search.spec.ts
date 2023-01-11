@@ -62,7 +62,14 @@ describe('Search resources', async () =>
 	const papiService = new MockApiService();
 	papiService.searchResource = async (resourceName: string, body: any) => 
 	{
-		if(Object.keys(body).length === 0)
+		Object.keys(body).map(key => {
+			if(body[key] === undefined)
+			{
+				delete body[key];
+			}
+		})
+
+		if(Object.keys(body).length === 1 && Object.keys(body)[0] === 'Where')
 		{
 			return Promise.resolve({Objects: resourcesList.filter(resource => !resource.Hidden)});
 		}

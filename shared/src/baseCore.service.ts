@@ -201,7 +201,30 @@ export class BaseCoreService
 			delete papiSearchBody.PageSize;
 		}
 
+		// If not IncludeDeleted=true, add 'Hidden=0' to where clause.
+		// Otherwise PAPI returns NULL values for hidden account_users.
+		// In order for Nebula (which works via ADAL directly with Core) to work
+		// as intended and get the filtered account_users, it was decided that the
+		// filtering will be done in Core for all resources, since it should have
+		// no real impact.
+		// For more information see: https://pepperi.atlassian.net/browse/DI-22222
+		papiSearchBody.Where = this.filterHiddenObjects(papiSearchBody.Where, papiSearchBody.IncludeDeleted);
+
 		return papiSearchBody;
+	}
+
+	/**
+	 * Filters out hidden objects from the search query.
+	 * 
+	 * @param {string} where - The search query.
+	 * @param {boolean} includeDeleted - Whether to include deleted objects.
+	 * @returns {string} The filtered search query.
+	 */
+	private filterHiddenObjects(where: string | undefined, includeDeleted: boolean): string | undefined
+	{
+		const res = includeDeleted ? where : `Hidden=0${where ? ` AND (${where})` : ''}`;
+
+		return res;
 	}
 
 	private translatePapiSupportedSearchFields(papiSearchBody: any) 
@@ -243,6 +266,15 @@ export class BaseCoreService
 		{
 			delete queryCopy.page_size;
 		}
+
+		// If not include_deleted=true, add 'Hidden=0' to where clause.
+		// Otherwise PAPI returns NULL values for hidden account_users.
+		// In order for Nebula (which works via ADAL directly with Core) to work
+		// as intended and get the filtered account_users, it was decided that the
+		// filtering will be done in Core for all resources, since it should have
+		// no real impact.
+		// For more information see: https://pepperi.atlassian.net/browse/DI-22222
+		queryCopy.where = this.filterHiddenObjects(queryCopy.where, this.request.query.include_deleted);
 
 		const papiItems = await this.papi.getResources(this.schema.Name, queryCopy);
 
@@ -411,7 +443,12 @@ export class BaseCoreService
 
 		requestedSchemaFields.map(field => {
 			if (this.schema.Fields![field].Resource) {
-				resItem[`${field}.UUID`] = resItem[field];
+				resItem[field] = {
+					Data:
+					{
+						UUID :resItem[field]
+					}
+				}
 			}
 		});
 
