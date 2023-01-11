@@ -281,7 +281,8 @@ export default class BaseCpiSideApiService implements IPapiService
 	protected filterFieldsToMatchCpi(schemaFields: string[]): string[] 
 	{
 		// ModificationDateTime isn't supported in cpi-side
-		return schemaFields.filter(field => field !== 'ModificationDateTime');
+		// Key is part of the schema, but doesn't exist on the PAPI object.
+		return schemaFields.filter(field => field !== 'ModificationDateTime' && field !== 'Key');
 	}
 
 	protected async getClientApiFieldsTypes(resourceName: string) : Promise<{[key: string]: FieldType}>
