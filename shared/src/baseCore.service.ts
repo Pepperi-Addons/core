@@ -238,6 +238,11 @@ export class BaseCoreService
 			delete papiSearchBody.KeyList;
 		}
 
+		if(papiSearchBody.UniqueFieldID === 'Key')
+		{
+			papiSearchBody.UniqueFieldID = 'UUID';
+		}
+
 		// Fields are passed as an array of strings, while PAPI supports a string that is separated by commas.
 		if(papiSearchBody.Fields && Array.isArray(papiSearchBody.Fields))
 		{
