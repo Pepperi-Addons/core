@@ -28,15 +28,8 @@ export class CoreSchemaService
 	{
 		let resourceFields: ResourceFields = await this.papi.getResourceFields(this.resource);
 
-		// This check is for https://pepperi.atlassian.net/browse/DI-22352.
-		// When Implementing https://pepperi.atlassian.net/browse/DI-22341 I'll remove this if statement, and 
-		// the filter will be applied for every resource.
-		if(this.request.body.Name === 'account_users')
-		{
-			// Add only TSA's to the schema
-			resourceFields = resourceFields.filter(resourceField => resourceField.FieldID.startsWith('TSA') || resourceField.FieldID.startsWith('PSA'));
-		}
-		
+		// Add only TSA's to the schema
+		resourceFields = resourceFields.filter(resourceField => resourceField.FieldID.startsWith('TSA') || resourceField.FieldID.startsWith('PSA'));
 
 		const schema = this.translateResourceFieldsToSchema(resourceFields);
 		const result = {
