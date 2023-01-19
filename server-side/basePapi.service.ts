@@ -110,7 +110,7 @@ export class BasePapiService implements IPapiService
 	{
 		const res: SearchResult = {Objects:[]};
 
-		this.translateUniqueFieldQueriesToPapi(body);
+		this.handleUniqueFieldsQuery(body);
 
 		try
 		{
@@ -130,7 +130,36 @@ export class BasePapiService implements IPapiService
 		return res;
 	}
 
-	private translateUniqueFieldQueriesToPapi(papiSearchBody: any) 
+	handleUniqueFieldsQuery(papiSearchBody: any): void
+	{
+		// Set PageSize to support UniqueFieldLists with more than 100 objects
+		// For more information see: https://pepperi.atlassian.net/browse/DI-22607
+		this.setPageSizeToMatchUniqueFieldListSize(papiSearchBody);
+
+		// Translate UniqueField queries to supported PAPI interface.
+		this.translateUniqueFieldQueriesToPapi(papiSearchBody);
+	}
+
+	/**
+	 * Sets the PageSize property of the papiSearchBody object to match the size of its UniqueFieldList.
+	 * If UniqueFieldList is present and PageSize is not set, the function sets PageSize to the length of UniqueFieldList.
+	 * @param papiSearchBody The object containing the UniqueFieldList and PageSize properties
+    */
+	private setPageSizeToMatchUniqueFieldListSize(papiSearchBody: any): void 
+	{
+		if(papiSearchBody.UniqueFieldList && !papiSearchBody.PageSize)
+		{
+			papiSearchBody.PageSize = papiSearchBody.UniqueFieldList.length;
+		}
+	}
+
+	/**
+	 * Translates unique field queries to PAPI search body format.
+	 * This function also deletes the UniqueFieldID and UniqueFieldList
+	 * if there is a UniqueFieldID property on the Search body.
+	 * @param {any} papiSearchBody - The PAPI search body object that contains the unique field queries.
+    */
+	private translateUniqueFieldQueriesToPapi(papiSearchBody: any): void 
 	{
 		let shouldDeleteUniqueFields = false;
 		if (papiSearchBody.UniqueFieldID === "ExternalID") 
