@@ -54,7 +54,7 @@ export async function papi_export(client: Client, request: Request)
 
 	if(request.body.DataSourceExportParams?.ForcedWhereClauseAddition)
 	{
-		request.query.where = `${request.body.DataSourceExportParams?.ForcedWhereClauseAddition} AND (${request.query.where})`;
+		request.query.where = `${request.body.DataSourceExportParams?.ForcedWhereClauseAddition}${request.query.where ? ` AND (${request.query.where})` : ''}`;
 	}
 
 	resourcesRequest.method = 'GET';
