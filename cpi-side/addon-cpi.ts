@@ -3,7 +3,7 @@ import { BaseCoreService, CatalogsAndAccountsCoreService, IPapiService, UsersCor
 import { Request } from '@pepperi-addons/debug-server';import BaseCpiSideApiService from './baseCpiSideApiService';
 import { IClientApiService } from './iClientApiService';
 import ClientApiService from './clientApiService';
-import CatalogsCpiSideApiService from './catalogsCpiSideApiService';
+import CatalogsAndUsersCpiSideApiService from './catalogsAndUsersCpiSideApiService';
 import AccountsCpiSideApiService from './accountsCpiSideApiService';
 import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
@@ -32,7 +32,7 @@ router.use('/:resourceName', async (req, res, next) =>
 
 function validateResourceSupportedInCpiSide(resourceName: string)
 {
-	const supportedResources = ['catalogs', 'accounts'];
+	const supportedResources = ['catalogs', 'accounts', 'users'];
 
 	if(!supportedResources.includes(resourceName))
 	{
@@ -147,8 +147,9 @@ function getPapiService(request: Request) : IPapiService
 	switch(request.query?.resource_name)
 	{
 	case "catalogs":
+	case "users":
 	{
-		papiService = new CatalogsCpiSideApiService(request.query.addon_uuid, iClientApi);
+		papiService = new CatalogsAndUsersCpiSideApiService(request.query.addon_uuid, iClientApi);
 		break;
 	}
 	case "accounts":

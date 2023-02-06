@@ -3,7 +3,7 @@ import { IClientApiService } from './iClientApiService';
 import BaseCpiSideApiService from './baseCpiSideApiService';
 
 
-export default class CatalogsCpiSideApiService extends BaseCpiSideApiService implements IPapiService
+export default class CatalogsAndUsersCpiSideApiService extends BaseCpiSideApiService implements IPapiService
 {
 	constructor(protected clientAddonUUID: string, protected iClientApi: IClientApiService)
 	{
