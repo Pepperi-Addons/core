@@ -29,7 +29,7 @@ export default class CatalogsAndUsersCpiSideApiService extends BaseCpiSideApiSer
 	{
 		schemaFields = super.filterFieldsToMatchCpi(schemaFields);
 		
-		// CreationDate isn't synced for catalogs resource
+		// CreationDate isn't synced for catalogs and users resources
 		return schemaFields.filter(field => field !== 'CreationDate' && field !== 'CreationDateTime');
 	}
 }
