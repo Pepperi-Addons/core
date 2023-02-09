@@ -3,7 +3,7 @@ import { IClientApiService } from './iClientApiService';
 import BaseCpiSideApiService from './baseCpiSideApiService';
 
 
-export default class CatalogsCpiSideApiService extends BaseCpiSideApiService implements IPapiService
+export default class CatalogsAndUsersCpiSideApiService extends BaseCpiSideApiService implements IPapiService
 {
 	constructor(protected clientAddonUUID: string, protected iClientApi: IClientApiService)
 	{
@@ -29,7 +29,7 @@ export default class CatalogsCpiSideApiService extends BaseCpiSideApiService imp
 	{
 		schemaFields = super.filterFieldsToMatchCpi(schemaFields);
 		
-		// CreationDate isn't synced for catalogs resource
+		// CreationDate isn't synced for catalogs and users resources
 		return schemaFields.filter(field => field !== 'CreationDate' && field !== 'CreationDateTime');
 	}
 }
