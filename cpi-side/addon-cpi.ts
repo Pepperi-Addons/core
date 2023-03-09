@@ -6,6 +6,7 @@ import ClientApiService from './clientApiService';
 import CatalogsAndUsersCpiSideApiService from './catalogsAndUsersCpiSideApiService';
 import AccountsCpiSideApiService from './accountsCpiSideApiService';
 import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
+import NoCreationDateCpiSideApiService from './noCreationDateCpiSideApiService';
 
 
 export const router = Router();
@@ -32,7 +33,7 @@ router.use('/:resourceName', async (req, res, next) =>
 
 function validateResourceSupportedInCpiSide(resourceName: string)
 {
-	const supportedResources = ['catalogs', 'accounts', 'users'];
+	const supportedResources = ['catalogs', 'accounts', 'users', 'items'];
 
 	if(!supportedResources.includes(resourceName))
 	{
@@ -112,7 +113,7 @@ router.post('/:resourceName', async (req, res, next) =>
 
 async function getCoreService(request: Request): Promise<BaseCoreService>
 {
-	let core: BaseCoreService | undefined = undefined;
+	let core: BaseCoreService;
 	const papiService: IPapiService = getPapiService(request);
 	const resourceSchema: AddonDataScheme = await papiService.getResourceSchema(request.query?.resource_name ?? request.body.Resource);
 
@@ -155,6 +156,11 @@ function getPapiService(request: Request) : IPapiService
 	case "accounts":
 	{
 		papiService = new AccountsCpiSideApiService(request.query.addon_uuid, iClientApi);
+		break;
+	}
+	case "items":
+	{
+		papiService = new NoCreationDateCpiSideApiService(request.query.addon_uuid, iClientApi);
 		break;
 	}
 	default:
