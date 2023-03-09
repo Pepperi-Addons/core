@@ -10,7 +10,7 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 	/**
 	 * Return the item with the given key
 	 */
-	public async getResourceByKey(key?: string): Promise<any>
+	public override async getResourceByKey(key?: string): Promise<any>
 	{
 		const res = await super.getResourceByKey(key);
 
@@ -20,7 +20,7 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 	/**
 	 * Returns an item by the unique field
 	 */
-	public async getResourceByUniqueField(field_id?: string, value?: string)
+	public override async getResourceByUniqueField(field_id?: string, value?: string)
 	{
 		const requestedFieldId = field_id ?? this.request.query.field_id;
 		const requestedValue = value ?? this.request.query.value;
@@ -33,7 +33,7 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 	 * Perform a search like a GET endpoint, but given a body to overcome the URL size limitation to get list of objects.
 	 * @returns a list of items that match the required parameters
 	 */
-	public async search()
+	public override async search()
 	{
 		this.request = new CatalogsSearchBodyResolver().resolve([this.request])[0];
 		const res = await super.search();
@@ -45,7 +45,7 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 	/**
 	 * Return a list of items
 	 */
-	public async getResources() 
+	public override async getResources() 
 	{
 		this.request = (new CatalogsGetQueryResolver().resolve([this.request]))[0];
 		let res = await super.getResources();
@@ -57,7 +57,7 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 	 * Upserts a resource
 	 * @returns the updated resource
 	 */
-	public async upsertResource()
+	public override async upsertResource()
 	{
 		this.request.body = (new CatalogsResourceCreationDateTimeToCreationDateResolver().resolve([this.request.body]))[0];
 		const res = await super.upsertResource();
@@ -69,7 +69,7 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 	 * Batch upserts a list of items
 	 * @returns a list of upserted items
 	 */
-	public async batch(): Promise<{DIMXObjects: DIMXObject[]}>
+	public override async batch(): Promise<{DIMXObjects: DIMXObject[]}>
 	{
 		this.request.body.Objects = (new CatalogsResourceCreationDateTimeToCreationDateResolver().resolve(this.request.body.Objects));
 
@@ -77,7 +77,7 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 	}
 
 	// CreationDate shouldn't be deleted, as it will be translated to CreationDateTime, which is a part of the schema.
-	protected shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean
+	protected override shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean
 	{
 		return super.shouldFieldBeDeleted(field, schemaFields) && field !== 'CreationDate'
 	}

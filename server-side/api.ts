@@ -99,7 +99,7 @@ export async function get_contacts_by_unique_field(client: Client, request: Requ
 
 async function getByUniqueFieldFunctionAdapter(client: Client, request: Request, resourceName: string)
 {
-	return genericAdapter(client, request, resourceName, get_by_unique_field);
+	return await genericAdapter(client, request, resourceName, get_by_unique_field);
 }
 // #endregion
 
@@ -136,7 +136,7 @@ export async function contacts_search(client: Client, request: Request)
 
 async function searchFunctionAdapter(client: Client, request: Request, resourceName: string)
 {
-	return genericAdapter(client, request, resourceName, search);
+	return await genericAdapter(client, request, resourceName, search);
 }
 // #endregion
 
@@ -173,18 +173,18 @@ export async function batch_contacts(client: Client, request: Request)
 
 async function batchFunctionAdapter(client: Client, request: Request, resourceName: string)
 {
-	return genericAdapter(client, request, resourceName, batch);
+	return await genericAdapter(client, request, resourceName, batch);
 }
 // #endregion
 
 async function resourcesFunctionAdapter(client: Client, request: Request, resourceName: string)
 {
-	return genericAdapter(client, request, resourceName, resources);
+	return await genericAdapter(client, request, resourceName, resources);
 }
 
 async function genericAdapter(client: Client, request: Request, resourceName: string, adaptedFunction: (client: Client, request: Request) => Promise<any>)
 {
 	const requestCopy = {...request};
 	requestCopy.query.resource_name = resourceName;
-	return adaptedFunction(client, requestCopy);
+	return await adaptedFunction(client, requestCopy);
 }

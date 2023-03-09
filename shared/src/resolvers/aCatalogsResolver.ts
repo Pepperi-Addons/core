@@ -4,7 +4,7 @@ import { Request } from "@pepperi-addons/debug-server"
 
 export default abstract class ACatalogsResolver extends AResolver implements IResolver
 {
-    abstract resolve(objects: Array<Request>): Array<Request>;
+    abstract override resolve(objects: Array<Request>): Array<Request>;
 
     protected replaceCreationDateWithCreationDateTime(str: string): string
     {

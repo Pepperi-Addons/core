@@ -7,7 +7,7 @@ export class UsersCoreService extends BaseCoreService
 	 * Create a new item
 	 * @returns the newly created item
 	 */
-	public async upsertResource()
+	public override async upsertResource()
 	{
 		console.log(`Core - Users - Trying to upsert the resource...`);
 		// Translate the item to PAPI format

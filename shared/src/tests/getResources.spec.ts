@@ -63,7 +63,8 @@ describe('GET resources', async () =>
 	const papiService = new MockApiService();
 	papiService.getResources = async (resourceName: string, query: any) => 
 	{
-		Object.keys(query).map(key => {
+		Object.keys(query).map(key => 
+		{
 			if(query[key] === undefined)
 			{
 				delete query[key];
