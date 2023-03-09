@@ -11,7 +11,6 @@
     "noImplicitAny": false,
     "allowJs": true,
     "resolveJsonModule": true,
-    "noImplicitOverride": true
   },
   "exclude": [
     "./build/**",
