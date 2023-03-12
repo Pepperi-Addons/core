@@ -62,7 +62,8 @@ describe('Search resources', async () =>
 	const papiService = new MockApiService();
 	papiService.searchResource = async (resourceName: string, body: any) => 
 	{
-		Object.keys(body).map(key => {
+		Object.keys(body).map(key => 
+		{
 			if(body[key] === undefined)
 			{
 				delete body[key];

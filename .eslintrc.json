@@ -22,6 +22,8 @@
           "@typescript-eslint/no-explicit-any": "off",
           "@typescript-eslint/explicit-module-boundary-types": "off",
         "indent": ["error", "tab"],
-        "brace-style": ["error", "allman"]
+        "brace-style": ["error", "allman"],
+        "no-debugger": "error",
+        "eol-last": ["error", "always"]
     }
 }

@@ -132,7 +132,7 @@ export default class BaseCpiSideApiService implements IPapiService
 
 	async getResourceByInternalId(resourceName: string, internalId: any): Promise<any> 
 	{
-		const searchBody = this.createAUniqueFieldRequestBody("ExternalID", internalId);
+		const searchBody = this.createAUniqueFieldRequestBody("InternalID", internalId);
 		return await this.callSearchExpectingASingleResource(resourceName, searchBody);
 	}
 
@@ -217,7 +217,9 @@ export default class BaseCpiSideApiService implements IPapiService
 		// Add the elements from resources to the hash table
 		for (const resource of clientApiSearchResult.objects)
 		{
-			resourcesHashTable.set(resource[uniqueField], resource);
+			// Use toString() singe since we try to get the value from the hash table,
+			// It is done using a parameter of type string.
+			resourcesHashTable.set(resource[uniqueField].toString(), resource);
 		}
 
 		// Create an array to store the elements from the intersection
