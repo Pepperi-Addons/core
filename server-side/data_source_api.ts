@@ -203,6 +203,13 @@ function getPapiService(client: Client, resourceName: string) : IPapiService
 		papiService = new UsersPapiService(papiClient);
 		break;
 	}
+	case "account_employees":
+	{
+		// account_employees queries should use the account_users api.
+		// For more information, please see: https://pepperi.atlassian.net/browse/DI-23201
+		papiService = new BasePapiService("account_users", papiClient);
+		break;
+	}
 	default:
 	{
 		papiService = new BasePapiService(resourceName, papiClient);
