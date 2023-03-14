@@ -71,7 +71,8 @@ export const usersSchema: AddonDataScheme = {
 
 export class MockApiService implements IPapiService
 {
-	constructor(protected resourceName: string){};
+	constructor(protected resourceName: string)
+	{}
 
 	async getResourceSchema(): Promise<AddonDataScheme> 
 	{

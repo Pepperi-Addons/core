@@ -147,7 +147,7 @@ async function getResourceSchema(request: Request): Promise<AddonDataScheme>
 	return await baseCpiSideApiService.getResourceSchema();
 }
 
-function getPapiService(request: Request, getBaseApiService: boolean = false) : IPapiService
+function getPapiService(request: Request, getBaseApiService = false) : IPapiService
 {
 	const iClientApi: IClientApiService = new ClientApiService();
 
