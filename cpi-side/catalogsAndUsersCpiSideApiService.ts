@@ -1,21 +1,31 @@
 import { IPapiService } from 'core-shared';
+import { IClientApiService } from './iClientApiService';
 import NoCreationDateCpiSideApiService from './noCreationDateCpiSideApiService';
 
 
 export default class CatalogsAndUsersCpiSideApiService extends NoCreationDateCpiSideApiService implements IPapiService
 {
-	async createResource(resourceName: string, body: any): Promise<any> 
+	constructor(resourceName: string, clientAddonUUID: string, iClientApi: IClientApiService)
 	{
-		throw new Error(`Creation of a '${resourceName}' resource is not supported.`);
+		if(resourceName === 'employees')
+		{
+			resourceName = 'users'
+		}
+
+		super(resourceName, clientAddonUUID, iClientApi);
+	}
+	async createResource(body: any): Promise<any> 
+	{
+		throw new Error(`Creation of a '${this.resourceName}' resource is not supported.`);
 	}
 
-	async updateResource(resourceName: string, body: any): Promise<any> 
+	async updateResource(body: any): Promise<any> 
 	{
-		throw new Error(`Updating a '${resourceName}' resource is not supported.`);
+		throw new Error(`Updating a '${this.resourceName}' resource is not supported.`);
 	}
 
-	async upsertResource(resourceName: string, body: any): Promise<any> 
+	async upsertResource(body: any): Promise<any> 
 	{
-		throw new Error(`Upserting a '${resourceName}' resource is not supported.`);
+		throw new Error(`Upserting a '${this.resourceName}' resource is not supported.`);
 	}
 }

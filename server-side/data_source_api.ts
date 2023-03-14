@@ -155,7 +155,7 @@ export async function search(client: Client, request: Request)
 
 function getCoreSchemaService(client: Client, request: Request)
 {
-	const papiService = getPapiService(client, request);
+	const papiService = getPapiService(client, request.body?.Name);
 	const core = new CoreSchemaService(request.body?.Name, request, client, papiService);
 	return core;
 }
@@ -164,7 +164,7 @@ function getCoreSchemaService(client: Client, request: Request)
 async function getCoreService(client: Client, request: Request): Promise<BaseCoreService>
 {
 	let core: BaseCoreService;
-	const papiService: IPapiService = getPapiService(client, request);
+	const papiService: IPapiService = getPapiService(client, request.query?.resource_name);
 	const resourceSchema: AddonDataScheme = await getResourceSchema(client, request);
 
 	switch(request.query?.resource_name)
@@ -190,12 +190,12 @@ async function getCoreService(client: Client, request: Request): Promise<BaseCor
 	return core;
 }
 
-function getPapiService(client: Client, request: Request) : IPapiService
+function getPapiService(client: Client, resourceName: string) : IPapiService
 {
 	const papiClient = Helper.getPapiClient(client);
 	let papiService: IPapiService | undefined = undefined;
 
-	switch(request.query.resource_name)
+	switch(resourceName)
 	{
 	case "users":
 	case "employees":
@@ -205,7 +205,7 @@ function getPapiService(client: Client, request: Request) : IPapiService
 	}
 	default:
 	{
-		papiService = new BasePapiService(request.query.resource_name, papiClient);
+		papiService = new BasePapiService(resourceName, papiClient);
 		break;
 	}
 	}
