@@ -129,13 +129,13 @@ describe('Batch', async () =>
 		}
 	]
 
-	const papiService = new MockApiService();
-	papiService.batch = async (resourceName: string, body: any) => 
+	const papiService = new MockApiService("users");
+	papiService.batch = async ( body: any) => 
 	{
 		return Promise.resolve(papiBatchResult);
 	}
 
-	papiService.searchResource = async (resourceName: string, body: any) => 
+	papiService.searchResource = async (body: any) => 
 	{
 		expect(body).to.have.property('InternalIDList');
 		expect(body.InternalIDList).to.be.an('array');
@@ -214,7 +214,7 @@ describe('Batch', async () =>
 
 	it('should throw an "invalid resource" exception', async () => 
 	{
-		const papiService = new MockApiService();
+		const papiService = new MockApiService("FAULTY_RESOURCE");
 
 		const request: Request = {
 			method: 'POST',

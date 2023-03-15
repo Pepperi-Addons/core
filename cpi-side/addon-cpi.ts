@@ -115,11 +115,12 @@ async function getCoreService(request: Request): Promise<BaseCoreService>
 {
 	let core: BaseCoreService;
 	const papiService: IPapiService = getPapiService(request);
-	const resourceSchema: AddonDataScheme = await papiService.getResourceSchema(request.query?.resource_name ?? request.body.Resource);
+	const resourceSchema: AddonDataScheme = await getResourceSchema(request);
 
 	switch(request.query?.resource_name)
 	{
 	case "users":
+	case "employees":
 	{
 		core = new UsersCoreService(resourceSchema, request, papiService);
 		break;
@@ -139,35 +140,50 @@ async function getCoreService(request: Request): Promise<BaseCoreService>
 	return core;
 }
 
-function getPapiService(request: Request) : IPapiService
+async function getResourceSchema(request: Request): Promise<AddonDataScheme>
+{
+	const shouldGetBaseApiService = true;
+	const baseCpiSideApiService = getPapiService(request, shouldGetBaseApiService);
+	return await baseCpiSideApiService.getResourceSchema();
+}
+
+function getPapiService(request: Request, getBaseApiService = false) : IPapiService
 {
 	const iClientApi: IClientApiService = new ClientApiService();
 
 	let papiService: IPapiService;
 
-	switch(request.query?.resource_name)
+	if(getBaseApiService)
 	{
-	case "catalogs":
-	case "users":
+		papiService = new BaseCpiSideApiService(request.query?.resource_name, request.query.addon_uuid, iClientApi); 
+	}
+	else
 	{
-		papiService = new CatalogsAndUsersCpiSideApiService(request.query.addon_uuid, iClientApi);
-		break;
+		switch(request.query?.resource_name)
+		{
+		case "catalogs":
+		case "users":
+		case "employees":
+		{
+			papiService = new CatalogsAndUsersCpiSideApiService(request.query?.resource_name, request.query.addon_uuid, iClientApi);
+			break;
+		}
+		case "accounts":
+		{
+			papiService = new AccountsCpiSideApiService(request.query.addon_uuid, iClientApi);
+			break;
+		}
+		case "items":
+		{
+			papiService = new NoCreationDateCpiSideApiService(request.query?.resource_name, request.query.addon_uuid, iClientApi);
+			break;
+		}
+		default:
+		{
+			papiService = new BaseCpiSideApiService(request.query?.resource_name, request.query.addon_uuid, iClientApi);
+		}
+		}	
 	}
-	case "accounts":
-	{
-		papiService = new AccountsCpiSideApiService(request.query.addon_uuid, iClientApi);
-		break;
-	}
-	case "items":
-	{
-		papiService = new NoCreationDateCpiSideApiService(request.query.addon_uuid, iClientApi);
-		break;
-	}
-	default:
-	{
-		papiService = new BaseCpiSideApiService(request.query.addon_uuid, iClientApi);
-	}
-	}
-
+	
 	return papiService;
 }

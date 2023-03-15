@@ -9,7 +9,7 @@ export class UsersCoreService extends BaseCoreService
 	 */
 	public override async upsertResource()
 	{
-		console.log(`Core - Users - Trying to upsert the resource...`);
+		console.log(`Core - Employees - Trying to upsert the resource...`);
 		// Translate the item to PAPI format
 		const papiItemRequestBody = this.translateItemToPapiItem(this.request.body);
 
@@ -17,25 +17,22 @@ export class UsersCoreService extends BaseCoreService
 		let papiItem;
 		if(await this.doesUserExist())
 		{
-			console.log(`Core - Users - User already exist. Try to update it...`);
+			console.log(`Core - Employees - User already exist. Try to update it...`);
 			
-			papiItem = await this.papi.updateResource(this.schema.Name, papiItemRequestBody);
+			papiItem = await this.papi.updateResource(papiItemRequestBody);
 
-			console.log(`Core - Users - Successfully updated the user.`);
+			console.log(`Core - Employees - Successfully updated the user.`);
 
 		}
 		else
 		{
-			console.log(`Core - Users - User does not exist. Try to create it...`);
+			console.log(`Core - Employees - User does not exist. Try to create it...`);
 			
-			papiItem = await this.papi.createResource(this.schema.Name, papiItemRequestBody);
+			papiItem = await this.papi.createResource(papiItemRequestBody);
 
-			console.log(`Core - Users - Successfully created a user.`);
+			console.log(`Core - Employees - Successfully created a user.`);
 			
 		}
-
-		// Create the PAPI item
-		// const papiItem = await papiFunction(this.resource, papiItemRequestBody);
 
 		// Translate the PAPI item to an item
 		const translatedItem = this.translatePapiItemToItem(papiItem);
@@ -48,13 +45,13 @@ export class UsersCoreService extends BaseCoreService
 	 */
 	private async doesUserExist(): Promise<boolean>
 	{
-		console.log(`Core - Users - Trying to decide whether this resource already exists or not...`);
+		console.log(`Core - Employees - Trying to decide whether this resource already exists or not...`);
 		
 		let res = false;
 
 		try
 		{
-			console.log(`Core - Users - Trying to get user by some unique field...`);
+			console.log(`Core - Employees - Trying to get user by some unique field...`);
 			
 			res = !!(await this.getUser());
 		}
@@ -62,7 +59,7 @@ export class UsersCoreService extends BaseCoreService
 		{
 			if(error instanceof Error)
 			{
-				console.log(`Core - Users - Failed to get the user: ${error.message}`);
+				console.log(`Core - Employees - Failed to get the user: ${error.message}`);
 			}
 		}
 		return res;
@@ -76,7 +73,7 @@ export class UsersCoreService extends BaseCoreService
 		let user: undefined | any = undefined;
 		// If the body contains any of the unique fields, try to get the User by their value.
 		const { field_id, value } = this.extractUniqueFieldIdAndValueFromRequest();
-		console.log(`Core - Users - Upserted resource can be identified by the passed '${field_id}' value, of '${value}'. Trying to getResourceByUniqueField...`);
+		console.log(`Core - Employees - Upserted resource can be identified by the passed '${field_id}' value, of '${value}'. Trying to getResourceByUniqueField...`);
 
 
 		if(field_id && value)
@@ -84,7 +81,7 @@ export class UsersCoreService extends BaseCoreService
 			user = await this.getResourceByUniqueField(field_id, value);
 		}
 
-		console.log(`Core - Users - ${user ? `Found user with Key ${user.UUID}` : 'Could not find user.'}`);
+		console.log(`Core - Employees - ${user ? `Found user with Key ${user.UUID}` : 'Could not find user.'}`);
 		
 		return user;
 	}

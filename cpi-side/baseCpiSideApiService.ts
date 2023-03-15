@@ -10,16 +10,16 @@ import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 export default class BaseCpiSideApiService implements IPapiService
 {
-	constructor(protected clientAddonUUID: string, protected iClientApi: IClientApiService)
+	constructor(protected resourceName: string, protected clientAddonUUID: string, protected iClientApi: IClientApiService)
 	{}
 
-	async getResourceFields(resourceName: string): Promise<ResourceFields> 
+	async getResourceFields(): Promise<ResourceFields> 
 	{
 		// This method is used for creation of a schema, and is not needed in cpi-side
 		throw new Error('Method not implemented.');
 	}
 
-	async createResource(resourceName: string, body: any): Promise<any> 
+	async createResource(body: any): Promise<any> 
 	{
 		// Build CreateResourceParams
 		const createResourceParams: CreateResourceParams = {
@@ -27,23 +27,23 @@ export default class BaseCpiSideApiService implements IPapiService
 		}
 
 		// Call to create the resource
-		const addResult = await this.iClientApi.add(resourceName, createResourceParams);
+		const addResult = await this.iClientApi.add(this.resourceName, createResourceParams);
 
 		// Validate the creation process succeeded
 		if(addResult.status !== 'added')
 		{
-			const errorMessage = `Adding resource of type ${resourceName} failed. Addition status: '${addResult.status}'. Message: '${addResult.message}'`;
+			const errorMessage = `Adding resource of type ${this.resourceName} failed. Addition status: '${addResult.status}'. Message: '${addResult.message}'`;
 			console.error(errorMessage);
 			throw new Error(errorMessage);
 		}
 
 		// Get the newly created resource
-		const resultObject = await this.getResourceByKey(resourceName, addResult.id);
+		const resultObject = await this.getResourceByKey(addResult.id);
 
 		return resultObject;
 	}
 
-	async updateResource(resourceName: string, body: any): Promise<any> 
+	async updateResource(body: any): Promise<any> 
 	{
 		// Build UpdateParams
 		const updateParams: UpdateParams = {
@@ -53,30 +53,30 @@ export default class BaseCpiSideApiService implements IPapiService
 		}
 
 		// Call to update the resource
-		const updateResult = await this.iClientApi.update(resourceName, updateParams);
+		const updateResult = await this.iClientApi.update(this.resourceName, updateParams);
 
 		// Validate the creation process succeeded
 		if(updateResult.result[0].status !== 'updated')
 		{
-			const errorMessage = `Updating resource of type ${resourceName} failed. Update status: '${updateResult.result[0].status}'. Message: '${updateResult.result[0].message}'`;
+			const errorMessage = `Updating resource of type ${this.resourceName} failed. Update status: '${updateResult.result[0].status}'. Message: '${updateResult.result[0].message}'`;
 			console.error(errorMessage);
 			throw new Error(errorMessage);
 		}
 
 		// Get the newly updated resource
-		const resultObject = await this.getResourceByKey(resourceName, updateResult.result[0].id);
+		const resultObject = await this.getResourceByKey(updateResult.result[0].id);
 
 		return resultObject;
 	}
 
-	async upsertResource(resourceName: string, body: any): Promise<any> 
+	async upsertResource(body: any): Promise<any> 
 	{
 		let res: any;
 		let doesResourceExist: boolean | undefined;
 
 		try
 		{
-			await this.getResourceByKey(resourceName, body.UUID);
+			await this.getResourceByKey(body.UUID);
 			doesResourceExist = true;
 		}
 		catch(error)
@@ -86,32 +86,32 @@ export default class BaseCpiSideApiService implements IPapiService
 
 		if(doesResourceExist)
 		{
-			res = await this.updateResource(resourceName, body);
+			res = await this.updateResource(body);
 		}
 		else
 		{
-			res = await this.createResource(resourceName, body); 
+			res = await this.createResource(body); 
 		}
 
 		return res;
 	}
 
-	async batch(resourceName: string, body: any): Promise<PapiBatchResponse> 
+	async batch(body: any): Promise<PapiBatchResponse> 
 	{
 		// This method is not used in cpi-side
 		throw new Error('Method not implemented.');
 	}
 
-	async getResources(resourceName: string, query: any): Promise<any[]> 
+	async getResources(query: any): Promise<any[]> 
 	{
 		// This method is not used in cpi-side
 		// cpi-side only calls Search.
 		throw new Error('Method not implemented.');
 	}
 
-	async getResourceByKey(resourceName: string, key: string): Promise<any> 
+	async getResourceByKey(key: string): Promise<any> 
 	{
-		const schemaFields = await this.getRequestedClientApiFields(resourceName);
+		const schemaFields = await this.getRequestedClientApiFields();
 		const getParams: GetParams<string> = {
 			key: {  
 				UUID: key
@@ -119,21 +119,21 @@ export default class BaseCpiSideApiService implements IPapiService
 			fields: schemaFields
 		};
 		
-		const getResult = await this.iClientApi.get(resourceName, getParams);
+		const getResult = await this.iClientApi.get(this.resourceName, getParams);
         
 		return getResult.object
 	}
 
-	async getResourceByExternalId(resourceName: string, externalId: any): Promise<any> 
+	async getResourceByExternalId(externalId: any): Promise<any> 
 	{
 		const searchBody = this.createAUniqueFieldRequestBody("ExternalID", externalId);
-		return await this.callSearchExpectingASingleResource(resourceName, searchBody);
+		return await this.callSearchExpectingASingleResource(searchBody);
 	}
 
-	async getResourceByInternalId(resourceName: string, internalId: any): Promise<any> 
+	async getResourceByInternalId(internalId: any): Promise<any> 
 	{
 		const searchBody = this.createAUniqueFieldRequestBody("InternalID", internalId);
-		return await this.callSearchExpectingASingleResource(resourceName, searchBody);
+		return await this.callSearchExpectingASingleResource(searchBody);
 	}
 
 	protected createAUniqueFieldRequestBody(uniqueFieldID: string, uniqueFieldValue: string)
@@ -143,9 +143,9 @@ export default class BaseCpiSideApiService implements IPapiService
 		};
 	}
 
-	protected async callSearchExpectingASingleResource(resourceName: string, searchBody: any)
+	protected async callSearchExpectingASingleResource(searchBody: any)
 	{
-		const res = await this.searchResource(resourceName, searchBody);
+		const res = await this.searchResource(searchBody);
 		if(res.Objects.length === 1)
 		{
 			return res.Objects[0];
@@ -160,10 +160,10 @@ export default class BaseCpiSideApiService implements IPapiService
 		}
 	}
 
-	async searchResource(resourceName: string, body: any): Promise<SearchResult> 
+	async searchResource(body: any): Promise<SearchResult> 
 	{
 		let clientApiSearchResult: ClientApiSearchResult<string>;
-		body.Fields = body.Fields ? this.filterFieldsToMatchCpi(body.Fields.split(',')) : await this.getRequestedClientApiFields(resourceName);
+		body.Fields = body.Fields ? this.filterFieldsToMatchCpi(body.Fields.split(',')) : await this.getRequestedClientApiFields();
 
 		// Due to the lack of time, I'm not validating the mutual exclusivity between Where, UniqueFieldList and KeyList.
 		// This is promised in the API, and I'm counting on the api to hold to it's definition.
@@ -172,7 +172,7 @@ export default class BaseCpiSideApiService implements IPapiService
 		{
 			const uniqueField = body.hasOwnProperty('UniqueFieldList') ? body.UniqueFieldID : 'UUID';
 			const valuesList = body.hasOwnProperty('UniqueFieldList') ? body.UniqueFieldList : body.UUIDList;
-			clientApiSearchResult = await this.handleSearchUniqueFieldList(resourceName, uniqueField, valuesList, body.Fields, body.Page, body.PageSize);
+			clientApiSearchResult = await this.handleSearchUniqueFieldList(uniqueField, valuesList, body.Fields, body.Page, body.PageSize);
 		}
 		else
 		{
@@ -180,10 +180,10 @@ export default class BaseCpiSideApiService implements IPapiService
 				fields: body.Fields,
 				...(body.hasOwnProperty('Page') && {page: body.Page}),
 				...(body.hasOwnProperty('PageSize') && {pageSize: body.PageSize}),
-				...(body.hasOwnProperty('Where')) && {filter: transformSqlToJson(body.Where, await this.getClientApiFieldsTypes(resourceName))},
+				...(body.hasOwnProperty('Where')) && {filter: transformSqlToJson(body.Where, await this.getClientApiFieldsTypes())},
 			};
 
-			clientApiSearchResult = await this.iClientApi.search(resourceName, searchParams);
+			clientApiSearchResult = await this.iClientApi.search(this.resourceName, searchParams);
 		}
 
 		// Build the SearchResult object to return
@@ -195,7 +195,7 @@ export default class BaseCpiSideApiService implements IPapiService
 		return searchResult;
 	}
 
-	async handleSearchUniqueFieldList(resourceName: string, uniqueField: string, valuesList: string[], requestedFields: string[], page = 0, pageSize?: number): Promise<ClientApiSearchResult<string>>
+	async handleSearchUniqueFieldList(uniqueField: string, valuesList: string[], requestedFields: string[], page = 0, pageSize?: number): Promise<ClientApiSearchResult<string>>
 	{
 		// There's no 'in' operator in ClientApi. A "manual" implementation of this functionality is required.
 
@@ -208,7 +208,7 @@ export default class BaseCpiSideApiService implements IPapiService
 
 		const searchParams: SearchParams<string> = {fields: searchFields};
         
-		const clientApiSearchResult: ClientApiSearchResult<string> = await this.iClientApi.search(resourceName, searchParams);
+		const clientApiSearchResult: ClientApiSearchResult<string> = await this.iClientApi.search(this.resourceName, searchParams);
 
 		// 2. Filter the resources that fit the valuesList.
 		// Assuming the resources.length is bigger than valuesList.length
@@ -263,11 +263,11 @@ export default class BaseCpiSideApiService implements IPapiService
 		return clientApiSearchResult;
 	}
 
-	protected async getRequestedClientApiFields(resourceName: string)
+	protected async getRequestedClientApiFields()
 	{
     	try
 		{
-			const schema = await pepperi.addons.data.schemes.uuid(this.clientAddonUUID).name(resourceName).get();
+			const schema = await pepperi.addons.data.schemes.uuid(this.clientAddonUUID).name(this.resourceName).get();
 			let schemaFields = Object.keys(schema.Fields);
 
 			schemaFields = this.filterFieldsToMatchCpi(schemaFields);
@@ -287,10 +287,10 @@ export default class BaseCpiSideApiService implements IPapiService
 		return schemaFields.filter(field => field !== 'ModificationDateTime' && field !== 'Key');
 	}
 
-	protected async getClientApiFieldsTypes(resourceName: string) : Promise<{[key: string]: FieldType}>
+	protected async getClientApiFieldsTypes() : Promise<{[key: string]: FieldType}>
 	{
     	const res: {[key: string]: FieldType} = {}
-    	const schema = (await this.getResourceSchema(resourceName)) as unknown as {[key: string]: any, Key: string};
+    	const schema = (await this.getResourceSchema()) as unknown as {[key: string]: any, Key: string};
         
     	for(const fieldName in schema.Fields)
     	{
@@ -300,8 +300,8 @@ export default class BaseCpiSideApiService implements IPapiService
     	return res;
 	}
 
-	async getResourceSchema(resourceName: string): Promise<AddonDataScheme>
+	async getResourceSchema(): Promise<AddonDataScheme>
 	{
-		return await pepperi.addons.data.schemes.uuid(this.clientAddonUUID).name(resourceName).get() as unknown as AddonDataScheme;
+		return await pepperi.addons.data.schemes.uuid(this.clientAddonUUID).name(this.resourceName).get() as unknown as AddonDataScheme;
 	}
 }

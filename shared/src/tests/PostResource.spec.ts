@@ -34,20 +34,9 @@ describe('POST resource', async () =>
         	"Role": null,
         };
 
-	// const papiClient = new PapiClient({
-	//     baseURL: mockClient.BaseURL,
-	//     token: mockClient.OAuthAccessToken,
-	//     addonUUID: mockClient.AddonUUID,
-	//     actionUUID: mockClient.ActionUUID,
-	// });
+	const papiService = new MockApiService("users");
 
-	// papiClient.post = async (url: string) => {
-	//     return Promise.resolve(createPapiItem);
-	// }
-
-	const papiService = new MockApiService();
-
-	papiService.upsertResource = async (resourceName: string, body: any) => 
+	papiService.upsertResource = async (body: any) => 
 	{
 		return Promise.resolve(createPapiItem);
 	}
@@ -89,7 +78,7 @@ describe('POST resource', async () =>
 	it('should throw an "invalid resource" exception', async () => 
 	{
 
-		const papiService = new MockApiService();
+		const papiService = new MockApiService("FAULTY_RESOURCE");
 
 		const request: Request = {
 			method: 'POST',

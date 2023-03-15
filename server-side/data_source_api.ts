@@ -155,7 +155,7 @@ export async function search(client: Client, request: Request)
 
 function getCoreSchemaService(client: Client, request: Request)
 {
-	const papiService = getPapiService(client, request);
+	const papiService = getPapiService(client, request.body?.Name);
 	const core = new CoreSchemaService(request.body?.Name, request, client, papiService);
 	return core;
 }
@@ -163,13 +163,14 @@ function getCoreSchemaService(client: Client, request: Request)
 
 async function getCoreService(client: Client, request: Request): Promise<BaseCoreService>
 {
-	let core: BaseCoreService | undefined = undefined;
-	const papiService: IPapiService = getPapiService(client, request);
+	let core: BaseCoreService;
+	const papiService: IPapiService = getPapiService(client, request.query?.resource_name);
 	const resourceSchema: AddonDataScheme = await getResourceSchema(client, request);
 
 	switch(request.query?.resource_name)
 	{
 	case "users":
+	case "employees":
 	{
 		core = new UsersCoreService(resourceSchema, request, papiService);
 		break;
@@ -189,21 +190,22 @@ async function getCoreService(client: Client, request: Request): Promise<BaseCor
 	return core;
 }
 
-function getPapiService(client: Client, request: Request) : IPapiService
+function getPapiService(client: Client, resourceName: string) : IPapiService
 {
 	const papiClient = Helper.getPapiClient(client);
 	let papiService: IPapiService | undefined = undefined;
 
-	switch(request.query.resource_name)
+	switch(resourceName)
 	{
 	case "users":
+	case "employees":
 	{
 		papiService = new UsersPapiService(papiClient);
 		break;
 	}
 	default:
 	{
-		papiService = new BasePapiService(papiClient);
+		papiService = new BasePapiService(resourceName, papiClient);
 		break;
 	}
 	}
@@ -214,8 +216,8 @@ function getPapiService(client: Client, request: Request) : IPapiService
 async function getResourceSchema(client: Client, request: Request): Promise<AddonDataScheme>
 {
 	const papiClient = Helper.getPapiClient(client, request.query.addon_uuid);
-	const schemaOwnerPapiService = new BasePapiService(papiClient);
-	const resourceSchema = await schemaOwnerPapiService.getResourceSchema(request.query?.resource_name ?? request.body.Resource);
+	const schemaOwnerPapiService = new BasePapiService(request.query.resource_name, papiClient);
+	const resourceSchema = await schemaOwnerPapiService.getResourceSchema();
 
 	return resourceSchema;
 }

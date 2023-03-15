@@ -5,11 +5,11 @@ import BaseCpiSideApiService from './baseCpiSideApiService';
 
 export default class AccountsCpiSideApiService extends BaseCpiSideApiService implements IPapiService
 {
-	constructor(protected clientAddonUUID: string, protected iClientApi: IClientApiService)
+	constructor(clientAddonUUID: string, iClientApi: IClientApiService)
 	{
-		super(clientAddonUUID, iClientApi);
+		super("accounts", clientAddonUUID, iClientApi);
 	}
-
+	
 	protected filterFieldsToMatchCpi(schemaFields: string[]): string[]
 	{
 		schemaFields = super.filterFieldsToMatchCpi(schemaFields);

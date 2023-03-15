@@ -32,7 +32,7 @@ export class BaseCoreService
 
 		this.validateKey(requestedKey);
 
-		const papiItem = await this.papi.getResourceByKey(this.schema.Name, requestedKey);
+		const papiItem = await this.papi.getResourceByKey(requestedKey);
 		const translatedItem = this.translatePapiItemToItem(papiItem);
 
 		return translatedItem;
@@ -59,14 +59,14 @@ export class BaseCoreService
 		case "InternalID":
 		{
 
-			const papiItem = await this.papi.getResourceByInternalId(this.schema.Name, requestedValue);
+			const papiItem = await this.papi.getResourceByInternalId(requestedValue);
 			const translatedItem = this.translatePapiItemToItem(papiItem);
 
 			return translatedItem;
 		}
 		case "ExternalID":
 		{
-			const papiItem = await this.papi.getResourceByExternalId(this.schema.Name, requestedValue);
+			const papiItem = await this.papi.getResourceByExternalId(requestedValue);
 			const translatedItem = this.translatePapiItemToItem(papiItem);
 
 			return translatedItem;
@@ -108,7 +108,7 @@ export class BaseCoreService
 		// Create a papi Search body
 		const papiSearchBody = this.translateBodyToPapiSearchBody();
 
-		const res: SearchResult = await this.papi.searchResource(this.schema.Name, papiSearchBody);
+		const res: SearchResult = await this.papi.searchResource(papiSearchBody);
 		
 		res.Objects = res.Objects.map(papiItem => this.translatePapiItemToItem(papiItem));
 
@@ -281,7 +281,7 @@ export class BaseCoreService
 		// For more information see: https://pepperi.atlassian.net/browse/DI-22222
 		queryCopy.where = this.filterHiddenObjects(queryCopy.where, this.request.query.include_deleted);
 
-		const papiItems = await this.papi.getResources(this.schema.Name, queryCopy);
+		const papiItems = await this.papi.getResources(queryCopy);
 
 		const translatedItems = papiItems.map(papiItem => this.translatePapiItemToItem(papiItem));
 
@@ -319,7 +319,7 @@ export class BaseCoreService
 		// Translate the item to PAPI format
 		const papiItemRequestBody = this.translateItemToPapiItem(this.request.body);
 		// Create the PAPI item
-		const papiItem = await this.papi.upsertResource(this.schema.Name, papiItemRequestBody);
+		const papiItem = await this.papi.upsertResource(papiItemRequestBody);
 		// Translate the PAPI item to an item
 		const translatedItem = this.translatePapiItemToItem(papiItem);
 
@@ -337,7 +337,7 @@ export class BaseCoreService
 		const batchObjects = [...this.request.body.Objects];
 		// Translate the items to PAPI format
 		const papiItems = batchObjects.map(batchObject => this.translateItemToPapiItem(batchObject));
-		const papiBatchResult: PapiBatchResponse = await this.papi.batch(this.schema.Name, papiItems);
+		const papiBatchResult: PapiBatchResponse = await this.papi.batch(papiItems);
 		// PAPI batch objects are returned with empty UUIDs. We have to get the
 		// actual UUIDs from PAPI and replace the empty UUIDs with the actual UUIDs.
 		await this.fillPapiBatchResultWithUUIDs(papiBatchResult);
