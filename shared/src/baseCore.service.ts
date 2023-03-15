@@ -493,7 +493,7 @@ export class BaseCoreService
 		const resItemFields = Object.keys(resItem);
 		const schemaFields = Object.keys(this.schema.Fields!);
 
-		// Keep only fields that listed on the schema, or TSA fields.
+		// Keep only fields that are listed on the schema, or are TSA fields.
 		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
 		fieldsToDelete.map(absentField => delete resItem[absentField]);
 		
