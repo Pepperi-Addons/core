@@ -475,7 +475,7 @@ export class BaseCoreService
 
 		// Add ms to DateTime fields. 
 		// For more information see: https://pepperi.atlassian.net/browse/DI-23237
-		resItem = this.addMsToDateTimeFields(papiItem);
+		resItem = this.addMsToDateTimeFields(resItem);
 
 		// Translate PAPI references to ADAL references.
 		resItem = this.translatePapiReferencesToAdalReferences(resItem);
