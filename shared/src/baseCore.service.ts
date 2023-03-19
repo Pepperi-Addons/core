@@ -473,6 +473,10 @@ export class BaseCoreService
 		// Remove properties that are not part of the schema.
 		resItem = this.removePropertiesNotListedOnSchema(resItem);
 
+		// Add ms to DateTime fields. 
+		// For more information see: https://pepperi.atlassian.net/browse/DI-23237
+		resItem = this.addMsToDateTimeFields(resItem);
+
 		// Translate PAPI references to ADAL references.
 		resItem = this.translatePapiReferencesToAdalReferences(resItem);
 
@@ -496,6 +500,26 @@ export class BaseCoreService
 		// Keep only fields that listed on the schema, or TSA fields.
 		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
 		fieldsToDelete.map(absentField => delete resItem[absentField]);
+		
+		return resItem;
+	}
+
+	/**
+	 * Add milliseconds to DateTime fields on the PAPI item.
+	 */
+	private addMsToDateTimeFields(papiItem: any): any {
+		const resItem = { ...papiItem };
+
+		const resItemFields = Object.keys(resItem);
+		const schemaFields = Object.keys(this.schema.Fields!);
+
+		// Keep fields that are part of the schema, and are of type DateTime
+		const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
+
+		// Set a new Date on the resItem
+		dateTimeFields.map(dateTimeField => {
+			resItem[dateTimeField] = new Date(resItem[dateTimeField]).toISOString();
+		})
 		
 		return resItem;
 	}
