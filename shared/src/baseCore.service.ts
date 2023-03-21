@@ -517,9 +517,14 @@ export class BaseCoreService
 		const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
 
 		// Set a new Date on the resItem
-		dateTimeFields.map(dateTimeField => {
-			resItem[dateTimeField] = new Date(resItem[dateTimeField]).toISOString();
-		})
+		dateTimeFields.map(dateTimeField => 
+		{
+			//The date might be null, in that case we don't need to create a new date.
+			if(resItem[dateTimeField])
+			{
+				resItem[dateTimeField] = new Date(resItem[dateTimeField]).toISOString();
+			}
+		});
 		
 		return resItem;
 	}
