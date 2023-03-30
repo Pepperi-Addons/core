@@ -20,7 +20,7 @@ export type PapiBatchResponse = Array<{ InternalID?: number, UUID?: string, Exte
 export type ResourceFields = Array<ResourceField>;
 export type SearchResult = {Objects: Array<any>, Count?: number};
 
-export const RESOURCE_TYPES = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts', 'employees', 'account_employees'];
+export const RESOURCE_TYPES = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts', 'employees', 'account_employees', 'profiles'];
 export const UNIQUE_FIELDS = ['InternalID', 'UUID', 'ExternalID', 'Key'];
 
 export const DIMX_ADDON_UUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
