@@ -31,6 +31,11 @@ export async function get_contacts_by_key(client: Client, request: Request)
 {
 	return await resourcesFunctionAdapter(client, request, "contacts");
 }
+
+export async function get_profiles_by_key(client: Client, request: Request) 
+{
+	return await resourcesFunctionAdapter(client, request, "profiles");
+}
 // #endregion
 
 // #region GET/POST
@@ -64,6 +69,11 @@ export async function contacts(client: Client, request: Request)
 {
 	return await resourcesFunctionAdapter(client, request, "contacts");
 }
+
+export async function profiles(client: Client, request: Request) 
+{
+	return await resourcesFunctionAdapter(client, request, "profiles");
+}
 // #endregion
 
 // #region get by unique field
@@ -95,6 +105,11 @@ export async function get_account_users_by_unique_field(client: Client, request:
 export async function get_contacts_by_unique_field(client: Client, request: Request) 
 {
 	return await getByUniqueFieldFunctionAdapter(client, request, "contacts");
+}
+
+export async function get_profiles_by_unique_field(client: Client, request: Request) 
+{
+	return await getByUniqueFieldFunctionAdapter(client, request, "profiles");
 }
 
 async function getByUniqueFieldFunctionAdapter(client: Client, request: Request, resourceName: string)
@@ -134,6 +149,11 @@ export async function contacts_search(client: Client, request: Request)
 	return await searchFunctionAdapter(client, request, "contacts");
 }
 
+export async function profiles_search(client: Client, request: Request) 
+{
+	return await searchFunctionAdapter(client, request, "profiles");
+}
+
 async function searchFunctionAdapter(client: Client, request: Request, resourceName: string)
 {
 	return await genericAdapter(client, request, resourceName, search);
@@ -169,6 +189,11 @@ export async function batch_account_users(client: Client, request: Request)
 export async function batch_contacts(client: Client, request: Request) 
 {
 	return await batchFunctionAdapter(client, request, "contacts");
+}
+
+export async function batch_profiles(client: Client, request: Request) 
+{
+	return await batchFunctionAdapter(client, request, "profiles");
 }
 
 async function batchFunctionAdapter(client: Client, request: Request, resourceName: string)
