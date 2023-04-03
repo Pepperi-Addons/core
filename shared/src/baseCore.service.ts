@@ -125,10 +125,11 @@ export class BaseCoreService
 	 * @param items the items from which to delete the unwanted fields.
 	 * @param fieldsArray an array of string representing the wanted fields.
 	 */
-	private deleteUnwantedFieldsFromItems(items: any, fieldsArray: Array<string>) 
+	private deleteUnwantedFieldsFromItems(items: any, fieldsArray: Array<string> | string) 
 	{
 		if (fieldsArray) 
 		{
+			fieldsArray = Array.isArray(fieldsArray) ? fieldsArray : fieldsArray.split(",");
 			items.forEach(item => 
 			{
 				Object.keys(item).forEach(key => 
@@ -481,9 +482,6 @@ export class BaseCoreService
 		// Add Key property, equal to UUID.
 		let resItem = this.addKeyPropertyEqualToUUID(papiItem);
 
-		// Remove properties that are not part of the schema.
-		resItem = this.removePropertiesNotListedOnSchema(resItem);
-
 		// Translate PAPI references to ADAL references.
 		resItem = this.translatePapiReferencesToAdalReferences(resItem);
 
@@ -494,20 +492,6 @@ export class BaseCoreService
 	{
 		const resItem = { ...papiItem };
 		resItem.Key = resItem.UUID;
-		return resItem;
-	}
-
-	removePropertiesNotListedOnSchema(item: any): any 
-	{
-		const resItem = { ...item };
-
-		const resItemFields = Object.keys(resItem);
-		const schemaFields = Object.keys(this.schema.Fields!);
-
-		// Keep only fields that listed on the schema, or TSA fields.
-		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
-		fieldsToDelete.map(absentField => delete resItem[absentField]);
-		
 		return resItem;
 	}
 
