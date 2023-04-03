@@ -309,23 +309,22 @@ export class BaseCoreService
 	private translateWhereClauseKeyToUUID(whereClause: string | undefined): string | undefined
 	{
 		let newWhereClause: string | undefined = undefined;
-		if(!whereClause)
+		
+		if(whereClause)
 		{
-			return newWhereClause;
+			// Create the JSON filter from the SQL where clause
+			const jsonFilter: JSONFilter = parse(whereClause, this.getSchemaFieldsTypes())!;
+
+			// Replace all Key fields with UUID fields
+			const transformedJsonFilter = transform(jsonFilter, {
+				"Key": (node: JSONBaseFilter) => {
+					node.ApiName = "UUID";
+				}
+			});
+
+			// Transform the JSON filter back to SQL where clause
+			newWhereClause = toApiQueryString(transformedJsonFilter);
 		}
-
-		// Create the JSON filter from the SQL where clause
-		const jsonFilter: JSONFilter = parse(whereClause, this.getSchemaFieldsTypes())!;
-
-		// Replace all Key fields with UUID fields
-		const transformedJsonFilter = transform(jsonFilter, {
-			"Key": (node: JSONBaseFilter) => {
-				node.ApiName = "UUID";
-			}
-		});
-
-		// Transform the JSON filter back to SQL where clause
-		newWhereClause = toApiQueryString(transformedJsonFilter);
 
 		// Return the new where clause
 		return newWhereClause;
