@@ -60,8 +60,8 @@ describe('GET resources', async () =>
 		}
 	]
 
-	const papiService = new MockApiService();
-	papiService.getResources = async (resourceName: string, query: any) => 
+	const papiService = new MockApiService("users");
+	papiService.getResources = async (query: any) => 
 	{
 		Object.keys(query).map(key => 
 		{
@@ -157,7 +157,7 @@ describe('GET resources', async () =>
 			actionUUID: mockClient.ActionUUID,
 		});
 
-		const papiService = new MockApiService();
+		const papiService = new MockApiService("FAULTY_RESOURCE");
 
 		const request: Request = {
 			method: 'POST',

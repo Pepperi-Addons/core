@@ -26,7 +26,7 @@ describe('Create schema', async () =>
 		return Promise.resolve()
 	};
 
-	const papiService = new MockApiService();
+	const papiService = new MockApiService("users");
 
 	it('should return a valid schema', async () => 
 	{
@@ -65,7 +65,7 @@ describe('Create schema', async () =>
 	it('should throw an "invalid resource" exception', async () => 
 	{
 
-		const papiService = new MockApiService();
+		const papiService = new MockApiService("FAULTY_RESOURCE");
 
 		const request: Request = {
 			method: 'POST',

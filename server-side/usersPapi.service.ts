@@ -1,10 +1,15 @@
+import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { ErrorWithStatus, IPapiService } from 'core-shared';
 import BasePapiService from './basePapi.service';
 
 export class UsersPapiService extends BasePapiService implements IPapiService
 {
+	constructor(papiClient: PapiClient) 
+	{
+		super("users", papiClient);
+	}
 
-	async createResource(resourceName: string, body: any)
+	async createResource(body: any)
 	{
 		try
 		{
@@ -16,11 +21,11 @@ export class UsersPapiService extends BasePapiService implements IPapiService
 		}
 	}
 
-	async updateResource(resourceName: string, body: any)
+	async updateResource(body: any)
 	{
 		try
 		{
-			return await this.papiClient.post(`/${resourceName}`, body);
+			return await this.papiClient.post(`/${this.resourceName}`, body);
 		}
 		catch(error)
 		{
@@ -28,7 +33,7 @@ export class UsersPapiService extends BasePapiService implements IPapiService
 		}
 	}
 
-	async upsertResource(resourceName: string, body: any): Promise<any> 
+	async upsertResource(body: any): Promise<any> 
 	{
 		throw new Error('Method not implemented.');
 	}

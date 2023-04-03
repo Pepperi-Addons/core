@@ -59,8 +59,8 @@ describe('Search resources', async () =>
 		}
 	]
 
-	const papiService = new MockApiService();
-	papiService.searchResource = async (resourceName: string, body: any) => 
+	const papiService = new MockApiService("users");
+	papiService.searchResource = async (body: any) => 
 	{
 		Object.keys(body).map(key => 
 		{
@@ -335,7 +335,7 @@ describe('Search resources', async () =>
 	it('should throw an "invalid resource" exception', async () => 
 	{
 
-		const papiService = new MockApiService();
+		const papiService = new MockApiService("FAULTY_RESOURCE");
 
 		const request: Request = {
 			method: 'POST',
