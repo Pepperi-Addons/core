@@ -4,27 +4,27 @@ import { PapiBatchResponse, ResourceFields, SearchResult } from './constants';
 export interface IPapiService 
 {
 
-	getResourceFields(resourceName: string): Promise<ResourceFields>;
+	getResourceFields(): Promise<ResourceFields>;
 
-	createResource(resourceName: string, body: any): Promise<any>;
+	createResource(body: any): Promise<any>;
 
-	updateResource(resourceName: string, body: any): Promise<any>;
+	updateResource(body: any): Promise<any>;
 
-	upsertResource(resourceName: string, body: any): Promise<any>;
+	upsertResource(body: any): Promise<any>;
 
-	batch(resourceName: string, body: any): Promise<PapiBatchResponse>;
+	batch(body: any): Promise<PapiBatchResponse>;
 
-	getResources(resourceName: string, query: any): Promise<Array<any>>;
+	getResources(query: any): Promise<Array<any>>;
 
-	getResourceByKey(resourceName: string, key: string): Promise<any>;
+	getResourceByKey(key: string): Promise<any>;
 
-	getResourceByExternalId(resourceName: string, externalId: any): Promise<any>;
+	getResourceByExternalId(externalId: any): Promise<any>;
 
-	getResourceByInternalId(resourceName: string, internalId: any): Promise<any>;
+	getResourceByInternalId(internalId: any): Promise<any>;
 
-	searchResource(resourceName: string, body: void): Promise<SearchResult>;
+	searchResource(body: void): Promise<SearchResult>;
 
-	getResourceSchema(resourceName: string): Promise<AddonDataScheme>
+	getResourceSchema(): Promise<AddonDataScheme>
 }
 
 export default IPapiService;

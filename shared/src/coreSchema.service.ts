@@ -26,7 +26,7 @@ export class CoreSchemaService
 
 	private async getMergedSchema(): Promise<AddonDataScheme>
 	{
-		let resourceFields: ResourceFields = await this.papi.getResourceFields(this.resource);
+		let resourceFields: ResourceFields = await this.papi.getResourceFields();
 
 		// Add only TSA's to the schema
 		resourceFields = resourceFields.filter(resourceField => resourceField.FieldID.startsWith('TSA') || resourceField.FieldID.startsWith('PSA'));

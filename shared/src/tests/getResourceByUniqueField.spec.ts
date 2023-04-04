@@ -17,17 +17,17 @@ describe('GET resource by unique field', async () =>
 	const requestedExternalID = "MyExternalID";
 
 	const resolveString = '{"InternalID":11496119, "ExternalID":"MyExternalID", "UUID":"dd51e0a9-83f3-49b5-9074-35f13916b340","ExternalID":"","CreationDateTime":"2022-05-09T13:39:18Z","Email":"testing@testing.testing","FirstName":"aaa","Hidden":false,"IsInTradeShowMode":false,"LastName":"aa","Mobile":"","ModificationDateTime":"2022-05-09T13:40:31Z","Phone":"","Profile":{"Data":{"InternalID":69004,"Name":"Rep"},"URI":"/profiles/69004"},"Role":null}';
-	const papiService = new MockApiService();
+	const papiService = new MockApiService("users");
 
-	papiService.getResourceByKey = async (resourceName: string, key: string) => 
+	papiService.getResourceByKey = async (key: string) => 
 	{
 		return Promise.resolve(JSON.parse(resolveString)); 
 	}
-	papiService.getResourceByInternalId = async (resourceName: string, internalId: string) => 
+	papiService.getResourceByInternalId = async (internalId: string) => 
 	{
 		return Promise.resolve(JSON.parse(resolveString)); 
 	}
-	papiService.getResourceByExternalId = async (resourceName: string, externalId: string) => 
+	papiService.getResourceByExternalId = async (	externalId: string) => 
 	{
 		return Promise.resolve(JSON.parse(resolveString)); 
 	}
@@ -146,7 +146,7 @@ describe('GET resource by unique field', async () =>
 
 	it('should throw an "invalid resource" exception', async () => 
 	{
-		const papiService = new MockApiService();
+		const papiService = new MockApiService("FAULTY_RESOURCE");
 
 		const request: Request = {
 			method: 'POST',

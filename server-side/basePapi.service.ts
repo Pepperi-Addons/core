@@ -4,12 +4,12 @@ import { ErrorWithStatus, Helper, IPapiService, PapiBatchResponse, ResourceField
 
 export class BasePapiService implements IPapiService
 {
-	constructor(protected papiClient: PapiClient) 
+	constructor(protected resourceName: string, protected papiClient: PapiClient) 
 	{}
 
-	async getResourceFields(resourceName: string): Promise<ResourceFields> 
+	async getResourceFields(): Promise<ResourceFields> 
 	{
-		const url = `/meta_data/${resourceName}/fields?include_owned=true&include_internal=false`;
+		const url = `/meta_data/${this.resourceName}/fields?include_owned=true&include_internal=false`;
 		try
 		{
 			return await this.papiClient.get(url);
@@ -21,21 +21,21 @@ export class BasePapiService implements IPapiService
 
 	}
 
-	async createResource(resourceName: string, body: any)
+	async createResource(body: any)
 	{
-		return await this.upsertResource(resourceName, body);
+		return await this.upsertResource(body);
 	}
 
-	async updateResource(resourceName: string, body: any)
+	async updateResource(body: any)
 	{
-		return await this.upsertResource(resourceName, body);
+		return await this.upsertResource(body);
 	}
 
-	async upsertResource(resourceName: string, body: any) 
+	async upsertResource(body: any) 
 	{
 		try
 		{
-			return await this.papiClient.post(`/${resourceName}`, body);
+			return await this.papiClient.post(`/${this.resourceName}`, body);
 		}
 		catch(error)
 		{
@@ -43,11 +43,11 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async batch(resourceName: string, body: any): Promise<PapiBatchResponse>
+	async batch(body: any): Promise<PapiBatchResponse>
 	{
 		try
 		{
-			return await this.papiClient.post(`/batch/${resourceName}`, body);
+			return await this.papiClient.post(`/batch/${this.resourceName}`, body);
 		}
 		catch(error)
 		{
@@ -55,9 +55,9 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async getResources(resourceName: string, query: any)
+	async getResources(query: any)
 	{
-		let url = `/${resourceName}`;
+		let url = `/${this.resourceName}`;
 		const encodedQuery = Helper.encodeQueryParams(query);
 		url = `${url}?${encodedQuery}`;
 		try
@@ -70,11 +70,11 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async getResourceByKey(resourceName: string, key: string): Promise<any> 
+	async getResourceByKey(key: string): Promise<any> 
 	{
 		try
 		{
-			return await this.papiClient.get(`/${resourceName}/UUID/${key}`);
+			return await this.papiClient.get(`/${this.resourceName}/UUID/${key}`);
 		}
 		catch(error)
 		{
@@ -82,11 +82,11 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async getResourceByExternalId(resourceName: string, externalId: any)
+	async getResourceByExternalId(externalId: any)
 	{
 		try
 		{
-			return await this.papiClient.get(`/${resourceName}/ExternalId/${externalId}`);
+			return await this.papiClient.get(`/${this.resourceName}/ExternalId/${externalId}`);
 		}
 		catch(error)
 		{
@@ -94,11 +94,11 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async getResourceByInternalId(resourceName: string, internalId: any)
+	async getResourceByInternalId(internalId: any)
 	{
 		try
 		{
-			return await this.papiClient.get(`/${resourceName}/${internalId}`);
+			return await this.papiClient.get(`/${this.resourceName}/${internalId}`);
 		}
 		catch(error)
 		{
@@ -106,7 +106,7 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async searchResource(resourceName: string, body: any): Promise<SearchResult>
+	async searchResource(body: any): Promise<SearchResult>
 	{
 		const res: SearchResult = {Objects:[]};
 
@@ -114,7 +114,7 @@ export class BasePapiService implements IPapiService
 
 		try
 		{
-			const papiRes = await this.papiClient.apiCall("POST", `/${resourceName}/search`, body);
+			const papiRes = await this.papiClient.apiCall("POST", `/${this.resourceName}/search`, body);
 			res.Objects = await papiRes.json();
 
 			if(body.IncludeCount)
@@ -188,9 +188,9 @@ export class BasePapiService implements IPapiService
 		
 	}
 
-	async getResourceSchema(resourceName: string): Promise<AddonDataScheme> 
+	async getResourceSchema(): Promise<AddonDataScheme> 
 	{
-		return await this.papiClient.get(`/addons/data/schemes/${resourceName}`);
+		return await this.papiClient.get(`/addons/data/schemes/${this.resourceName}`);
 	}
 }
 

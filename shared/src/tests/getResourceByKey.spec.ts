@@ -47,11 +47,11 @@ describe('GET resource by key', async () =>
 	it('should return a valid item', async () => 
 	{
 
-		const papiService = new MockApiService();
+		const papiService = new MockApiService("users");
 
-		papiService.getResourceByKey = async (resourceName: string, key: string) => 
+		papiService.getResourceByKey = async (key: string) => 
 		{
-			if(resourceName === 'users' && key === 'dd51e0a9-83f3-49b5-9074-35f13916b340')
+			if(key === 'dd51e0a9-83f3-49b5-9074-35f13916b340')
 			{
 				return Promise.resolve(
 					JSON.parse('{"InternalID":11496119,"UUID":"dd51e0a9-83f3-49b5-9074-35f13916b340","ExternalID":"","CreationDateTime":"2022-05-09T13:39:18Z","Email":"testing@testing.testing","FirstName":"aaa","Hidden":false,"IsInTradeShowMode":false,"LastName":"aa","Mobile":"","ModificationDateTime":"2022-05-09T13:40:31Z","Phone":"","Profile":{"Data":{"InternalID":69004,"Name":"Rep"},"URI":"/profiles/69004"},"Role":null}')
@@ -85,9 +85,12 @@ describe('GET resource by key', async () =>
 	it('should return a valid catalog with CreationDateTime', async () => 
 	{
 
-		const papiService = new MockApiService();
 
-		papiService.getResourceByKey = async (resourceName: string, key: string) => 
+		const resourceName = "catalogs"
+
+		const papiService = new MockApiService(resourceName);
+
+		papiService.getResourceByKey = async (key: string) => 
 		{
 			if(resourceName === 'catalogs' && key === catalogWithCreationDate.Key)
 			{
@@ -124,7 +127,7 @@ describe('GET resource by key', async () =>
 
 	it('should throw an "invalid resource" exception', async () => 
 	{
-		const papiService = new MockApiService();
+		const papiService = new MockApiService("FAULTY_RESOURCE");
 
 		const request: Request = {
 			method: 'POST',

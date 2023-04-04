@@ -71,57 +71,60 @@ export const usersSchema: AddonDataScheme = {
 
 export class MockApiService implements IPapiService
 {
-	async getResourceSchema(resourceName: string): Promise<AddonDataScheme> 
+	constructor(protected resourceName: string)
+	{}
+
+	async getResourceSchema(): Promise<AddonDataScheme> 
 	{
-		return Promise.resolve({Name: resourceName});
+		return Promise.resolve({Name: this.resourceName});
 	}
 
-	async getResourceFields(resourceName: string): Promise<ResourceFields> 
+	async getResourceFields(): Promise<ResourceFields> 
 	{
 		throw new Error('Method not implemented.');
 	}
 
-	async createResource(resourceName: string, body: any): Promise<any>
+	async createResource(body: any): Promise<any>
 	{
-		return await this.upsertResource(resourceName, body);
+		return await this.upsertResource(body);
 	}
 
-	async updateResource(resourceName: string, body: any): Promise<any>
+	async updateResource(body: any): Promise<any>
 	{
-		return await this.upsertResource(resourceName, body);
+		return await this.upsertResource(body);
 	}
 
-	async upsertResource(resourceName: string, body: any): Promise<any>
+	async upsertResource(body: any): Promise<any>
 	{
 		return Promise.resolve({});
 	}
 
-	async batch(resourceName: string, body: any): Promise<PapiBatchResponse>
+	async batch(body: any): Promise<PapiBatchResponse>
 	{
 		return Promise.resolve([]);
 	}
 
-	async getResources(resourceName: string, query: any): Promise<Array<any>>
+	async getResources(query: any): Promise<Array<any>>
 	{
 		return Promise.resolve([]);
 	}
 
-	async getResourceByKey(resourceName: string, key: string): Promise<any> 
+	async getResourceByKey(key: string): Promise<any> 
 	{
 		return Promise.resolve({});
 	}
 
-	async getResourceByExternalId(resourceName: string, externalId: any): Promise<any>
+	async getResourceByExternalId(externalId: any): Promise<any>
 	{
 		return Promise.resolve({});
 	}
 
-	async getResourceByInternalId(resourceName: string, internalId: any): Promise<any>
+	async getResourceByInternalId(internalId: any): Promise<any>
 	{
 		return Promise.resolve({});
 	}
 
-	async searchResource(resourceName: string, body: void): Promise<SearchResult>
+	async searchResource(body: void): Promise<SearchResult>
 	{
 		return Promise.resolve({Objects: []});
 	}
