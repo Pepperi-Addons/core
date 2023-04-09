@@ -4,7 +4,7 @@ import BaseCpiSideApiService from './baseCpiSideApiService';
 
 export default class NoCreationDateCpiSideApiService extends BaseCpiSideApiService implements IPapiService
 {
-	protected filterFieldsToMatchCpi(schemaFields: string[]): string[]
+	protected override filterFieldsToMatchCpi(schemaFields: string[]): string[]
 	{
 		schemaFields = super.filterFieldsToMatchCpi(schemaFields);
 		

@@ -3,7 +3,7 @@ import { BaseCoreService, CatalogsAndAccountsCoreService, IPapiService, UsersCor
 import { Request } from '@pepperi-addons/debug-server';import BaseCpiSideApiService from './baseCpiSideApiService';
 import { IClientApiService } from './iClientApiService';
 import ClientApiService from './clientApiService';
-import CatalogsAndUsersCpiSideApiService from './catalogsAndUsersCpiSideApiService';
+import NoPostCpiSideApiService from './noPostCpiSideApiService';
 import AccountsCpiSideApiService from './accountsCpiSideApiService';
 import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 import NoCreationDateCpiSideApiService from './noCreationDateCpiSideApiService';
@@ -165,7 +165,7 @@ function getPapiService(request: Request, getBaseApiService = false) : IPapiServ
 		case "users":
 		case "employees":
 		{
-			papiService = new CatalogsAndUsersCpiSideApiService(request.query?.resource_name, request.query.addon_uuid, iClientApi);
+			papiService = new NoPostCpiSideApiService(request.query?.resource_name, request.query.addon_uuid, iClientApi);
 			break;
 		}
 		case "accounts":

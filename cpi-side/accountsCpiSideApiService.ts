@@ -10,7 +10,7 @@ export default class AccountsCpiSideApiService extends BaseCpiSideApiService imp
 		super("accounts", clientAddonUUID, iClientApi);
 	}
 	
-	protected filterFieldsToMatchCpi(schemaFields: string[]): string[]
+	protected override filterFieldsToMatchCpi(schemaFields: string[]): string[]
 	{
 		schemaFields = super.filterFieldsToMatchCpi(schemaFields);
 		
