@@ -1,5 +1,7 @@
 import { Request } from "@pepperi-addons/debug-server";
 import { DIMXObject, AddonDataScheme } from "@pepperi-addons/papi-sdk";
+import { FieldType, JSONBaseFilter, JSONFilter, parse, transform, toApiQueryString } from '@pepperi-addons/pepperi-filters';
+
 import { PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from "./constants";
 import IPapiService from "./IPapi.service";
 
@@ -193,6 +195,8 @@ export class BaseCoreService
 			papiSearchBody.Fields = fields.join(',');
 		}
 
+		papiSearchBody.Where = this.translateWhereClauseKeyToUUID(papiSearchBody.Where);
+
 		// If the query passed a page_size=-1, remove it.
 		// Resources with a lot of objects might time out otherwise.
 		// For more information see: https://pepperi.atlassian.net/browse/DI-21943
@@ -264,6 +268,8 @@ export class BaseCoreService
 		// And add the equivalent UUID field to the query
 		this.changeKeyFieldQueryToUuidFieldQuery(queryCopy);
 
+		queryCopy.where = this.translateWhereClauseKeyToUUID(queryCopy.where);
+
 		// If the query passed a page_size=-1, remove it.
 		// Resources with a lot of objects might time out otherwise.
 		// For more information see: https://pepperi.atlassian.net/browse/DI-21943
@@ -291,6 +297,50 @@ export class BaseCoreService
 		this.deleteUnwantedFieldsFromItems(translatedItems, this.request.query.fields)
 
 		return translatedItems;
+	}
+
+	
+	/**
+	 * Translate each reference to Key in the where clause to UUID
+	 * @param whereClause
+	 * @returns
+	 * 
+	 */ 
+	private translateWhereClauseKeyToUUID(whereClause: string | undefined): string | undefined
+	{
+		let newWhereClause: string | undefined = undefined;
+		
+		if(whereClause)
+		{
+			// Create the JSON filter from the SQL where clause
+			const jsonFilter: JSONFilter = parse(whereClause, this.getSchemaFieldsTypes())!;
+
+			// Replace all Key fields with UUID fields
+			const transformedJsonFilter = transform(jsonFilter, {
+				"Key": (node: JSONBaseFilter) => {
+					node.ApiName = "UUID";
+				}
+			});
+
+			// Transform the JSON filter back to SQL where clause
+			newWhereClause = toApiQueryString(transformedJsonFilter);
+		}
+
+		// Return the new where clause
+		return newWhereClause;
+
+	}
+
+	private getSchemaFieldsTypes(): {[key: string]: FieldType}
+	{
+    	const res: {[key: string]: FieldType} = {}
+        
+    	for(const fieldName in this.schema.Fields)
+    	{
+    		res[fieldName] = this.schema.Fields[fieldName].Type as FieldType;
+    	}
+
+    	return res;
 	}
 
 	/**
