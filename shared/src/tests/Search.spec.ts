@@ -109,7 +109,7 @@ describe('Search resources', async () =>
 		}
 		else
 		{
-			return Promise.reject(new Error('Something unexpected happened...'));
+			return Promise.resolve({Objects: resourcesList.filter(resource => body.IncludeDeleted || !resource.Hidden)});
 		}
 	}
 

@@ -127,10 +127,11 @@ export class BaseCoreService
 	 * @param items the items from which to delete the unwanted fields.
 	 * @param fieldsArray an array of string representing the wanted fields.
 	 */
-	private deleteUnwantedFieldsFromItems(items: any, fieldsArray: Array<string>) 
+	private deleteUnwantedFieldsFromItems(items: any, fieldsArray: Array<string> | string) 
 	{
 		if (fieldsArray) 
 		{
+			fieldsArray = Array.isArray(fieldsArray) ? fieldsArray : fieldsArray.split(",");
 			items.forEach(item => 
 			{
 				Object.keys(item).forEach(key => 
@@ -247,11 +248,24 @@ export class BaseCoreService
 			papiSearchBody.UniqueFieldID = 'UUID';
 		}
 
+		papiSearchBody.Fields = papiSearchBody.Fields ? papiSearchBody.Fields : this.getSchemasFields().split(',');
+
 		// Fields are passed as an array of strings, while PAPI supports a string that is separated by commas.
-		if(papiSearchBody.Fields && Array.isArray(papiSearchBody.Fields))
-		{
-			papiSearchBody.Fields = (papiSearchBody.Fields as Array<string>).join(',');
-		}
+		papiSearchBody.Fields = this.changeKeyFieldQueryToUuidFieldQuery(papiSearchBody.Fields);
+	}
+
+	/**
+	 * 
+	 * @returns {string} A string of all the fields in the schema, separated by commas.
+	 * 
+	 * @example
+	 * // returns 'Name,Key,Hidden,CustomField1,CustomField2'
+	 * this.getSchemasFields();
+	 * 
+	 */
+	protected getSchemasFields(): string
+	{
+		return Object.keys(this.schema.Fields!).join(',');
 	}
 
 	/**
@@ -263,10 +277,13 @@ export class BaseCoreService
 		const queryCopy = { ...this.request.query };
 		delete queryCopy.resource_name;
 
+		// Set the fields to be returned by PAPI
+		// For more information see: https://pepperi.atlassian.net/browse/DI-23169
+		queryCopy.fields = queryCopy.fields ? queryCopy.fields : this.getSchemasFields();
 
 		// Since PAPI does not have a Key field, we need to remove it from the query
 		// And add the equivalent UUID field to the query
-		this.changeKeyFieldQueryToUuidFieldQuery(queryCopy);
+		queryCopy.fields = this.changeKeyFieldQueryToUuidFieldQuery(queryCopy.fields);
 
 		queryCopy.where = this.translateWhereClauseKeyToUUID(queryCopy.where);
 
@@ -347,18 +364,21 @@ export class BaseCoreService
 	 * If a query contains a key field, change it to a UUID field
 	 * @param query
 	 */
-	private changeKeyFieldQueryToUuidFieldQuery(query: any)
+	private changeKeyFieldQueryToUuidFieldQuery(fields: string | string[]): string
 	{
-		if (query.fields) 
+		// Set fields: string[]
+		fields = Array.isArray(fields) ? fields : fields.split(',');
+
+		if (fields.includes("Key")) 
 		{
-			const fields = query.fields.split(",");
-			if (fields.includes("Key")) 
-			{
-				fields.splice(fields.indexOf("Key"), 1);
-				fields.push("UUID");
-				query.fields = fields.join(",");
-			}
+			fields.splice(fields.indexOf("Key"), 1);
+			fields.push("UUID");
 		}
+
+		// Set fields: string
+		fields = fields.join(",");
+
+		return fields;
 	}
 	/**
 	 * Upserts a resource
