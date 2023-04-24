@@ -332,6 +332,26 @@ describe('Search resources', async () =>
 
 	});
 
+	it("should translate Key in where clause to UUID", async () => 
+	{
+
+		const requestCopy = {...request};
+		requestCopy.body.Where = `Key in ('${resourcesList[0].UUID}')`;
+		const previousSearchResource = papiService.searchResource;
+
+		papiService.searchResource = async (body: any) =>
+		{
+			expect(body.Where).to.contain(`UUID IN ('${resourcesList[0].UUID}')`);
+			return previousSearchResource(body);
+		}
+
+		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
+
+		await core.search();
+
+		papiService.searchResource = previousSearchResource;        
+	});
+
 	it('should throw an "invalid resource" exception', async () => 
 	{
 

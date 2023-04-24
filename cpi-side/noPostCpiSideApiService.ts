@@ -3,7 +3,7 @@ import { IClientApiService } from './iClientApiService';
 import NoCreationDateCpiSideApiService from './noCreationDateCpiSideApiService';
 
 
-export default class CatalogsAndUsersCpiSideApiService extends NoCreationDateCpiSideApiService implements IPapiService
+export default class NoPostCpiSideApiService extends NoCreationDateCpiSideApiService implements IPapiService
 {
 	constructor(resourceName: string, clientAddonUUID: string, iClientApi: IClientApiService)
 	{
@@ -14,17 +14,18 @@ export default class CatalogsAndUsersCpiSideApiService extends NoCreationDateCpi
 
 		super(resourceName, clientAddonUUID, iClientApi);
 	}
-	async createResource(body: any): Promise<any> 
+
+	override async createResource(body: any): Promise<any> 
 	{
 		throw new Error(`Creation of a '${this.resourceName}' resource is not supported.`);
 	}
 
-	async updateResource(body: any): Promise<any> 
+	override async updateResource(body: any): Promise<any> 
 	{
 		throw new Error(`Updating a '${this.resourceName}' resource is not supported.`);
 	}
 
-	async upsertResource(body: any): Promise<any> 
+	override async upsertResource(body: any): Promise<any> 
 	{
 		throw new Error(`Upserting a '${this.resourceName}' resource is not supported.`);
 	}

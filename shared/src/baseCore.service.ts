@@ -1,5 +1,7 @@
 import { Request } from "@pepperi-addons/debug-server";
 import { DIMXObject, AddonDataScheme } from "@pepperi-addons/papi-sdk";
+import { FieldType, JSONBaseFilter, JSONFilter, parse, transform, toApiQueryString } from '@pepperi-addons/pepperi-filters';
+
 import { PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from "./constants";
 import IPapiService from "./IPapi.service";
 
@@ -186,6 +188,16 @@ export class BaseCoreService
 		// Remove possible duplicates in Fields
 		fields = fields?.filter((item,index) => fields.indexOf(item) === index);
 
+		if(fields?.includes("Key"))
+		{
+			fields.splice(fields.indexOf("Key"), 1);
+			fields.push("UUID");
+
+			papiSearchBody.Fields = fields.join(',');
+		}
+
+		papiSearchBody.Where = this.translateWhereClauseKeyToUUID(papiSearchBody.Where);
+
 		// If the query passed a page_size=-1, remove it.
 		// Resources with a lot of objects might time out otherwise.
 		// For more information see: https://pepperi.atlassian.net/browse/DI-21943
@@ -273,6 +285,8 @@ export class BaseCoreService
 		// And add the equivalent UUID field to the query
 		queryCopy.fields = this.changeKeyFieldQueryToUuidFieldQuery(queryCopy.fields);
 
+		queryCopy.where = this.translateWhereClauseKeyToUUID(queryCopy.where);
+
 		// If the query passed a page_size=-1, remove it.
 		// Resources with a lot of objects might time out otherwise.
 		// For more information see: https://pepperi.atlassian.net/browse/DI-21943
@@ -300,6 +314,50 @@ export class BaseCoreService
 		this.deleteUnwantedFieldsFromItems(translatedItems, this.request.query.fields)
 
 		return translatedItems;
+	}
+
+	
+	/**
+	 * Translate each reference to Key in the where clause to UUID
+	 * @param whereClause
+	 * @returns
+	 * 
+	 */ 
+	private translateWhereClauseKeyToUUID(whereClause: string | undefined): string | undefined
+	{
+		let newWhereClause: string | undefined = undefined;
+		
+		if(whereClause)
+		{
+			// Create the JSON filter from the SQL where clause
+			const jsonFilter: JSONFilter = parse(whereClause, this.getSchemaFieldsTypes())!;
+
+			// Replace all Key fields with UUID fields
+			const transformedJsonFilter = transform(jsonFilter, {
+				"Key": (node: JSONBaseFilter) => {
+					node.ApiName = "UUID";
+				}
+			});
+
+			// Transform the JSON filter back to SQL where clause
+			newWhereClause = toApiQueryString(transformedJsonFilter);
+		}
+
+		// Return the new where clause
+		return newWhereClause;
+
+	}
+
+	private getSchemaFieldsTypes(): {[key: string]: FieldType}
+	{
+    	const res: {[key: string]: FieldType} = {}
+        
+    	for(const fieldName in this.schema.Fields)
+    	{
+    		res[fieldName] = this.schema.Fields[fieldName].Type as FieldType;
+    	}
+
+    	return res;
 	}
 
 	/**
@@ -482,6 +540,13 @@ export class BaseCoreService
 		// Add Key property, equal to UUID.
 		let resItem = this.addKeyPropertyEqualToUUID(papiItem);
 
+		// Remove properties that are not part of the schema.
+		resItem = this.removePropertiesNotListedOnSchema(resItem);
+
+		// Add ms to DateTime fields. 
+		// For more information see: https://pepperi.atlassian.net/browse/DI-23237
+		resItem = this.addMsToDateTimeFields(resItem);
+
 		// Translate PAPI references to ADAL references.
 		resItem = this.translatePapiReferencesToAdalReferences(resItem);
 
@@ -492,6 +557,45 @@ export class BaseCoreService
 	{
 		const resItem = { ...papiItem };
 		resItem.Key = resItem.UUID;
+		return resItem;
+	}
+
+	removePropertiesNotListedOnSchema(item: any): any 
+	{
+		const resItem = { ...item };
+
+		const resItemFields = Object.keys(resItem);
+		const schemaFields = Object.keys(this.schema.Fields!);
+
+		// Keep only fields that are listed on the schema, or are TSA fields.
+		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
+		fieldsToDelete.map(absentField => delete resItem[absentField]);
+		
+		return resItem;
+	}
+
+	/**
+	 * Add milliseconds to DateTime fields on the PAPI item.
+	 */
+	private addMsToDateTimeFields(papiItem: any): any {
+		const resItem = { ...papiItem };
+
+		const resItemFields = Object.keys(resItem);
+		const schemaFields = Object.keys(this.schema.Fields!);
+
+		// Keep fields that are part of the schema, and are of type DateTime
+		const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
+
+		// Set a new Date on the resItem
+		dateTimeFields.map(dateTimeField => 
+		{
+			//The date might be null, in that case we don't need to create a new date.
+			if(resItem[dateTimeField])
+			{
+				resItem[dateTimeField] = new Date(resItem[dateTimeField]).toISOString();
+			}
+		});
+		
 		return resItem;
 	}
 
