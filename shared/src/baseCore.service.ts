@@ -7,6 +7,16 @@ import IPapiService from "./IPapi.service";
 
 export class BaseCoreService 
 {
+	protected get uniqueFields(): string[]
+	{
+		return UNIQUE_FIELDS;
+	}
+
+	protected get papiKeyPropertyName(): string
+	{
+		return "UUID";
+	}
+
 	constructor(protected schema: AddonDataScheme, protected request: Request, protected papi: IPapiService) 
 	{
 		this.validateResource();
@@ -94,9 +104,9 @@ export class BaseCoreService
 			throw new Error(`Missing the required field_id and value query parameters.`);
 		}
 
-		if(!UNIQUE_FIELDS.includes(requestedFieldId))
+		if(!this.uniqueFields.includes(requestedFieldId))
 		{
-			throw new Error(`The field_id query parameter is not valid. Supported field_ids are: ${UNIQUE_FIELDS.join(", ")}`);
+			throw new Error(`The field_id query parameter is not valid. Supported field_ids are: ${this.uniqueFields.join(", ")}`);
 		}
 	}
 
@@ -151,9 +161,9 @@ export class BaseCoreService
 	 */
 	protected validateSearchPrerequisites()
 	{
-		if(this.request.body.UniqueFieldID && !UNIQUE_FIELDS.includes(this.request.body.UniqueFieldID))
+		if(this.request.body.UniqueFieldID && !this.uniqueFields.includes(this.request.body.UniqueFieldID))
 		{
-			const errorMessage = `The passed UniqueFieldID is not supported: '${this.request.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(UNIQUE_FIELDS)}`;
+			const errorMessage = `The passed UniqueFieldID is not supported: '${this.request.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(this.uniqueFields)}`;
 			console.error(errorMessage);
 			throw new Error(errorMessage);
 		}
@@ -191,7 +201,7 @@ export class BaseCoreService
 		if(fields?.includes("Key"))
 		{
 			fields.splice(fields.indexOf("Key"), 1);
-			fields.push("UUID");
+			fields.push(this.papiKeyPropertyName);
 
 			papiSearchBody.Fields = fields.join(',');
 		}
@@ -225,14 +235,14 @@ export class BaseCoreService
 	 * @param {boolean} includeDeleted - Whether to include deleted objects.
 	 * @returns {string} The filtered search query.
 	 */
-	private filterHiddenObjects(where: string | undefined, includeDeleted: boolean): string | undefined
+	protected filterHiddenObjects(where: string | undefined, includeDeleted: boolean): string | undefined
 	{
 		const res = includeDeleted ? where : `Hidden=0${where ? ` AND (${where})` : ''}`;
 
 		return res;
 	}
 
-	private translatePapiSupportedSearchFields(papiSearchBody: any) 
+	protected translatePapiSupportedSearchFields(papiSearchBody: any) 
 	{
 		// populate papiSearchBody with the properties on the request's body, keeping any existing properties on the papiSearchBody.
 		Object.keys(this.request.body).map(key => papiSearchBody[key] = this.request.body[key]);
@@ -245,7 +255,7 @@ export class BaseCoreService
 
 		if(papiSearchBody.UniqueFieldID === 'Key')
 		{
-			papiSearchBody.UniqueFieldID = 'UUID';
+			papiSearchBody.UniqueFieldID = this.papiKeyPropertyName;
 		}
 
 		papiSearchBody.Fields = papiSearchBody.Fields ? papiSearchBody.Fields : this.getSchemasFields().split(',');
@@ -332,10 +342,10 @@ export class BaseCoreService
 			// Create the JSON filter from the SQL where clause
 			const jsonFilter: JSONFilter = parse(whereClause, this.getSchemaFieldsTypes())!;
 
-			// Replace all Key fields with UUID fields
+			// Replace all Key fields with this.papiKeyPropertyName fields
 			const transformedJsonFilter = transform(jsonFilter, {
 				"Key": (node: JSONBaseFilter) => {
-					node.ApiName = "UUID";
+					node.ApiName = this.papiKeyPropertyName;
 				}
 			});
 
@@ -372,7 +382,7 @@ export class BaseCoreService
 		if (fields.includes("Key")) 
 		{
 			fields.splice(fields.indexOf("Key"), 1);
-			fields.push("UUID");
+			fields.push(this.papiKeyPropertyName);
 		}
 
 		// Set fields: string
@@ -473,7 +483,7 @@ export class BaseCoreService
 
 		papiBatchResult.forEach((papiItem, index) => 
 		{
-			papiItem.UUID = batchObjectKeys[index];
+			papiItem[this.papiKeyPropertyName] = batchObjectKeys[index];
 		});
 	}
 
@@ -497,13 +507,13 @@ export class BaseCoreService
 		const resItem = { ...item };
 
 		// If item has both UUID and Key fields, make sure they are equivalent
-		if (resItem.UUID && resItem.Key && resItem.UUID !== resItem.Key) {
-			throw new Error("The UUID and Key fields are not equivalent.");
+		if (resItem[this.papiKeyPropertyName] && resItem.Key && resItem[this.papiKeyPropertyName] !== resItem.Key) {
+			throw new Error(`The ${this.papiKeyPropertyName} and Key fields are not equivalent.`);
 		}
 
 		// If item has a Key field, set the UUID field to the same value and delete the Key field
 		if (resItem.Key) {
-			resItem.UUID = resItem.Key;
+			resItem[this.papiKeyPropertyName] = resItem.Key;
 			delete resItem.Key;
 		}
 		return resItem;
@@ -538,7 +548,7 @@ export class BaseCoreService
 	protected translatePapiItemToItem(papiItem: any) 
 	{
 		// Add Key property, equal to UUID.
-		let resItem = this.addKeyPropertyEqualToUUID(papiItem);
+		let resItem = this.addKeyProperty(papiItem);
 
 		// Remove properties that are not part of the schema.
 		resItem = this.removePropertiesNotListedOnSchema(resItem);
@@ -553,10 +563,15 @@ export class BaseCoreService
 		return resItem;
 	}
 
-	private addKeyPropertyEqualToUUID(papiItem: any): any
+	/**
+	 * Add Key property, equal to papiKeyPropertyName.
+	 * @param papiItem 
+	 * @returns 
+	 */
+	private addKeyProperty(papiItem: any): any
 	{
 		const resItem = { ...papiItem };
-		resItem.Key = resItem.UUID;
+		resItem.Key = resItem[this.papiKeyPropertyName];
 		return resItem;
 	}
 

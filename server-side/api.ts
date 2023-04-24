@@ -36,6 +36,11 @@ export async function get_profiles_by_key(client: Client, request: Request)
 {
 	return await resourcesFunctionAdapter(client, request, "profiles");
 }
+
+export async function get_roles_by_key(client: Client, request: Request) 
+{
+	return await resourcesFunctionAdapter(client, request, "roles");
+}
 // #endregion
 
 // #region GET/POST
@@ -74,6 +79,11 @@ export async function profiles(client: Client, request: Request)
 {
 	return await resourcesFunctionAdapter(client, request, "profiles");
 }
+
+export async function roles(client: Client, request: Request)
+{
+	return await resourcesFunctionAdapter(client, request, "roles")
+}
 // #endregion
 
 // #region get by unique field
@@ -110,6 +120,11 @@ export async function get_contacts_by_unique_field(client: Client, request: Requ
 export async function get_profiles_by_unique_field(client: Client, request: Request) 
 {
 	return await getByUniqueFieldFunctionAdapter(client, request, "profiles");
+}
+
+export async function get_roles_by_unique_field(client: Client, request: Request) 
+{
+	return await getByUniqueFieldFunctionAdapter(client, request, "roles");
 }
 
 async function getByUniqueFieldFunctionAdapter(client: Client, request: Request, resourceName: string)
@@ -154,6 +169,11 @@ export async function profiles_search(client: Client, request: Request)
 	return await searchFunctionAdapter(client, request, "profiles");
 }
 
+export async function roles_search(client: Client, request: Request) 
+{
+	return await searchFunctionAdapter(client, request, "roles");
+}
+
 async function searchFunctionAdapter(client: Client, request: Request, resourceName: string)
 {
 	return await genericAdapter(client, request, resourceName, search);
@@ -194,6 +214,11 @@ export async function batch_contacts(client: Client, request: Request)
 export async function batch_profiles(client: Client, request: Request) 
 {
 	return await batchFunctionAdapter(client, request, "profiles");
+}
+
+export async function batch_roles(client: Client, request: Request) 
+{
+	return await batchFunctionAdapter(client, request, "roles");
 }
 
 async function batchFunctionAdapter(client: Client, request: Request, resourceName: string)

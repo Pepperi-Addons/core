@@ -7,7 +7,7 @@ export class BasePapiService implements IPapiService
 	constructor(protected resourceName: string, protected papiClient: PapiClient) 
 	{}
 
-	async getResourceFields(): Promise<ResourceFields> 
+	public async getResourceFields(): Promise<ResourceFields> 
 	{
 		const url = `/meta_data/${this.resourceName}/fields?include_owned=true&include_internal=false`;
 		try
@@ -21,17 +21,17 @@ export class BasePapiService implements IPapiService
 
 	}
 
-	async createResource(body: any)
+	public async createResource(body: any)
 	{
 		return await this.upsertResource(body);
 	}
 
-	async updateResource(body: any)
+	public async updateResource(body: any)
 	{
 		return await this.upsertResource(body);
 	}
 
-	async upsertResource(body: any) 
+	public async upsertResource(body: any) 
 	{
 		try
 		{
@@ -43,7 +43,7 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async batch(body: any): Promise<PapiBatchResponse>
+	public async batch(body: any): Promise<PapiBatchResponse>
 	{
 		try
 		{
@@ -55,7 +55,7 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async getResources(query: any)
+	public async getResources(query: any)
 	{
 		let url = `/${this.resourceName}`;
 		const encodedQuery = Helper.encodeQueryParams(query);
@@ -70,7 +70,7 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async getResourceByKey(key: string): Promise<any> 
+	public async getResourceByKey(key: string): Promise<any> 
 	{
 		try
 		{
@@ -82,7 +82,7 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async getResourceByExternalId(externalId: any)
+	public async getResourceByExternalId(externalId: any)
 	{
 		try
 		{
@@ -94,7 +94,7 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async getResourceByInternalId(internalId: any)
+	public async getResourceByInternalId(internalId: any)
 	{
 		try
 		{
@@ -106,7 +106,7 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	async searchResource(body: any): Promise<SearchResult>
+	public async searchResource(body: any): Promise<SearchResult>
 	{
 		const res: SearchResult = {Objects:[]};
 
@@ -130,7 +130,7 @@ export class BasePapiService implements IPapiService
 		return res;
 	}
 
-	handleUniqueFieldsQuery(papiSearchBody: any): void
+	protected handleUniqueFieldsQuery(papiSearchBody: any): void
 	{
 		// Set PageSize to support UniqueFieldLists with more than 100 objects
 		// For more information see: https://pepperi.atlassian.net/browse/DI-22607
@@ -159,12 +159,12 @@ export class BasePapiService implements IPapiService
 	 * if there is a UniqueFieldID property on the Search body.
 	 * @param {any} papiSearchBody - The PAPI search body object that contains the unique field queries.
     */
-	private translateUniqueFieldQueriesToPapi(papiSearchBody: any): void 
+	protected translateUniqueFieldQueriesToPapi(papiSearchBody: any): void 
 	{
 		let shouldDeleteUniqueFields = false;
 		if (papiSearchBody.UniqueFieldID === "ExternalID") 
 		{
-			papiSearchBody.Where = `ExternalID in ('${papiSearchBody.UniqueFieldList.join("\',\'")}') ${papiSearchBody.where ?  `AND (${papiSearchBody.where})` : '' }`;
+			papiSearchBody.Where = `ExternalID in ('${papiSearchBody.UniqueFieldList.join("\',\'")}') ${papiSearchBody.Where ?  `AND (${papiSearchBody.Where})` : '' }`;
 			shouldDeleteUniqueFields = true;
 		}
 
@@ -188,7 +188,7 @@ export class BasePapiService implements IPapiService
 		
 	}
 
-	async getResourceSchema(): Promise<AddonDataScheme> 
+	public async getResourceSchema(): Promise<AddonDataScheme> 
 	{
 		return await this.papiClient.get(`/addons/data/schemes/${this.resourceName}`);
 	}

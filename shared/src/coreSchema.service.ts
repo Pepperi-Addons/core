@@ -1,5 +1,5 @@
 import { Client, Request } from "@pepperi-addons/debug-server";
-import { AddonDataScheme, FindOptions } from "@pepperi-addons/papi-sdk";
+import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
 import { ResourceField, ResourceFields, RESOURCE_TYPES, UNIQUE_FIELDS } from "./constants";
 import { Helper } from "./helper";
 import IPapiService from "./IPapi.service";
