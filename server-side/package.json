@@ -17,9 +17,9 @@
         "start": "tsc -w app.local.ts"
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "^19.0.2",
+        "@rollup/plugin-commonjs": "^24.1.0",
         "@rollup/plugin-json": "^4.1.0",
-        "@rollup/plugin-node-resolve": "^8.0.0",
+        "@rollup/plugin-node-resolve": "^15.0.2",
         "@types/chai-as-promised": "^7.1.5",
         "@types/dotenv": "^8.2.0",
         "@types/mocha": "^9.1.1",
