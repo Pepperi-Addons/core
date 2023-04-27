@@ -1,8 +1,9 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import {BaseCoreService, CatalogsAndAccountsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper} from 'core-shared';
+import {BaseCoreService, CatalogsAndAccountsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper, RolesCoreService} from 'core-shared';
 import BasePapiService from './basePapi.service';
 import { UsersPapiService } from './usersPapi.service';
 import { DIMXObject, AddonDataScheme } from '@pepperi-addons/papi-sdk';
+import { RolesPapiService } from './rolesPapi.service';
 
 export async function create(client: Client, request: Request) 
 {
@@ -181,6 +182,11 @@ async function getCoreService(client: Client, request: Request): Promise<BaseCor
 		core = new CatalogsAndAccountsCoreService(resourceSchema, request, papiService);
 		break;
 	}
+	case "roles":
+	{
+		core = new RolesCoreService(resourceSchema, request, papiService);
+		break;
+	}
 	default:
 	{
 		core = new BaseCoreService(resourceSchema, request, papiService);
@@ -208,6 +214,11 @@ function getPapiService(client: Client, resourceName: string) : IPapiService
 		// account_employees queries should use the account_users api.
 		// For more information, please see: https://pepperi.atlassian.net/browse/DI-23201
 		papiService = new BasePapiService("account_users", papiClient);
+		break;
+	}
+	case "roles":
+	{
+		papiService = new RolesPapiService(resourceName, papiClient);
 		break;
 	}
 	default:

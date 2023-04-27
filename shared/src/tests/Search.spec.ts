@@ -6,7 +6,6 @@ import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { BaseCoreService } from '../baseCore.service';
 import { UNIQUE_FIELDS } from '../constants';
-import { chmodSync } from 'fs';
 
 chai.use(promised);
 
