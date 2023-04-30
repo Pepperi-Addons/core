@@ -531,7 +531,9 @@ export class BaseCoreService
 				resItem[field] = {
 					Data:
 					{
-						UUID :resItem[field]
+						// 'roles' don't have a UUID, so we use the InternalID instead.
+						// The other resources have a UUID, so we use the UUID.
+						...(this.schema.Fields![field].Resource === 'roles' ? {InternalID: resItem[field]} : {Name: resItem[field]})
 					}
 				}
 			}
