@@ -4,6 +4,7 @@ import { FieldType, JSONBaseFilter, JSONFilter, parse, transform, toApiQueryStri
 
 import { PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from "./constants";
 import IPapiService from "./IPapi.service";
+import { ReferenceTranslationManager } from "./referenceTranslators/referenceTranslationExecutioner";
 
 export class BaseCoreService 
 {
@@ -27,7 +28,8 @@ export class BaseCoreService
 	 */
 	protected validateResource() 
 	{
-		if (!RESOURCE_TYPES.includes(this.schema.Name)) 
+		if(this.schema.Name in RESOURCE_TYPES)
+		// if (!RESOURCE_TYPES.includes(this.schema.Name)) 
 		{
 			const errorMessage = `The resource name is not valid. Please provide a valid resource name.`;
 			console.error(errorMessage);
@@ -316,7 +318,7 @@ export class BaseCoreService
 
 		const papiItems = await this.papi.getResources(queryCopy);
 
-		const translatedItems = papiItems.map(papiItem => this.translatePapiItemToItem(papiItem));
+		const translatedItems = this.translatePapiItemToItem(papiItems);
 
 		// if Fields are requested, drop any other fields
 		// PAPI handles this for us, but this should be done
@@ -491,53 +493,48 @@ export class BaseCoreService
 	 * Translate the item to PAPI format
 	 * @param item the item to translate
 	 */
-	protected translateItemToPapiItem(item: any)
+	protected translateItemToPapiItem(item: any | any[]) 
 	{
+		const isArray = Array.isArray(item);
+		const items = isArray ? item : [item];
 		// Add a UUID property equal to Key.
-		let resItem = this.AddUUIDPropertyEqualToKey(item);
+		let resItems = this.AddUUIDPropertyEqualToKey(items);
 
 		// Translate ADAL references to PAPI references.
-		resItem = this.translateAdalReferencesToPapiReferences(resItem);
+		resItems = this.translateAdalReferencesToPapiReferences(resItems);
 
-		return resItem;
+		return isArray ? resItems : resItems[0];
 	}
 
-	private AddUUIDPropertyEqualToKey(item: any)
+	private AddUUIDPropertyEqualToKey(items: any[])
 	{
-		const resItem = { ...item };
-
-		// If item has both UUID and Key fields, make sure they are equivalent
-		if (resItem[this.papiKeyPropertyName] && resItem.Key && resItem[this.papiKeyPropertyName] !== resItem.Key) {
-			throw new Error(`The ${this.papiKeyPropertyName} and Key fields are not equivalent.`);
-		}
-
-		// If item has a Key field, set the UUID field to the same value and delete the Key field
-		if (resItem.Key) {
-			resItem[this.papiKeyPropertyName] = resItem.Key;
-			delete resItem.Key;
-		}
-		return resItem;
-	}
-
-	private translateAdalReferencesToPapiReferences(adalItem: any): any
-	{
-		const resItem = { ...adalItem };
-
-		const resItemFields = Object.keys(resItem);
-		const requestedSchemaFields = Object.keys(this.schema.Fields!).filter(schemaField => resItemFields.includes(schemaField));
-
-		requestedSchemaFields.map(field => {
-			if (this.schema.Fields![field].Resource) {
-				resItem[field] = {
-					Data:
-					{
-						// 'roles' don't have a UUID, so we use the InternalID instead.
-						// The other resources have a UUID, so we use the UUID.
-						...(this.schema.Fields![field].Resource === 'roles' ? {InternalID: resItem[field]} : {Name: resItem[field]})
-					}
-				}
-			}
+		// Copy items so changes won't effect the original input objects
+		const resItems = items.map(element => {
+			return {...element}
 		});
+
+		for(const resItem of resItems)
+		{
+			// If item has both UUID and Key fields, make sure they are equivalent
+			if (resItem[this.papiKeyPropertyName] && resItem.Key && resItems[this.papiKeyPropertyName] !== resItem.Key) {
+				throw new Error(`The ${this.papiKeyPropertyName} and Key fields are not equivalent.`);
+			}
+
+			// If item has a Key field, set the UUID field to the same value and delete the Key field
+			if (resItem.Key) {
+				resItems[this.papiKeyPropertyName] = resItem.Key;
+				delete resItem.Key;
+			}
+		}
+		
+		return resItems;
+	}
+
+	private translateAdalReferencesToPapiReferences(adalItems: any[]): any[]
+	{
+
+		const referenceTranslationManager = new ReferenceTranslationManager(this.schema);
+		const resItem = referenceTranslationManager.adalToPapi(adalItems);
 
 		return resItem;
 	}
@@ -547,22 +544,25 @@ export class BaseCoreService
 	 * @param papiItem the papi item to translate
 	 * @returns a resource item
 	 */
-	protected translatePapiItemToItem(papiItem: any) 
+	protected translatePapiItemToItem(papiItem: any | any[]) 
 	{
+		const isArray = Array.isArray(papiItem);
+		const papiItems = isArray ? papiItem : [papiItem];
+
 		// Add Key property, equal to UUID.
-		let resItem = this.addKeyProperty(papiItem);
+		let resItems = this.addKeyProperty(papiItems);
 
 		// Remove properties that are not part of the schema.
-		resItem = this.removePropertiesNotListedOnSchema(resItem);
+		resItems = this.removePropertiesNotListedOnSchema(resItems);
 
 		// Add ms to DateTime fields. 
 		// For more information see: https://pepperi.atlassian.net/browse/DI-23237
-		resItem = this.addMsToDateTimeFields(resItem);
+		resItems = this.addMsToDateTimeFields(resItems);
 
 		// Translate PAPI references to ADAL references.
-		resItem = this.translatePapiReferencesToAdalReferences(resItem);
+		resItems = this.translatePapiReferencesToAdalReferences(resItems);
 
-		return resItem;
+		return isArray ? resItems : resItems[0];
 	}
 
 	/**
@@ -570,50 +570,66 @@ export class BaseCoreService
 	 * @param papiItem 
 	 * @returns 
 	 */
-	private addKeyProperty(papiItem: any): any
+	private addKeyProperty(papiItems: any[]): any[]
 	{
-		const resItem = { ...papiItem };
-		resItem.Key = resItem[this.papiKeyPropertyName];
-		return resItem;
+		const resItems = papiItems.map(papiItem => {
+			return {...papiItem};
+		});
+
+		resItems.map(papiItem => {
+			papiItem.Key = papiItem[this.papiKeyPropertyName];
+		})
+		return resItems;
 	}
 
-	removePropertiesNotListedOnSchema(item: any): any 
+	removePropertiesNotListedOnSchema(items: any[]): any[]
 	{
-		const resItem = { ...item };
+		const resItems = items.map(item =>{
+			return { ...item };
+		});
 
-		const resItemFields = Object.keys(resItem);
+		// Arbitrarily work on the fields of the first item.
+		// Since all items belong to the same resource, they have the same fields
+		const resItemFields = Object.keys(resItems[0]);
 		const schemaFields = Object.keys(this.schema.Fields!);
 
 		// Keep only fields that are listed on the schema, or are TSA fields.
 		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
-		fieldsToDelete.map(absentField => delete resItem[absentField]);
+		fieldsToDelete.map(absentField => resItems.map(resItem => {
+			delete resItem[absentField];
+		}));
 		
-		return resItem;
+		return resItems;
 	}
 
 	/**
 	 * Add milliseconds to DateTime fields on the PAPI item.
 	 */
-	private addMsToDateTimeFields(papiItem: any): any {
-		const resItem = { ...papiItem };
+	private addMsToDateTimeFields(papiItems: any[]): any[]
+	{
+		const resItems = papiItems.map(papiItem =>{
+			return { ...papiItem };
+		});
 
-		const resItemFields = Object.keys(resItem);
+		// Arbitrarily work on the fields of the first item.
+		// Since all items belong to the same resource, they have the same fields
+
+		const resItemFields = Object.keys(resItems[0]);
 		const schemaFields = Object.keys(this.schema.Fields!);
 
 		// Keep fields that are part of the schema, and are of type DateTime
 		const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
 
 		// Set a new Date on the resItem
-		dateTimeFields.map(dateTimeField => 
-		{
+		dateTimeFields.map(dateTimeField => resItems.map(resItem => {
 			//The date might be null, in that case we don't need to create a new date.
 			if(resItem[dateTimeField])
 			{
 				resItem[dateTimeField] = new Date(resItem[dateTimeField]).toISOString();
 			}
-		});
+		}));
 		
-		return resItem;
+		return resItems;
 	}
 
 	protected shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean
@@ -621,18 +637,10 @@ export class BaseCoreService
 		return !(schemaFields.includes(field) || field.startsWith('TSA') || field.startsWith('PSA'));
 	}
 
-	private translatePapiReferencesToAdalReferences(papiItem: any): any
+	private translatePapiReferencesToAdalReferences(papiItems: any[]): any[]
 	{
-		const resItem = { ...papiItem };
-
-		const resItemFields = Object.keys(resItem);
-		const requestedSchemaFields = Object.keys(this.schema.Fields!).filter(schemaField => resItemFields.includes(schemaField));
-
-		requestedSchemaFields.map(field => {
-			if (this.schema.Fields![field].Resource) {
-				resItem[field] = resItem[field].Data.UUID;
-			}
-		});
+		const referenceTranslationExecutioner = new ReferenceTranslationManager(this.schema);
+		const resItem = referenceTranslationExecutioner.papiToAdal(papiItems);
 
 		return resItem;
 	}
