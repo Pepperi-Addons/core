@@ -124,7 +124,7 @@ export class BaseCoreService
 
 		const res: SearchResult = await this.papi.searchResource(papiSearchBody);
 		
-		res.Objects = res.Objects.map(papiItem => this.translatePapiItemToItem(papiItem));
+		res.Objects = this.translatePapiItemToItem(res.Objects);
 
 		// if Fields are requested, drop any other fields
 		// PAPI handles this for us, but this should be done
