@@ -20,7 +20,7 @@ export class RolesPapiService extends BasePapiService
 		{
 			// Since roles doesn't have a UUID in PAPI, translate the Key
 			// to a where clause on Name field.
-			const whereClause = `InternalID='${key}'`;
+			const whereClause = `Name='${key}'`;
 			return (await this.papiClient.get(`/${this.resourceName}?where=${whereClause}`))[0];
 		}
 		catch(error)
@@ -44,13 +44,13 @@ export class RolesPapiService extends BasePapiService
 	{
 		let shouldDeleteUniqueFields = false;
 
-		if (papiSearchBody.UniqueFieldID === "InternalID" || papiSearchBody.UniqueFieldID === "Key") 
+		if (papiSearchBody.UniqueFieldID === "InternalID") 
 		{
 			papiSearchBody.InternalIDList = papiSearchBody.UniqueFieldList;
 			shouldDeleteUniqueFields = true;
 		}
 
-		if (papiSearchBody.UniqueFieldID === "Name" ) 
+		if (papiSearchBody.UniqueFieldID === "Name" || papiSearchBody.UniqueFieldID === "Key") 
 		{
 			papiSearchBody.Where = `Name in ('${papiSearchBody.UniqueFieldList.join("\',\'")}') ${papiSearchBody.Where ?  `AND (${papiSearchBody.Where})` : '' }`;
 			shouldDeleteUniqueFields = true;

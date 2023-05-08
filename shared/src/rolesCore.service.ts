@@ -4,12 +4,12 @@ export class RolesCoreService extends BaseCoreService
 {
 	protected override get uniqueFields(): string[]
 	{
-		return ["Name", "Key"];
+		return ["InternalID", "Key"];
 	}
 
 	protected override get papiKeyPropertyName(): string
 	{
-		return "InternalID";
+		return "Name";
 	}
 
 	protected override filterHiddenObjects(where: string | undefined, includeDeleted: boolean): string | undefined
