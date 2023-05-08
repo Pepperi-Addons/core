@@ -11,7 +11,14 @@ export class ReferenceTranslationManager
         {
             const referenceField = this.getResourcePapiReferenceField(resourceName);
             for (const inputItem of inputItems) {
-                inputItem[fieldName] = inputItem[fieldName].Data[referenceField];
+                if(inputItem[fieldName]?.Data && inputItem[fieldName].Data[referenceField])
+                {
+                    inputItem[fieldName] = inputItem[fieldName].Data[referenceField];
+                }
+                else
+                {
+                    inputItem[fieldName] = null;
+                }
             }
         }
 
@@ -26,8 +33,11 @@ export class ReferenceTranslationManager
             const resultReference: {Data: any} = {Data: {}}
             for(const inputItem of inputItems)
             {
-                resultReference[referenceField] = inputItem[fieldName];
-                inputItem[fieldName] = referenceField;
+                if(inputItem[fieldName])
+                {
+                    resultReference.Data[referenceField] = inputItem[fieldName];
+                    inputItem[fieldName] = resultReference;
+                }
             }
         }
 
@@ -58,9 +68,8 @@ export class ReferenceTranslationManager
     protected getResourcePapiReferenceField(resourceName: string): string
     {
         switch (resourceName){
-            case "roles":
             case "profiles":
-                return "InternalID";
+                return "Name";
             default:
                 return "UUID";
         }
