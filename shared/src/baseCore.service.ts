@@ -346,7 +346,8 @@ export class BaseCoreService
 
 			// Replace all Key fields with this.papiKeyPropertyName fields
 			const transformedJsonFilter = transform(jsonFilter, {
-				"Key": (node: JSONBaseFilter) => {
+				"Key": (node: JSONBaseFilter) => 
+				{
 					node.ApiName = this.papiKeyPropertyName;
 				}
 			});
@@ -509,19 +510,22 @@ export class BaseCoreService
 	private AddUUIDPropertyEqualToKey(items: any[])
 	{
 		// Copy items so changes won't effect the original input objects
-		const resItems = items.map(element => {
+		const resItems = items.map(element => 
+		{
 			return {...element}
 		});
 
 		for(const resItem of resItems)
 		{
 			// If item has both UUID and Key fields, make sure they are equivalent
-			if (resItem[this.papiKeyPropertyName] && resItem.Key && resItems[this.papiKeyPropertyName] !== resItem.Key) {
+			if (resItem[this.papiKeyPropertyName] && resItem.Key && resItems[this.papiKeyPropertyName] !== resItem.Key) 
+			{
 				throw new Error(`The ${this.papiKeyPropertyName} and Key fields are not equivalent.`);
 			}
 
 			// If item has a Key field, set the UUID field to the same value and delete the Key field
-			if (resItem.Key) {
+			if (resItem.Key) 
+			{
 				resItems[this.papiKeyPropertyName] = resItem.Key;
 				delete resItem.Key;
 			}
@@ -572,11 +576,13 @@ export class BaseCoreService
 	 */
 	private addKeyProperty(papiItems: any[]): any[]
 	{
-		const resItems = papiItems.map(papiItem => {
+		const resItems = papiItems.map(papiItem => 
+		{
 			return {...papiItem};
 		});
 
-		resItems.map(papiItem => {
+		resItems.map(papiItem => 
+		{
 			papiItem.Key = papiItem[this.papiKeyPropertyName];
 		})
 		return resItems;
@@ -584,7 +590,8 @@ export class BaseCoreService
 
 	removePropertiesNotListedOnSchema(items: any[]): any[]
 	{
-		const resItems = items.map(item =>{
+		const resItems = items.map(item =>
+		{
 			return { ...item };
 		});
 
@@ -595,7 +602,8 @@ export class BaseCoreService
 
 		// Keep only fields that are listed on the schema, or are TSA fields.
 		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
-		fieldsToDelete.map(absentField => resItems.map(resItem => {
+		fieldsToDelete.map(absentField => resItems.map(resItem => 
+		{
 			delete resItem[absentField];
 		}));
 		
@@ -607,7 +615,8 @@ export class BaseCoreService
 	 */
 	private addMsToDateTimeFields(papiItems: any[]): any[]
 	{
-		const resItems = papiItems.map(papiItem =>{
+		const resItems = papiItems.map(papiItem =>
+		{
 			return { ...papiItem };
 		});
 
@@ -621,7 +630,8 @@ export class BaseCoreService
 		const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
 
 		// Set a new Date on the resItem
-		dateTimeFields.map(dateTimeField => resItems.map(resItem => {
+		dateTimeFields.map(dateTimeField => resItems.map(resItem => 
+		{
 			//The date might be null, in that case we don't need to create a new date.
 			if(resItem[dateTimeField])
 			{
