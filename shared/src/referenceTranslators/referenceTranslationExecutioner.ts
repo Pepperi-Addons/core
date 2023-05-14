@@ -72,7 +72,7 @@ export class ReferenceTranslationManager
 	{
 		switch (resourceName)
 		{
-		case "profiles":
+		case "roles":
 			return "Name";
 		default:
 			return "UUID";
