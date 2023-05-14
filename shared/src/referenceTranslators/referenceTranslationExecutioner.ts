@@ -37,7 +37,7 @@ export class ReferenceTranslationManager
 				if(inputItem[fieldName])
 				{
 					resultReference.Data[referenceField] = inputItem[fieldName];
-					inputItem[fieldName] = resultReference;
+					if(resultReference) inputItem[fieldName] = resultReference.toString();
 				}
 			}
 		}
@@ -73,7 +73,7 @@ export class ReferenceTranslationManager
 		switch (resourceName)
 		{
 		case "roles":
-			return "Name";
+			return "InternalID";
 		default:
 			return "UUID";
 		}
