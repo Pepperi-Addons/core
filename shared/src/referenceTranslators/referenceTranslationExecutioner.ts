@@ -14,7 +14,7 @@ export class ReferenceTranslationManager
 			{
 				if(inputItem[fieldName]?.Data && inputItem[fieldName].Data[referenceField])
 				{
-					inputItem[fieldName] = inputItem[fieldName].Data[referenceField];
+					inputItem[fieldName] = inputItem[fieldName].Data[referenceField].toString();
 				}
 				else
 				{
@@ -36,8 +36,8 @@ export class ReferenceTranslationManager
 			{
 				if(inputItem[fieldName])
 				{
-					resultReference.Data[referenceField] = inputItem[fieldName];
-					if(resultReference) inputItem[fieldName] = resultReference.toString();
+					resultReference.Data[referenceField] = inputItem[fieldName].toString();
+					if(resultReference) inputItem[fieldName] = resultReference;
 				}
 			}
 		}
