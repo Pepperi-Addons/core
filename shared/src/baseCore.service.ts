@@ -583,7 +583,7 @@ export class BaseCoreService
 
 		resItems.map(papiItem => 
 		{
-			papiItem.Key = papiItem[this.papiKeyPropertyName];
+			papiItem.Key = papiItem[this.papiKeyPropertyName].toString();
 		})
 		return resItems;
 	}
