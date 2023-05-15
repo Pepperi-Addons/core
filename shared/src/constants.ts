@@ -21,16 +21,16 @@ export type ResourceFields = Array<ResourceField>;
 export type SearchResult = {Objects: Array<any>, Count?: number};
 
 export const RESOURCE_TYPES = [
-    'accounts',
-    'items',
-    'users',
-    'catalogs',
-    'account_users',
-    'contacts',
-    'employees',
-    'account_employees',
-    'profiles',
-    'roles',
+	'accounts',
+	'items',
+	'users',
+	'catalogs',
+	'account_users',
+	'contacts',
+	'employees',
+	'account_employees',
+	'profiles',
+	'roles',
 ];
 export const UNIQUE_FIELDS = ['InternalID', 'UUID', 'ExternalID', 'Key'];
 
