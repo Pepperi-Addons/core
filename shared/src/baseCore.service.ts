@@ -380,7 +380,9 @@ export class BaseCoreService
 	private changeKeyFieldQueryToUuidFieldQuery(fields: string | string[]): string
 	{
 		// Set fields: string[]
-		fields = Array.isArray(fields) ? fields : fields.split(',');
+		// In case of an array, copy the fields so the original fields
+		// array isn't affected by any changes
+		fields = Array.isArray(fields) ? [...fields] : fields.split(',');
 
 		if (fields.includes("Key")) 
 		{
@@ -583,7 +585,8 @@ export class BaseCoreService
 
 		resItems.map(papiItem => 
 		{
-			papiItem.Key = papiItem[this.papiKeyPropertyName].toString();
+			const keyValue = papiItem[this.papiKeyPropertyName];
+			papiItem.Key = keyValue ? keyValue.toString() : '';
 		})
 		return resItems;
 	}
