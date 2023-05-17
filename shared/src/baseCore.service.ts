@@ -598,6 +598,8 @@ export class BaseCoreService
 			return { ...item };
 		});
 
+		if(resItems.length > 0)
+		{
 		// Arbitrarily work on the fields of the first item.
 		// Since all items belong to the same resource, they have the same fields
 		const resItemFields = Object.keys(resItems[0]);
@@ -609,6 +611,8 @@ export class BaseCoreService
 		{
 			delete resItem[absentField];
 		}));
+		}
+		
 		
 		return resItems;
 	}
@@ -623,24 +627,27 @@ export class BaseCoreService
 			return { ...papiItem };
 		});
 
-		// Arbitrarily work on the fields of the first item.
-		// Since all items belong to the same resource, they have the same fields
-
-		const resItemFields = Object.keys(resItems[0]);
-		const schemaFields = Object.keys(this.schema.Fields!);
-
-		// Keep fields that are part of the schema, and are of type DateTime
-		const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
-
-		// Set a new Date on the resItem
-		dateTimeFields.map(dateTimeField => resItems.map(resItem => 
+		if(resItems.length > 0)
 		{
-			//The date might be null, in that case we don't need to create a new date.
-			if(resItem[dateTimeField])
+			// Arbitrarily work on the fields of the first item.
+			// Since all items belong to the same resource, they have the same fields
+
+			const resItemFields = Object.keys(resItems[0]);
+			const schemaFields = Object.keys(this.schema.Fields!);
+
+			// Keep fields that are part of the schema, and are of type DateTime
+			const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
+
+			// Set a new Date on the resItem
+			dateTimeFields.map(dateTimeField => resItems.map(resItem => 
 			{
-				resItem[dateTimeField] = new Date(resItem[dateTimeField]).toISOString();
-			}
-		}));
+				//The date might be null, in that case we don't need to create a new date.
+				if(resItem[dateTimeField])
+				{
+					resItem[dateTimeField] = new Date(resItem[dateTimeField]).toISOString();
+				}
+			}));
+		}
 		
 		return resItems;
 	}
