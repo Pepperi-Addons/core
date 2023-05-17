@@ -602,15 +602,15 @@ export class BaseCoreService
 		{
 		// Arbitrarily work on the fields of the first item.
 		// Since all items belong to the same resource, they have the same fields
-		const resItemFields = Object.keys(resItems[0]);
-		const schemaFields = Object.keys(this.schema.Fields!);
+			const resItemFields = Object.keys(resItems[0]);
+			const schemaFields = Object.keys(this.schema.Fields!);
 
-		// Keep only fields that are listed on the schema, or are TSA fields.
-		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
-		fieldsToDelete.map(absentField => resItems.map(resItem => 
-		{
-			delete resItem[absentField];
-		}));
+			// Keep only fields that are listed on the schema, or are TSA fields.
+			const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
+			fieldsToDelete.map(absentField => resItems.map(resItem => 
+			{
+				delete resItem[absentField];
+			}));
 		}
 		
 		
