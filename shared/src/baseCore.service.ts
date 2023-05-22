@@ -593,10 +593,7 @@ export class BaseCoreService
 
 	removePropertiesNotListedOnSchema(items: any[]): any[]
 	{
-		const resItems = items.map(item =>
-		{
-			return { ...item };
-		});
+		const resItems = this.shallowCopyObjects(items);
 
 		if(resItems.length > 0)
 		{
@@ -622,10 +619,7 @@ export class BaseCoreService
 	 */
 	private addMsToDateTimeFields(papiItems: any[]): any[]
 	{
-		const resItems = papiItems.map(papiItem =>
-		{
-			return { ...papiItem };
-		});
+		const resItems = this.shallowCopyObjects(papiItems);
 
 		if(resItems.length > 0)
 		{
@@ -650,6 +644,12 @@ export class BaseCoreService
 		}
 		
 		return resItems;
+	}
+
+	private shallowCopyObjects(objects: any[]) {
+		return objects.map(object => {
+			return { ...object };
+		});
 	}
 
 	protected shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean
