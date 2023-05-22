@@ -593,22 +593,23 @@ export class BaseCoreService
 
 	removePropertiesNotListedOnSchema(items: any[]): any[]
 	{
-		const resItems = items.map(item =>
-		{
-			return { ...item };
-		});
+		const resItems = this.shallowCopyObjects(items);
 
+		if(resItems.length > 0)
+		{
 		// Arbitrarily work on the fields of the first item.
 		// Since all items belong to the same resource, they have the same fields
-		const resItemFields = Object.keys(resItems[0]);
-		const schemaFields = Object.keys(this.schema.Fields!);
+			const resItemFields = Object.keys(resItems[0]);
+			const schemaFields = Object.keys(this.schema.Fields!);
 
-		// Keep only fields that are listed on the schema, or are TSA fields.
-		const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
-		fieldsToDelete.map(absentField => resItems.map(resItem => 
-		{
-			delete resItem[absentField];
-		}));
+			// Keep only fields that are listed on the schema, or are TSA fields.
+			const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
+			fieldsToDelete.map(absentField => resItems.map(resItem => 
+			{
+				delete resItem[absentField];
+			}));
+		}
+		
 		
 		return resItems;
 	}
@@ -618,31 +619,37 @@ export class BaseCoreService
 	 */
 	private addMsToDateTimeFields(papiItems: any[]): any[]
 	{
-		const resItems = papiItems.map(papiItem =>
+		const resItems = this.shallowCopyObjects(papiItems);
+
+		if(resItems.length > 0)
 		{
-			return { ...papiItem };
-		});
+			// Arbitrarily work on the fields of the first item.
+			// Since all items belong to the same resource, they have the same fields
 
-		// Arbitrarily work on the fields of the first item.
-		// Since all items belong to the same resource, they have the same fields
+			const resItemFields = Object.keys(resItems[0]);
+			const schemaFields = Object.keys(this.schema.Fields!);
 
-		const resItemFields = Object.keys(resItems[0]);
-		const schemaFields = Object.keys(this.schema.Fields!);
+			// Keep fields that are part of the schema, and are of type DateTime
+			const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
 
-		// Keep fields that are part of the schema, and are of type DateTime
-		const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
-
-		// Set a new Date on the resItem
-		dateTimeFields.map(dateTimeField => resItems.map(resItem => 
-		{
-			//The date might be null, in that case we don't need to create a new date.
-			if(resItem[dateTimeField])
+			// Set a new Date on the resItem
+			dateTimeFields.map(dateTimeField => resItems.map(resItem => 
 			{
-				resItem[dateTimeField] = new Date(resItem[dateTimeField]).toISOString();
-			}
-		}));
+				//The date might be null, in that case we don't need to create a new date.
+				if(resItem[dateTimeField])
+				{
+					resItem[dateTimeField] = new Date(resItem[dateTimeField]).toISOString();
+				}
+			}));
+		}
 		
 		return resItems;
+	}
+
+	private shallowCopyObjects(objects: any[]) {
+		return objects.map(object => {
+			return { ...object };
+		});
 	}
 
 	protected shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean

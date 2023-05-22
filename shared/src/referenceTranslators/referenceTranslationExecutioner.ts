@@ -52,19 +52,22 @@ export class ReferenceTranslationManager
 			return {...inputItem};
 		});
 
-		// Arbitrarily take the fields from the first item.
-		// Since all the items are from the same resource, they all have the same fields.
-		const resItemFields = Object.keys(resItems[0]); 
-		const requestedSchemaFields = Object.keys(this.schema.Fields!).filter(schemaField => resItemFields.includes(schemaField));
-
-		requestedSchemaFields.map(field => 
+		if(resItems.length > 0)
 		{
-			if (this.schema.Fields![field].Resource) 
-			{
-				callback(this.schema.Fields![field].Resource!, field, resItems);
-			}
-		});
+			// Arbitrarily take the fields from the first item.
+			// Since all the items are from the same resource, they all have the same fields.
+			const resItemFields = Object.keys(resItems[0]); 
+			const requestedSchemaFields = Object.keys(this.schema.Fields!).filter(schemaField => resItemFields.includes(schemaField));
 
+			requestedSchemaFields.map(field => 
+			{
+				if (this.schema.Fields![field].Resource) 
+				{
+					callback(this.schema.Fields![field].Resource!, field, resItems);
+				}
+			});
+		}
+		
 		return resItems;
 	}
 
