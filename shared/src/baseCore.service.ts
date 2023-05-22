@@ -309,7 +309,7 @@ export class BaseCoreService
 	private changeKeyFieldQueryToUuidFieldQuery(fields: string | string[]): string
 	{
 		// Set fields: string[]
-		fields = Array.isArray(fields) ? fields : fields.split(',');
+		fields = Array.isArray(fields) ? [...fields] : fields.split(',');
 
 		if (fields.includes("Key")) 
 		{
