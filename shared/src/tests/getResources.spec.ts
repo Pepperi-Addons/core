@@ -80,7 +80,7 @@ describe('GET resources', async () =>
 		}
 		else
 		{
-			return Promise.resolve(resourcesList.filter(resource => query.include_deleted || !resource.Hidden));
+			return Promise.resolve(resourcesList.filter(resource => !resource.Hidden));
 		}
 	}
 
