@@ -200,15 +200,7 @@ export default class BaseCpiSideApiService implements IPapiService
 		// There's no 'in' operator in ClientApi. A "manual" implementation of this functionality is required.
 
 		// 1. Get all of the resources, including the uniqueField (it might not be included in requestedFields).
-		const searchFields = [...requestedFields];
-		if(!searchFields.includes(uniqueField))
-		{
-			searchFields.push(uniqueField);
-		}
-
-		const searchParams: SearchParams<string> = {fields: searchFields};
-        
-		const clientApiSearchResult: ClientApiSearchResult<string> = await this.iClientApi.search(resourceName, searchParams);
+		const clientApiSearchResult: ClientApiSearchResult<string> = await this.getAllResources(requestedFields, uniqueField, resourceName);
 
 		// 2. Filter the resources that fit the valuesList.
 		// Assuming the resources.length is bigger than valuesList.length
@@ -259,6 +251,36 @@ export default class BaseCpiSideApiService implements IPapiService
 		}
 
 		clientApiSearchResult.objects = requestedPageResourceWithFields;
+
+		return clientApiSearchResult;
+	}
+
+	/**
+	 * Get all of the resources of a given resource name.
+	 * Return only the requested fields, and the unique field.
+	 * @param requestedFields {string[]} The fields to return.
+	 * @param uniqueField {string} The unique field of the resource.
+	 * @param resourceName {string} The name of the resource.
+	 * @returns 
+	 */
+	private async getAllResources(requestedFields: string[], uniqueField: string, resourceName: string)
+	{
+		const searchFields = [...requestedFields];
+		if (!searchFields.includes(uniqueField))
+		{
+			searchFields.push(uniqueField);
+		}
+
+		const searchParams: SearchParams<string> = { fields: searchFields };
+
+		let clientApiSearchResult: ClientApiSearchResult<string> = await this.iClientApi.search(resourceName, searchParams);
+
+		if (clientApiSearchResult.count > clientApiSearchResult.objects.length)
+		{
+			// In case the number of resources is bigger than the page size, we need to get all of the resources.
+			searchParams.pageSize = clientApiSearchResult.count;
+			clientApiSearchResult = await this.iClientApi.search(resourceName, searchParams);
+		}
 
 		return clientApiSearchResult;
 	}
