@@ -37,7 +37,7 @@ function validateResourceSupportedInCpiSide(resourceName: string)
 
 	if(!supportedResources.includes(resourceName))
 	{
-		throw new Error();
+		throw new Error(`Resource ${resourceName} is not supported in CPI side. Supported resources are: ${supportedResources}`);
 	}
 }
 
