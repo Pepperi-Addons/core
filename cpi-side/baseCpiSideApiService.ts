@@ -200,15 +200,7 @@ export default class BaseCpiSideApiService implements IPapiService
 		// There's no 'in' operator in ClientApi. A "manual" implementation of this functionality is required.
 
 		// 1. Get all of the resources, including the uniqueField (it might not be included in requestedFields).
-		const searchFields = [...requestedFields];
-		if(!searchFields.includes(uniqueField))
-		{
-			searchFields.push(uniqueField);
-		}
-
-		const searchParams: SearchParams<string> = {fields: searchFields};
-        
-		const clientApiSearchResult: ClientApiSearchResult<string> = await this.iClientApi.search(this.resourceName, searchParams);
+		const clientApiSearchResult: ClientApiSearchResult<string> = await this.getAllResources(requestedFields, uniqueField);
 
 		// 2. Filter the resources that fit the valuesList.
 		// Assuming the resources.length is bigger than valuesList.length
@@ -260,6 +252,29 @@ export default class BaseCpiSideApiService implements IPapiService
 
 		clientApiSearchResult.objects = requestedPageResourceWithFields;
 
+		return clientApiSearchResult;
+	}
+
+	private async getAllResources(requestedFields: string[], uniqueField: string)
+	{
+		const searchFields = [...requestedFields];
+		if (!searchFields.includes(uniqueField))
+		{
+			searchFields.push(uniqueField);
+		}
+
+		const searchParams: SearchParams<string> = { fields: searchFields };
+
+		let clientApiSearchResult: ClientApiSearchResult<string> = await this.iClientApi.search(this.resourceName, searchParams);
+
+		if (clientApiSearchResult.count > clientApiSearchResult.objects.length)
+		{
+			// The search returned only a partial result.
+			// Set searchParams to get the entire result.
+			searchParams.pageSize = clientApiSearchResult.count;
+			clientApiSearchResult = await this.iClientApi.search(this.resourceName, searchParams);
+		}
+		
 		return clientApiSearchResult;
 	}
 
