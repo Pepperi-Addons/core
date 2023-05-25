@@ -439,12 +439,14 @@ export class BaseCoreService
 		const resItem = { ...item };
 
 		// If item has both UUID and Key fields, make sure they are equivalent
-		if (resItem.UUID && resItem.Key && resItem.UUID !== resItem.Key) {
+		if (resItem.UUID && resItem.Key && resItem.UUID !== resItem.Key) 
+		{
 			throw new Error("The UUID and Key fields are not equivalent.");
 		}
 
 		// If item has a Key field, set the UUID field to the same value and delete the Key field
-		if (resItem.Key) {
+		if (resItem.Key) 
+		{
 			resItem.UUID = resItem.Key;
 			delete resItem.Key;
 		}
@@ -458,8 +460,10 @@ export class BaseCoreService
 		const resItemFields = Object.keys(resItem);
 		const requestedSchemaFields = Object.keys(this.schema.Fields!).filter(schemaField => resItemFields.includes(schemaField));
 
-		requestedSchemaFields.map(field => {
-			if (this.schema.Fields![field].Resource) {
+		requestedSchemaFields.map(field => 
+		{
+			if (this.schema.Fields![field].Resource) 
+			{
 				resItem[field] = {
 					Data:
 					{
@@ -502,7 +506,8 @@ export class BaseCoreService
 	/**
 	 * Add milliseconds to DateTime fields on the PAPI item.
 	 */
-	private addMsToDateTimeFields(papiItem: any): any {
+	private addMsToDateTimeFields(papiItem: any): any 
+	{
 		const resItem = { ...papiItem };
 
 		const resItemFields = Object.keys(resItem);
@@ -536,8 +541,10 @@ export class BaseCoreService
 		const resItemFields = Object.keys(resItem);
 		const requestedSchemaFields = Object.keys(this.schema.Fields!).filter(schemaField => resItemFields.includes(schemaField));
 
-		requestedSchemaFields.map(field => {
-			if (this.schema.Fields![field].Resource) {
+		requestedSchemaFields.map(field => 
+		{
+			if (this.schema.Fields![field].Resource) 
+			{
 				resItem[field] = resItem[field].Data.UUID;
 			}
 		});
