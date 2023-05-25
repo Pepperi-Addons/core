@@ -646,8 +646,10 @@ export class BaseCoreService
 		return resItems;
 	}
 
-	private shallowCopyObjects(objects: any[]) {
-		return objects.map(object => {
+	private shallowCopyObjects(objects: any[]) 
+	{
+		return objects.map(object => 
+		{
 			return { ...object };
 		});
 	}
