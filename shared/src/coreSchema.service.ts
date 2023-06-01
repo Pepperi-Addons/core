@@ -160,8 +160,6 @@ export class CoreSchemaService
 		// In the future we should use “hard delete” of papi - which is not developed yet
 		// There is no way to uninstall core addons anyhow
 
-		this.validateSchemaAlterationRequest();
-
 		return {success: true};
 	}
 
