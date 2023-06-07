@@ -558,9 +558,6 @@ export class BaseCoreService
 		// Add Key property, equal to UUID.
 		let resItems = this.addKeyProperty(papiItems);
 
-		// Remove properties that are not part of the schema.
-		resItems = this.removePropertiesNotListedOnSchema(resItems);
-
 		// Add ms to DateTime fields. 
 		// For more information see: https://pepperi.atlassian.net/browse/DI-23237
 		resItems = this.addMsToDateTimeFields(resItems);
