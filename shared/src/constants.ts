@@ -29,6 +29,7 @@ export const RESOURCE_TYPES = [
 	'contacts',
 	'employees',
 	'account_employees',
+	'account_buyers',
 	'profiles',
 	'roles',
 ];
