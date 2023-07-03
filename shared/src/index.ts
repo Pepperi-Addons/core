@@ -1,4 +1,5 @@
 export * from './IPapi.service'
+export * from './accountUsersCore.service'
 export * from './baseCore.service'
 export * from './catalogsAndAccountsCore.service'
 export * from './constants'

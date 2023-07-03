@@ -1,5 +1,5 @@
 import '@pepperi-addons/cpi-node';
-import { BaseCoreService, CatalogsAndAccountsCoreService, IPapiService, UsersCoreService } from 'core-shared';
+import { AccountUsersCoreService, BaseCoreService, CatalogsAndAccountsCoreService, IPapiService, UsersCoreService } from 'core-shared';
 import { Request } from '@pepperi-addons/debug-server';import BaseCpiSideApiService from './baseCpiSideApiService';
 import { IClientApiService } from './iClientApiService';
 import ClientApiService from './clientApiService';
@@ -129,6 +129,12 @@ async function getCoreService(request: Request): Promise<BaseCoreService>
 	case "accounts":
 	{
 		core = new CatalogsAndAccountsCoreService(resourceSchema, request, papiService);
+		break;
+	}
+	case "account_users":
+	case "account_employees":
+	{
+		core = new AccountUsersCoreService(resourceSchema, request, papiService);
 		break;
 	}
 	default:

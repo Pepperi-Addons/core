@@ -1,5 +1,5 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import {BaseCoreService, CatalogsAndAccountsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper, RolesCoreService} from 'core-shared';
+import {BaseCoreService, CatalogsAndAccountsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper, RolesCoreService, AccountUsersCoreService} from 'core-shared';
 import BasePapiService from './basePapi.service';
 import { UsersPapiService } from './usersPapi.service';
 import { DIMXObject, AddonDataScheme } from '@pepperi-addons/papi-sdk';
@@ -185,6 +185,12 @@ async function getCoreService(client: Client, request: Request): Promise<BaseCor
 	case "roles":
 	{
 		core = new RolesCoreService(resourceSchema, request, papiService);
+		break;
+	}
+	case "account_users":
+	case "account_employees":
+	{
+		core = new AccountUsersCoreService(resourceSchema, request, papiService);
 		break;
 	}
 	default:
