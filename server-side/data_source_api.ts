@@ -243,17 +243,5 @@ async function getResourceSchema(client: Client, request: Request): Promise<Addo
 	const schemaOwnerPapiService = new BasePapiService(request.query.resource_name, papiClient);
 	const resourceSchema = await schemaOwnerPapiService.getResourceSchema();
 
-	// Adal tables schema does not contain Key and Hidden in the Fields property (they are default)
-	// Adding them allows us to get the objects with Key and Hidden properties
-	if( request.query.resource_name=="users" || request.query.resource_name=="account_users")
-	{
-		resourceSchema.Fields!['Key'] = {
-			"Type": "String"
-		}
-		resourceSchema.Fields!['Hidden'] = {
-			"Type": "Bool"
-		}
-	}
-
 	return resourceSchema;
 }
