@@ -248,11 +248,11 @@ async function getResourceSchema(client: Client, request: Request): Promise<Addo
 	if( request.query.resource_name=="users" || request.query.resource_name=="account_users")
 	{
 		resourceSchema.Fields!['Key'] = {
-            "Type": "String"
-        }
+			"Type": "String"
+		}
 		resourceSchema.Fields!['Hidden'] = {
-            "Type": "Bool"
-        }
+			"Type": "Bool"
+		}
 	}
 
 	return resourceSchema;
