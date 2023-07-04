@@ -12,7 +12,6 @@ export class AccountUsersCoreService extends BaseCoreService
 		super(schema, request, papiService);
 		// Add Key and Hidden fields to the schema, so when GETting from PAPI, we will get them
 		const schemaManipulator = new SchemaManipulator(this.schema);
-		schemaManipulator.addField('Key', { Type: 'String' });
-		schemaManipulator.addField('Hidden', { Type: 'Bool' });
+		schemaManipulator.addStandardFields();
 	}
 }
