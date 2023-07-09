@@ -1,5 +1,5 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import {BaseCoreService, CatalogsAndAccountsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper, RolesCoreService} from 'core-shared';
+import {BaseCoreService, CatalogsAndAccountsCoreService, UsersCoreService, CoreSchemaService, IPapiService, Helper, RolesCoreService, AccountUsersCoreService} from 'core-shared';
 import BasePapiService from './basePapi.service';
 import { UsersPapiService } from './usersPapi.service';
 import { DIMXObject, AddonDataScheme } from '@pepperi-addons/papi-sdk';
@@ -187,6 +187,12 @@ async function getCoreService(client: Client, request: Request): Promise<BaseCor
 		core = new RolesCoreService(resourceSchema, request, papiService);
 		break;
 	}
+	case "account_users":
+	case "account_employees":
+	{
+		core = new AccountUsersCoreService(resourceSchema, request, papiService);
+		break;
+	}
 	default:
 	{
 		core = new BaseCoreService(resourceSchema, request, papiService);
@@ -236,18 +242,6 @@ async function getResourceSchema(client: Client, request: Request): Promise<Addo
 	const papiClient = Helper.getPapiClient(client, request.query.addon_uuid);
 	const schemaOwnerPapiService = new BasePapiService(request.query.resource_name, papiClient);
 	const resourceSchema = await schemaOwnerPapiService.getResourceSchema();
-
-	// Adal tables schema does not contain Key and Hidden in the Fields property (they are default)
-	// Adding them allows us to get the objects with Key and Hidden properties
-	if( request.query.resource_name=="users" || request.query.resource_name=="account_users")
-	{
-		resourceSchema.Fields!['Key'] = {
-            "Type": "String"
-        }
-		resourceSchema.Fields!['Hidden'] = {
-            "Type": "Bool"
-        }
-	}
 
 	return resourceSchema;
 }
