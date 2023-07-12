@@ -24,6 +24,15 @@
         "indent": ["error", "tab"],
         "brace-style": ["error", "allman"],
         "no-debugger": "error",
-        "eol-last": ["error", "always"]
+        "eol-last": ["error", "always"],
+        "@typescript-eslint/quotes": [
+            "error",
+            "single",
+            {
+              "avoidEscape": true,
+              "allowTemplateLiterals": true
+            }
+          ]
+          
     }
 }
