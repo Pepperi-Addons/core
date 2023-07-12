@@ -1,4 +1,4 @@
-import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
+import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 export class ReferenceTranslationManager
 {
@@ -75,10 +75,10 @@ export class ReferenceTranslationManager
 	{
 		switch (resourceName)
 		{
-		case "roles":
-			return "InternalID";
+		case 'roles':
+			return 'InternalID';
 		default:
-			return "UUID";
+			return 'UUID';
 		}
 	}
 }

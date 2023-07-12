@@ -3,7 +3,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
 import { MockApiService, mockClient, usersSchema } from './consts';
-import { Request } from "@pepperi-addons/debug-server";
+import { Request } from '@pepperi-addons/debug-server';
 import { BaseCoreService } from '../baseCore.service';
 import { UNIQUE_FIELDS } from '../constants';
 
@@ -14,10 +14,10 @@ describe('GET resource by unique field', async () =>
 	const requestedKey = 'dd51e0a9-83f3-49b5-9074-35f13916b340';
 	const requestedUUID = 'dd51e0a9-83f3-49b5-9074-35f13916b340';
 	const requestedInternalID = 11496119;
-	const requestedExternalID = "MyExternalID";
+	const requestedExternalID = 'MyExternalID';
 
 	const resolveString = '{"InternalID":11496119, "ExternalID":"MyExternalID", "UUID":"dd51e0a9-83f3-49b5-9074-35f13916b340","ExternalID":"","CreationDateTime":"2022-05-09T13:39:18Z","Email":"testing@testing.testing","FirstName":"aaa","Hidden":false,"IsInTradeShowMode":false,"LastName":"aa","Mobile":"","ModificationDateTime":"2022-05-09T13:40:31Z","Phone":"","Profile":{"Data":{"InternalID":69004,"Name":"Rep"},"URI":"/profiles/69004"},"Role":null}';
-	const papiService = new MockApiService("users");
+	const papiService = new MockApiService('users');
 
 	papiService.getResourceByKey = async (key: string) => 
 	{
@@ -111,7 +111,7 @@ describe('GET resource by unique field', async () =>
 
 		const core = new BaseCoreService(usersSchema, requestCopy, papiService);
 
-		await expect(core.getResourceByUniqueField()).to.be.rejectedWith(`The field_id query parameter is not valid. Supported field_ids are: ${UNIQUE_FIELDS.join(", ")}`); 
+		await expect(core.getResourceByUniqueField()).to.be.rejectedWith(`The field_id query parameter is not valid. Supported field_ids are: ${UNIQUE_FIELDS.join(', ')}`); 
 	})
 
 	it('should throw a missing field_id exception', async () => 
@@ -146,7 +146,7 @@ describe('GET resource by unique field', async () =>
 
 	it('should throw an "invalid resource" exception', async () => 
 	{
-		const papiService = new MockApiService("FAULTY_RESOURCE");
+		const papiService = new MockApiService('FAULTY_RESOURCE');
 
 		const request: Request = {
 			method: 'POST',

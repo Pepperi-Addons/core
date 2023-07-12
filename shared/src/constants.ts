@@ -1,17 +1,17 @@
 export type ResourceField = {
-    "InternalID": number,
-    "FieldID": string,
-    "Label": string,
-    "IsUserDefinedField": boolean,
-    "UIType": {
-        "ID": number,
-        "Name": string
+    'InternalID': number,
+    'FieldID': string,
+    'Label': string,
+    'IsUserDefinedField': boolean,
+    'UIType': {
+        'ID': number,
+        'Name': string
     },
-    "Type": string,
-    "Format": string,
-    "CreationDateTime": string,
-    "ModificationDateTime": string,
-    "Hidden": boolean,
+    'Type': string,
+    'Format': string,
+    'CreationDateTime': string,
+    'ModificationDateTime': string,
+    'Hidden': boolean,
     [any: string]: any
 };
 

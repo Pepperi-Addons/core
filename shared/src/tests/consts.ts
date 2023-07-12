@@ -1,7 +1,7 @@
-import { Client } from "@pepperi-addons/debug-server/dist";
-import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
-import { ResourceFields, PapiBatchResponse, SearchResult } from "../constants";
-import IPapiService from "../IPapi.service";
+import { Client } from '@pepperi-addons/debug-server/dist';
+import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
+import { ResourceFields, PapiBatchResponse, SearchResult } from '../constants';
+import IPapiService from '../IPapi.service';
 
 export const mockClient : Client/*: PapiClientOptions*/ = {
 	AddonUUID: 'NotUsed',
@@ -22,51 +22,51 @@ export const mockClient : Client/*: PapiClientOptions*/ = {
 }
 
 export const usersSchema: AddonDataScheme = {
-	"GenericResource": true,
-	"ModificationDateTime": "2023-01-04T15:23:24.066Z",
-	"SyncData": {
-		"Sync": true
+	'GenericResource': true,
+	'ModificationDateTime': '2023-01-04T15:23:24.066Z',
+	'SyncData': {
+		'Sync': true
 	},
-	"CreationDateTime": "2022-12-13T13:56:05.491Z",
-	"Fields": {
-		"InternalID": {
-			"Type": "Integer",
-			"Unique": true
+	'CreationDateTime': '2022-12-13T13:56:05.491Z',
+	'Fields': {
+		'InternalID': {
+			'Type': 'Integer',
+			'Unique': true
 		},
-		"CreationDateTime": {
-			"Type": "DateTime"
+		'CreationDateTime': {
+			'Type': 'DateTime'
 		},
-		"Email": {
-			"Type": "String"
+		'Email': {
+			'Type': 'String'
 		},
-		"FirstName": {
-			"Type": "String"
+		'FirstName': {
+			'Type': 'String'
 		},
-		"ExternalID": {
-			"Type": "String",
-			"Unique": true
+		'ExternalID': {
+			'Type': 'String',
+			'Unique': true
 		},
-		"ModificationDateTime": {
-			"Type": "DateTime"
+		'ModificationDateTime': {
+			'Type': 'DateTime'
 		},
-		"Hidden": {
-			"Type": "Bool"
+		'Hidden': {
+			'Type': 'Bool'
 		},
-		"LastName": {
-			"Type": "String"
+		'LastName': {
+			'Type': 'String'
 		},
-		"Mobile": {
-			"Type": "String"
+		'Mobile': {
+			'Type': 'String'
 		},
-		"Key": {
-			"Type": "String",
-			"Unique": true
+		'Key': {
+			'Type': 'String',
+			'Unique': true
 		}
 	},
-	"Type": "papi",
-	"Hidden": false,
-	"Name": "users",
-	"AddonUUID": "fc5a5974-3b30-4430-8feb-7d5b9699bc9f"
+	'Type': 'papi',
+	'Hidden': false,
+	'Name': 'users',
+	'AddonUUID': 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f'
 }
 
 export class MockApiService implements IPapiService

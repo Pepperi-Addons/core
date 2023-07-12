@@ -3,24 +3,24 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
 import { MockApiService, mockClient, usersSchema } from './consts';
-import { Request } from "@pepperi-addons/debug-server";
+import { Request } from '@pepperi-addons/debug-server';
 import { BaseCoreService } from '../baseCore.service';
 import { CatalogsAndAccountsCoreService } from '../catalogsAndAccountsCore.service';
 
 chai.use(promised);
 
 const catalogWithCreationDate = {
-	"InternalID": 75022,
-	"UUID": "f16583db-d6e4-4823-9e84-ed37d04c4c3f",
-	"ExternalID": "Default Catalog",
-	"CreationDate": "2020-01-05T08:29:07Z",
-	"Description": "",
-	"ExpirationDate": "2020-01-05Z",
-	"Hidden": false,
-	"IsActive": true,
-	"ModificationDateTime": "2020-01-05T08:29:07Z",
-	"TSAImage": null,
-	"Key": "f16583db-d6e4-4823-9e84-ed37d04c4c3f"
+	'InternalID': 75022,
+	'UUID': 'f16583db-d6e4-4823-9e84-ed37d04c4c3f',
+	'ExternalID': 'Default Catalog',
+	'CreationDate': '2020-01-05T08:29:07Z',
+	'Description': '',
+	'ExpirationDate': '2020-01-05Z',
+	'Hidden': false,
+	'IsActive': true,
+	'ModificationDateTime': '2020-01-05T08:29:07Z',
+	'TSAImage': null,
+	'Key': 'f16583db-d6e4-4823-9e84-ed37d04c4c3f'
 }
 
 const catalogsWithCreationDateTime : {
@@ -47,7 +47,7 @@ describe('GET resource by key', async () =>
 	it('should return a valid item', async () => 
 	{
 
-		const papiService = new MockApiService("users");
+		const papiService = new MockApiService('users');
 
 		papiService.getResourceByKey = async (key: string) => 
 		{
@@ -86,7 +86,7 @@ describe('GET resource by key', async () =>
 	{
 
 
-		const resourceName = "catalogs"
+		const resourceName = 'catalogs'
 
 		const papiService = new MockApiService(resourceName);
 
@@ -127,7 +127,7 @@ describe('GET resource by key', async () =>
 
 	it('should throw an "invalid resource" exception', async () => 
 	{
-		const papiService = new MockApiService("FAULTY_RESOURCE");
+		const papiService = new MockApiService('FAULTY_RESOURCE');
 
 		const request: Request = {
 			method: 'POST',

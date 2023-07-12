@@ -1,4 +1,4 @@
-import { AddonDataScheme, SchemeField } from "@pepperi-addons/papi-sdk";
+import { AddonDataScheme, SchemeField } from '@pepperi-addons/papi-sdk';
 
 /**
  * A class that helps to manipulate the schema
@@ -28,8 +28,8 @@ export class SchemaManipulator
 	public addStandardFields(): void
 	{
 		const standardFields: {FieldName: string, SchemaField: SchemeField}[] = [
-			{ FieldName: "Key", SchemaField: {Type: "String"}},
-			{ FieldName: "Hidden", SchemaField: {Type: "Bool"}},
+			{ FieldName: 'Key', SchemaField: {Type: 'String'}},
+			{ FieldName: 'Hidden', SchemaField: {Type: 'Bool'}},
 		];
 
 		standardFields.map(standardField => this.addField(standardField.FieldName, standardField.SchemaField));

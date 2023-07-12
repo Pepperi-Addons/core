@@ -119,20 +119,20 @@ async function getCoreService(request: Request): Promise<BaseCoreService>
 
 	switch(request.query?.resource_name)
 	{
-	case "users":
-	case "employees":
+	case 'users':
+	case 'employees':
 	{
 		core = new UsersCoreService(resourceSchema, request, papiService);
 		break;
 	}
-	case "catalogs":
-	case "accounts":
+	case 'catalogs':
+	case 'accounts':
 	{
 		core = new CatalogsAndAccountsCoreService(resourceSchema, request, papiService);
 		break;
 	}
-	case "account_users":
-	case "account_employees":
+	case 'account_users':
+	case 'account_employees':
 	{
 		core = new AccountUsersCoreService(resourceSchema, request, papiService);
 		break;
@@ -167,19 +167,19 @@ function getPapiService(request: Request, getBaseApiService = false) : IPapiServ
 	{
 		switch(request.query?.resource_name)
 		{
-		case "catalogs":
-		case "users":
-		case "employees":
+		case 'catalogs':
+		case 'users':
+		case 'employees':
 		{
 			papiService = new NoPostCpiSideApiService(request.query?.resource_name, request.query.addon_uuid, iClientApi);
 			break;
 		}
-		case "accounts":
+		case 'accounts':
 		{
 			papiService = new AccountsCpiSideApiService(request.query.addon_uuid, iClientApi);
 			break;
 		}
-		case "items":
+		case 'items':
 		{
 			papiService = new NoCreationDateCpiSideApiService(request.query?.resource_name, request.query.addon_uuid, iClientApi);
 			break;

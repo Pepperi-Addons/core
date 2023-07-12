@@ -44,13 +44,13 @@ export class RolesPapiService extends BasePapiService
 	{
 		let shouldDeleteUniqueFields = false;
 
-		if (papiSearchBody.UniqueFieldID === "InternalID") 
+		if (papiSearchBody.UniqueFieldID === 'InternalID') 
 		{
 			papiSearchBody.InternalIDList = papiSearchBody.UniqueFieldList;
 			shouldDeleteUniqueFields = true;
 		}
 
-		if (papiSearchBody.UniqueFieldID === "Name" || papiSearchBody.UniqueFieldID === "Key") 
+		if (papiSearchBody.UniqueFieldID === 'Name' || papiSearchBody.UniqueFieldID === 'Key') 
 		{
 			papiSearchBody.Where = `Name in ('${papiSearchBody.UniqueFieldList.join("\',\'")}') ${papiSearchBody.Where ?  `AND (${papiSearchBody.Where})` : '' }`;
 			shouldDeleteUniqueFields = true;

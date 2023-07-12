@@ -6,7 +6,7 @@ export class UsersPapiService extends BasePapiService implements IPapiService
 {
 	constructor(papiClient: PapiClient) 
 	{
-		super("users", papiClient);
+		super('users', papiClient);
 	}
 
 	async createResource(body: any)

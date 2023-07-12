@@ -3,7 +3,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
 import { MockApiService, mockClient, usersSchema } from './consts';
-import { Request } from "@pepperi-addons/debug-server";
+import { Request } from '@pepperi-addons/debug-server';
 import { BaseCoreService } from '../baseCore.service';
 
 chai.use(promised);
@@ -12,29 +12,29 @@ describe('POST resource', async () =>
 {
 	const createPapiItem =
         {
-        	"InternalID": 11443826,
-        	"UUID": "cc27dfe9-e87a-4710-ab24-8f703e167213",
-        	"ExternalID": "",
-        	"CreationDateTime": "2020-01-05T08:29:23Z",
-        	"Email": "pumddnx@hjqfiy.com",
-        	"FirstName": "test",
-        	"Hidden": true,
-        	"IsInTradeShowMode": false,
-        	"LastName": "Test",
-        	"Mobile": "",
-        	"ModificationDateTime": "2022-03-22T01:07:25Z",
-        	"Phone": "",
-        	"Profile": {
-        		"Data": {
-        			"InternalID": 69005,
-        			"Name": "Admin"
+        	'InternalID': 11443826,
+        	'UUID': 'cc27dfe9-e87a-4710-ab24-8f703e167213',
+        	'ExternalID': '',
+        	'CreationDateTime': '2020-01-05T08:29:23Z',
+        	'Email': 'pumddnx@hjqfiy.com',
+        	'FirstName': 'test',
+        	'Hidden': true,
+        	'IsInTradeShowMode': false,
+        	'LastName': 'Test',
+        	'Mobile': '',
+        	'ModificationDateTime': '2022-03-22T01:07:25Z',
+        	'Phone': '',
+        	'Profile': {
+        		'Data': {
+        			'InternalID': 69005,
+        			'Name': 'Admin'
         		},
-        		"URI": "/profiles/69005"
+        		'URI': '/profiles/69005'
         	},
-        	"Role": null,
+        	'Role': null,
         };
 
-	const papiService = new MockApiService("users");
+	const papiService = new MockApiService('users');
 
 	papiService.upsertResource = async (body: any) => 
 	{
@@ -78,7 +78,7 @@ describe('POST resource', async () =>
 	it('should throw an "invalid resource" exception', async () => 
 	{
 
-		const papiService = new MockApiService("FAULTY_RESOURCE");
+		const papiService = new MockApiService('FAULTY_RESOURCE');
 
 		const request: Request = {
 			method: 'POST',

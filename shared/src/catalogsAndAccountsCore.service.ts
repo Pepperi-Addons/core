@@ -1,9 +1,9 @@
-import { DIMXObject } from "@pepperi-addons/papi-sdk";
-import { BaseCoreService } from "./baseCore.service";
-import CatalogsGetQueryResolver from "./resolvers/catalogsGetQueryResolver";
-import CatalogsResourceCreationDateTimeToCreationDateResolver from "./resolvers/catalogsResourceCreationDateTimeToCreationDateResolver";
-import CatalogsResourceCreationDateToCreationDateTimeResolver from "./resolvers/catalogsResourceCreationDateToCreationDateTimeResolver";
-import CatalogsSearchBodyResolver from "./resolvers/catalogsSearchBodyResolver";
+import { DIMXObject } from '@pepperi-addons/papi-sdk';
+import { BaseCoreService } from './baseCore.service';
+import CatalogsGetQueryResolver from './resolvers/catalogsGetQueryResolver';
+import CatalogsResourceCreationDateTimeToCreationDateResolver from './resolvers/catalogsResourceCreationDateTimeToCreationDateResolver';
+import CatalogsResourceCreationDateToCreationDateTimeResolver from './resolvers/catalogsResourceCreationDateToCreationDateTimeResolver';
+import CatalogsSearchBodyResolver from './resolvers/catalogsSearchBodyResolver';
 
 export class CatalogsAndAccountsCoreService extends BaseCoreService
 {

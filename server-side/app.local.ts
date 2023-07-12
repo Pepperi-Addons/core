@@ -18,4 +18,4 @@ server.addStaticFolder(`/assets/plugins/${config.AddonUUID}/${config.AddonVersio
 
 server.start();
 
-console.log("Open webapp at: ", `${config.WebappBaseUrl}/settings/${config.AddonUUID}/${config.DefaultEditor}?dev=true`);
+console.log('Open webapp at: ', `${config.WebappBaseUrl}/settings/${config.AddonUUID}/${config.DefaultEditor}?dev=true`);
