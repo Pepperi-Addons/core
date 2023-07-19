@@ -84,21 +84,7 @@ describe('Export resources', async () =>
 			return Promise.resolve(resourcesList.slice(0, 1));
 		}
 
-		const res = await resourceFetcherService.fetch(requestCopy);
-
-		expect(res).to.be.an('Object').with.property('NextPageKey');
-		expect(res.NextPageKey).to.be.a('string');
-
-		const parsedPageKey = JSON.parse(res.NextPageKey);
-		expect(parsedPageKey).to.be.an('Object').with.property('Page');
-		expect(parsedPageKey.Page).to.equal(2);
-		expect(parsedPageKey).to.be.an('Object').with.property('PageSize');
-		expect(parsedPageKey.PageSize).to.equal(1);
-
-		expect(res).to.be.an('Object').with.property('Objects');
-		expect(res.Objects).to.be.an('Array');
-		expect(res.Objects.length).to.equal(1);
-        
+		await expectPageKey(resourceFetcherService, requestCopy);
 	});
 
 	it('Passed PageKey should return NextPageKey', async () => 
@@ -122,21 +108,7 @@ describe('Export resources', async () =>
 			return Promise.resolve(resourcesList.slice(0, 1));
 		}
 
-		const res = await resourceFetcherService.fetch(requestCopy);
-
-		expect(res).to.be.an('Object').with.property('NextPageKey');
-		expect(res.NextPageKey).to.be.a('string');
-
-		const parsedPageKey = JSON.parse(res.NextPageKey);
-		expect(parsedPageKey).to.be.an('Object').with.property('Page');
-		expect(parsedPageKey.Page).to.equal(2);
-		expect(parsedPageKey).to.be.an('Object').with.property('PageSize');
-		expect(parsedPageKey.PageSize).to.equal(1);
-
-		expect(res).to.be.an('Object').with.property('Objects');
-		expect(res.Objects).to.be.an('Array');
-		expect(res.Objects.length).to.equal(1);
-        
+		await expectPageKey(resourceFetcherService, requestCopy);        
 	});
 
 	it('Passed Page should not return NextPageKey', async () => 
@@ -161,9 +133,27 @@ describe('Export resources', async () =>
 
 		expect(res.hasOwnProperty('NextPageKey')).to.be.false;
 
-		expect(res).to.be.an('Object').with.property('Objects');
-		expect(res.Objects).to.be.an('Array');
-		expect(res.Objects.length).to.equal(1);
+		expectValidResponseObjects(res);
         
 	});
 });
+async function expectPageKey(resourceFetcherService: ResourceFetcherExportService, requestCopy: { method: string; body: any; query: any; originalUrl?: string | undefined; path?: string | undefined; header: any; }) {
+	const res = await resourceFetcherService.fetch(requestCopy);
+
+	expect(res).to.be.an('Object').with.property('NextPageKey');
+	expect(res.NextPageKey).to.be.a('string');
+
+	const parsedPageKey = JSON.parse(res.NextPageKey);
+	expect(parsedPageKey).to.be.an('Object').with.property('Page');
+	expect(parsedPageKey.Page).to.equal(2);
+	expect(parsedPageKey).to.be.an('Object').with.property('PageSize');
+	expect(parsedPageKey.PageSize).to.equal(1);
+
+	expectValidResponseObjects(res);
+}
+
+function expectValidResponseObjects(res: any) {
+	expect(res).to.be.an('Object').with.property('Objects');
+	expect(res.Objects).to.be.an('Array');
+	expect(res.Objects.length).to.equal(1);
+}
