@@ -139,7 +139,7 @@ describe('Export resources', async () =>
         
 	});
 
-	it('Passed Page should return NextPageKey', async () => 
+	it('Passed Page should not return NextPageKey', async () => 
 	{
 		const page = 1;
 		const requestCopy = { ...request};
