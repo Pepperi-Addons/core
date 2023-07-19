@@ -1,6 +1,6 @@
-import { CreateResult, GetParams, GetResult, SearchParams, SearchResult as ClientApiSearchResult, UpdateParams, UpdateResult } from "@pepperi-addons/client-api";
-import { CreateResourceParams } from "./constants";
-import { IClientApiService } from "./iClientApiService";
+import { CreateResult, GetParams, GetResult, SearchParams, SearchResult as ClientApiSearchResult, UpdateParams, UpdateResult } from '@pepperi-addons/client-api';
+import { CreateResourceParams } from './constants';
+import { IClientApiService } from './iClientApiService';
 
 export default class ClientApiService implements IClientApiService
 {

@@ -1,4 +1,4 @@
-import IResolver from "./iResolver";
+import IResolver from './iResolver';
 import cloneDeep from 'lodash.clonedeep'
 
 export default abstract class AResolver implements IResolver

@@ -75,7 +75,7 @@ async function upsertDimxRelations(client: Client, isHidden: boolean, papiClient
 function getDimxRelationsBodies(client: Client, isHidden: boolean) 
 {
 	const importRelation: Relation = {
-		RelationName: "DataImportSource",
+		RelationName: 'DataImportSource',
 		AddonUUID: client.AddonUUID,
 		Name: 'papi',
 		KeyName: 'Key',

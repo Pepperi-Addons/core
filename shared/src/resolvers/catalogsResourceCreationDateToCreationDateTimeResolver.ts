@@ -1,5 +1,5 @@
-import IResolver from "./iResolver";
-import ACatalogsResolver from "./aCatalogsResolver";
+import IResolver from './iResolver';
+import ACatalogsResolver from './aCatalogsResolver';
 
 
 export default class CatalogsResourceCreationDateToCreationDateTimeResolver extends ACatalogsResolver implements IResolver

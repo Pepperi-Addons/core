@@ -114,7 +114,7 @@ export class BasePapiService implements IPapiService
 
 		try
 		{
-			const papiRes = await this.papiClient.apiCall("POST", `/${this.resourceName}/search`, body);
+			const papiRes = await this.papiClient.apiCall('POST', `/${this.resourceName}/search`, body);
 			res.Objects = await papiRes.json();
 
 			if(body.IncludeCount)
@@ -162,19 +162,19 @@ export class BasePapiService implements IPapiService
 	protected translateUniqueFieldQueriesToPapi(papiSearchBody: any): void 
 	{
 		let shouldDeleteUniqueFields = false;
-		if (papiSearchBody.UniqueFieldID === "ExternalID") 
+		if (papiSearchBody.UniqueFieldID === 'ExternalID') 
 		{
 			papiSearchBody.Where = `ExternalID in ('${papiSearchBody.UniqueFieldList.join("\',\'")}') ${papiSearchBody.Where ?  `AND (${papiSearchBody.Where})` : '' }`;
 			shouldDeleteUniqueFields = true;
 		}
 
-		if (papiSearchBody.UniqueFieldID === "InternalID") 
+		if (papiSearchBody.UniqueFieldID === 'InternalID') 
 		{
 			papiSearchBody.InternalIDList = papiSearchBody.UniqueFieldList;
 			shouldDeleteUniqueFields = true;
 		}
 
-		if (papiSearchBody.UniqueFieldID === "UUID" || papiSearchBody.UniqueFieldID === "Key") 
+		if (papiSearchBody.UniqueFieldID === 'UUID' || papiSearchBody.UniqueFieldID === 'Key') 
 		{
 			papiSearchBody.UUIDList = papiSearchBody.UniqueFieldList;
 			shouldDeleteUniqueFields = true;

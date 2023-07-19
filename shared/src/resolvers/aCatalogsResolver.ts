@@ -1,6 +1,6 @@
-import IResolver from "./iResolver";
-import AResolver from "./aResolver";
-import { Request } from "@pepperi-addons/debug-server"
+import IResolver from './iResolver';
+import AResolver from './aResolver';
+import { Request } from '@pepperi-addons/debug-server'
 
 export default abstract class ACatalogsResolver extends AResolver implements IResolver
 {

@@ -1,10 +1,10 @@
-import { Request } from "@pepperi-addons/debug-server";
-import { DIMXObject, AddonDataScheme } from "@pepperi-addons/papi-sdk";
+import { Request } from '@pepperi-addons/debug-server';
+import { DIMXObject, AddonDataScheme } from '@pepperi-addons/papi-sdk';
 import { FieldType, JSONBaseFilter, JSONFilter, parse, transform, toApiQueryString } from '@pepperi-addons/pepperi-filters';
 
-import { PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from "./constants";
-import IPapiService from "./IPapi.service";
-import { ReferenceTranslationManager } from "./referenceTranslators/referenceTranslationExecutioner";
+import { PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from './constants';
+import IPapiService from './IPapi.service';
+import { ReferenceTranslationManager } from './referenceTranslators/referenceTranslationExecutioner';
 
 export class BaseCoreService 
 {
@@ -15,7 +15,7 @@ export class BaseCoreService
 
 	protected get papiKeyPropertyName(): string
 	{
-		return "UUID";
+		return 'UUID';
 	}
 
 	constructor(protected schema: AddonDataScheme, protected request: Request, protected papi: IPapiService) 
@@ -65,12 +65,12 @@ export class BaseCoreService
 
 		switch(requestedFieldId)
 		{
-		case "UUID":
-		case "Key":
+		case 'UUID':
+		case 'Key':
 		{
 			return await this.getResourceByKey(requestedValue);
 		}
-		case "InternalID":
+		case 'InternalID':
 		{
 
 			const papiItem = await this.papi.getResourceByInternalId(requestedValue);
@@ -78,7 +78,7 @@ export class BaseCoreService
 
 			return translatedItem;
 		}
-		case "ExternalID":
+		case 'ExternalID':
 		{
 			const papiItem = await this.papi.getResourceByExternalId(requestedValue);
 			const translatedItem = this.translatePapiItemToItem(papiItem);
@@ -108,7 +108,7 @@ export class BaseCoreService
 
 		if(!this.uniqueFields.includes(requestedFieldId))
 		{
-			throw new Error(`The field_id query parameter is not valid. Supported field_ids are: ${this.uniqueFields.join(", ")}`);
+			throw new Error(`The field_id query parameter is not valid. Supported field_ids are: ${this.uniqueFields.join(', ')}`);
 		}
 	}
 
@@ -143,7 +143,7 @@ export class BaseCoreService
 	{
 		if (fieldsArray) 
 		{
-			fieldsArray = Array.isArray(fieldsArray) ? fieldsArray : fieldsArray.split(",");
+			fieldsArray = Array.isArray(fieldsArray) ? fieldsArray : fieldsArray.split(',');
 			items.forEach(item => 
 			{
 				Object.keys(item).forEach(key => 
@@ -200,9 +200,9 @@ export class BaseCoreService
 		// Remove possible duplicates in Fields
 		fields = fields?.filter((item,index) => fields.indexOf(item) === index);
 
-		if(fields?.includes("Key"))
+		if(fields?.includes('Key'))
 		{
-			fields.splice(fields.indexOf("Key"), 1);
+			fields.splice(fields.indexOf('Key'), 1);
 			fields.push(this.papiKeyPropertyName);
 
 			papiSearchBody.Fields = fields.join(',');
@@ -302,7 +302,7 @@ export class BaseCoreService
 		// If the query passed a page_size=-1, remove it.
 		// Resources with a lot of objects might time out otherwise.
 		// For more information see: https://pepperi.atlassian.net/browse/DI-21943
-		if(queryCopy.page_size === "-1")
+		if(queryCopy.page_size === '-1')
 		{
 			delete queryCopy.page_size;
 		}
@@ -346,7 +346,7 @@ export class BaseCoreService
 
 			// Replace all Key fields with this.papiKeyPropertyName fields
 			const transformedJsonFilter = transform(jsonFilter, {
-				"Key": (node: JSONBaseFilter) => 
+				'Key': (node: JSONBaseFilter) => 
 				{
 					node.ApiName = this.papiKeyPropertyName;
 				}
@@ -384,14 +384,14 @@ export class BaseCoreService
 		// array isn't affected by any changes
 		fields = Array.isArray(fields) ? [...fields] : fields.split(',');
 
-		if (fields.includes("Key")) 
+		if (fields.includes('Key')) 
 		{
-			fields.splice(fields.indexOf("Key"), 1);
+			fields.splice(fields.indexOf('Key'), 1);
 			fields.push(this.papiKeyPropertyName);
 		}
 
 		// Set fields: string
-		fields = fields.join(",");
+		fields = fields.join(',');
 
 		return fields;
 	}
@@ -469,7 +469,7 @@ export class BaseCoreService
 			return {
 				Key: papiItem.UUID!,
 				Status: papiItem.Status,
-				...(papiItem.Status === "Error" && {Details: papiItem.Message})
+				...(papiItem.Status === 'Error' && {Details: papiItem.Message})
 			}
 		});
 
@@ -674,7 +674,7 @@ export class BaseCoreService
 	{
 		if (!key) 
 		{
-			throw new Error("No key provided");
+			throw new Error('No key provided');
 		}
 	}
 

@@ -1,6 +1,6 @@
 import {IPapiService, PapiBatchResponse, ResourceFields, SearchResult} from 'core-shared';
-import { GetParams, SearchParams, SearchResult as ClientApiSearchResult, UpdateParams } from "@pepperi-addons/client-api";
-import { FieldType } from "@pepperi-addons/pepperi-filters";
+import { GetParams, SearchParams, SearchResult as ClientApiSearchResult, UpdateParams } from '@pepperi-addons/client-api';
+import { FieldType } from '@pepperi-addons/pepperi-filters';
 import { parse as transformSqlToJson } from '@pepperi-addons/pepperi-filters';
 import pick from 'lodash.pick';
 import { IClientApiService } from './iClientApiService';
@@ -126,13 +126,13 @@ export default class BaseCpiSideApiService implements IPapiService
 
 	async getResourceByExternalId(externalId: any): Promise<any> 
 	{
-		const searchBody = this.createAUniqueFieldRequestBody("ExternalID", externalId);
+		const searchBody = this.createAUniqueFieldRequestBody('ExternalID', externalId);
 		return await this.callSearchExpectingASingleResource(searchBody);
 	}
 
 	async getResourceByInternalId(internalId: any): Promise<any> 
 	{
-		const searchBody = this.createAUniqueFieldRequestBody("InternalID", internalId);
+		const searchBody = this.createAUniqueFieldRequestBody('InternalID', internalId);
 		return await this.callSearchExpectingASingleResource(searchBody);
 	}
 
@@ -152,11 +152,11 @@ export default class BaseCpiSideApiService implements IPapiService
 		}
 		else if(res.Objects.length > 1)
 		{
-			throw new Error("Something very strange happened... Found more than one instance.");
+			throw new Error('Something very strange happened... Found more than one instance.');
 		}
 		else
 		{
-			throw new Error("Could not find the requested resource");
+			throw new Error('Could not find the requested resource');
 		}
 	}
 
@@ -188,8 +188,8 @@ export default class BaseCpiSideApiService implements IPapiService
 
 		// Build the SearchResult object to return
 		const searchResult: SearchResult = {
-			"Objects": clientApiSearchResult.objects,
-			...(body.IncludeCount && {"Count" : clientApiSearchResult.count})
+			'Objects': clientApiSearchResult.objects,
+			...(body.IncludeCount && {'Count' : clientApiSearchResult.count})
 		};
 
 		return searchResult;

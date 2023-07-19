@@ -3,7 +3,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
 import { MockApiService, mockClient, usersSchema } from './consts';
-import { Request } from "@pepperi-addons/debug-server";
+import { Request } from '@pepperi-addons/debug-server';
 import { BaseCoreService } from '../baseCore.service';
 import { UNIQUE_FIELDS } from '../constants';
 
@@ -13,52 +13,52 @@ describe('Search resources', async () =>
 {
 	const resourcesList = [
 		{
-			"InternalID": 11443826,
-			"UUID": "cc27dfe9-e87a-4710-ab24-8f703e167213",
-			"ExternalID": "User0",
-			"CreationDateTime": "2020-01-05T08:29:23Z",
-			"Email": "pumddnx@hjqfiy.com",
-			"FirstName": "test",
-			"Hidden": true,
-			"IsInTradeShowMode": false,
-			"LastName": "Test",
-			"Mobile": "",
-			"ModificationDateTime": "2022-03-22T01:07:25Z",
-			"Phone": "",
-			"Profile": {
-				"Data": {
-					"InternalID": 69005,
-					"Name": "Admin"
+			'InternalID': 11443826,
+			'UUID': 'cc27dfe9-e87a-4710-ab24-8f703e167213',
+			'ExternalID': 'User0',
+			'CreationDateTime': '2020-01-05T08:29:23Z',
+			'Email': 'pumddnx@hjqfiy.com',
+			'FirstName': 'test',
+			'Hidden': true,
+			'IsInTradeShowMode': false,
+			'LastName': 'Test',
+			'Mobile': '',
+			'ModificationDateTime': '2022-03-22T01:07:25Z',
+			'Phone': '',
+			'Profile': {
+				'Data': {
+					'InternalID': 69005,
+					'Name': 'Admin'
 				},
-				"URI": "/profiles/69005"
+				'URI': '/profiles/69005'
 			},
-			"Role": null,
+			'Role': null,
 		},
 		{
-			"InternalID": 11496119,
-			"UUID": "dd51e0a9-83f3-49b5-9074-35f13916b340",
-			"ExternalID": "User1",
-			"CreationDateTime": "2022-05-09T13:39:18Z",
-			"Email": "testing@testing.testing",
-			"FirstName": "aaa",
-			"Hidden": false,
-			"IsInTradeShowMode": false,
-			"LastName": "aa",
-			"Mobile": "",
-			"ModificationDateTime": "2022-05-09T13:40:31Z",
-			"Phone": "",
-			"Profile": {
-				"Data": {
-					"InternalID": 69004,
-					"Name": "Rep"
+			'InternalID': 11496119,
+			'UUID': 'dd51e0a9-83f3-49b5-9074-35f13916b340',
+			'ExternalID': 'User1',
+			'CreationDateTime': '2022-05-09T13:39:18Z',
+			'Email': 'testing@testing.testing',
+			'FirstName': 'aaa',
+			'Hidden': false,
+			'IsInTradeShowMode': false,
+			'LastName': 'aa',
+			'Mobile': '',
+			'ModificationDateTime': '2022-05-09T13:40:31Z',
+			'Phone': '',
+			'Profile': {
+				'Data': {
+					'InternalID': 69004,
+					'Name': 'Rep'
 				},
-				"URI": "/profiles/69004"
+				'URI': '/profiles/69004'
 			},
-			"Role": null,
+			'Role': null,
 		}
 	]
 
-	const papiService = new MockApiService("users");
+	const papiService = new MockApiService('users');
 	papiService.searchResource = async (body: any) => 
 	{
 		Object.keys(body).map(key => 
@@ -130,8 +130,8 @@ describe('Search resources', async () =>
 
 		const items = await core.search();
 
-		expect(items).to.be.an('Object').with.property("Objects");
-		expect(items.Objects).to.be.an("Array");
+		expect(items).to.be.an('Object').with.property('Objects');
+		expect(items.Objects).to.be.an('Array');
 		expect(items.Objects.length).to.equal(1);
 		expect(items.Objects[0]).to.have.property('Key');
 		expect(items.Objects[0]).to.have.property('Hidden', false);
@@ -147,8 +147,8 @@ describe('Search resources', async () =>
 
 		const items = await core.search();
 
-		expect(items).to.be.an('Object').with.property("Objects");
-		expect(items.Objects).to.be.an("Array");
+		expect(items).to.be.an('Object').with.property('Objects');
+		expect(items.Objects).to.be.an('Array');
 		expect(items.Objects.length).to.equal(1);
 		expect(items.Objects[0]).to.have.property('Key');
 		expect(items.Objects[0]).to.have.property('Hidden', false);
@@ -159,14 +159,14 @@ describe('Search resources', async () =>
 	{
 
 		const requestCopy = { ...request };
-		const body = {KeyList: ["cc27dfe9-e87a-4710-ab24-8f703e167213", "dd51e0a9-83f3-49b5-9074-35f13916b340"]};
+		const body = {KeyList: ['cc27dfe9-e87a-4710-ab24-8f703e167213', 'dd51e0a9-83f3-49b5-9074-35f13916b340']};
 		requestCopy.body = body;
 		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
 		const items = await core.search();
 
-		expect(items).to.be.an('Object').with.property("Objects");
-		expect(items.Objects).to.be.an("Array");
+		expect(items).to.be.an('Object').with.property('Objects');
+		expect(items.Objects).to.be.an('Array');
 		expect(items.Objects.length).to.equal(1);
 		expect(items.Objects[0]).to.have.property('Key');
 		expect(items.Objects[0]).to.have.property('Hidden', false);
@@ -178,8 +178,8 @@ describe('Search resources', async () =>
 
 		const requestCopy = { ...request };
 		const body = {
-			UniqueFieldID: "UUID",
-			UniqueFieldList: ["cc27dfe9-e87a-4710-ab24-8f703e167213", "dd51e0a9-83f3-49b5-9074-35f13916b340"]
+			UniqueFieldID: 'UUID',
+			UniqueFieldList: ['cc27dfe9-e87a-4710-ab24-8f703e167213', 'dd51e0a9-83f3-49b5-9074-35f13916b340']
 		}
 
 		requestCopy.body = body;
@@ -188,8 +188,8 @@ describe('Search resources', async () =>
 
 		const items = await core.search();
 
-		expect(items).to.be.an('Object').with.property("Objects");
-		expect(items.Objects).to.be.an("Array");
+		expect(items).to.be.an('Object').with.property('Objects');
+		expect(items.Objects).to.be.an('Array');
 		expect(items.Objects.length).to.equal(1);
 		expect(items.Objects[0]).to.have.property('Key');
 		expect(items.Objects[0]).to.have.property('Hidden', false);
@@ -201,8 +201,8 @@ describe('Search resources', async () =>
 
 		const requestCopy = { ...request };
 		const body = {
-			UniqueFieldID: "Key",
-			UniqueFieldList: ["cc27dfe9-e87a-4710-ab24-8f703e167213", "dd51e0a9-83f3-49b5-9074-35f13916b340"]
+			UniqueFieldID: 'Key',
+			UniqueFieldList: ['cc27dfe9-e87a-4710-ab24-8f703e167213', 'dd51e0a9-83f3-49b5-9074-35f13916b340']
 		}
 
 		requestCopy.body = body;
@@ -210,8 +210,8 @@ describe('Search resources', async () =>
 
 		const items = await core.search();
 
-		expect(items).to.be.an('Object').with.property("Objects");
-		expect(items.Objects).to.be.an("Array");
+		expect(items).to.be.an('Object').with.property('Objects');
+		expect(items.Objects).to.be.an('Array');
 		expect(items.Objects.length).to.equal(1);
 		expect(items.Objects[0]).to.have.property('Key');
 		expect(items.Objects[0]).to.have.property('Hidden', false);
@@ -223,8 +223,8 @@ describe('Search resources', async () =>
 
 		const requestCopy = { ...request };
 		const body = {
-			UniqueFieldID: "ExternalID",
-			UniqueFieldList: ["User0", "User1"]
+			UniqueFieldID: 'ExternalID',
+			UniqueFieldList: ['User0', 'User1']
 		}
 
 		requestCopy.body = body;
@@ -241,7 +241,7 @@ describe('Search resources', async () =>
 
 		const requestCopy = { ...request };
 		const body = {
-			UniqueFieldID: "InternalID",
+			UniqueFieldID: 'InternalID',
 			UniqueFieldList: [11496119, 11443826]
 		}
 		requestCopy.body = body;
@@ -249,8 +249,8 @@ describe('Search resources', async () =>
 
 		const items = await core.search();
 
-		expect(items).to.be.an('Object').with.property("Objects");
-		expect(items.Objects).to.be.an("Array");
+		expect(items).to.be.an('Object').with.property('Objects');
+		expect(items.Objects).to.be.an('Array');
 		expect(items.Objects.length).to.equal(1);
 		expect(items.Objects[0]).to.have.property('Key');
 		expect(items.Objects[0]).to.have.property('Hidden', false);
@@ -267,8 +267,8 @@ describe('Search resources', async () =>
 		const core = new BaseCoreService(usersSchema ,requestCopy, papiService);
 
 		const items = await core.search();
-		expect(items).to.be.an('Object').with.property("Objects");
-		expect(items.Objects).to.be.an("Array");
+		expect(items).to.be.an('Object').with.property('Objects');
+		expect(items.Objects).to.be.an('Array');
 
 		expect(items.Objects.length).to.equal(2);
 		for(const item of items.Objects)
@@ -290,8 +290,8 @@ describe('Search resources', async () =>
 	{
 		const requestCopy = { ...request };
 		const body = {
-			UniqueFieldID: "NotSupported",
-			UniqueFieldList: ["User0", "User1"]
+			UniqueFieldID: 'NotSupported',
+			UniqueFieldList: ['User0', 'User1']
 		}
 		requestCopy.body = body;
 
@@ -305,7 +305,7 @@ describe('Search resources', async () =>
 	{
 		const requestCopy = { ...request };
 		const body = {
-			UniqueFieldID: "InternalID",
+			UniqueFieldID: 'InternalID',
 			UniqueFieldList: [11496119, 11443826],
 			KeyList: [11496119, 11443826]
 		}
@@ -321,7 +321,7 @@ describe('Search resources', async () =>
 	{
 		const requestCopy = { ...request };
 		const body = {
-			UniqueFieldList: ["User0", "User1"]
+			UniqueFieldList: ['User0', 'User1']
 		}
 		requestCopy.body = body;
 
@@ -331,7 +331,7 @@ describe('Search resources', async () =>
 
 	});
 
-	it("should translate Key in where clause to UUID", async () => 
+	it('should translate Key in where clause to UUID', async () => 
 	{
 
 		const requestCopy = {...request};
@@ -354,7 +354,7 @@ describe('Search resources', async () =>
 	it('should throw an "invalid resource" exception', async () => 
 	{
 
-		const papiService = new MockApiService("FAULTY_RESOURCE");
+		const papiService = new MockApiService('FAULTY_RESOURCE');
 
 		const request: Request = {
 			method: 'POST',

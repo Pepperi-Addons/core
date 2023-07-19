@@ -7,7 +7,7 @@ export default class AccountsCpiSideApiService extends BaseCpiSideApiService imp
 {
 	constructor(clientAddonUUID: string, iClientApi: IClientApiService)
 	{
-		super("accounts", clientAddonUUID, iClientApi);
+		super('accounts', clientAddonUUID, iClientApi);
 	}
 	
 	protected override filterFieldsToMatchCpi(schemaFields: string[]): string[]

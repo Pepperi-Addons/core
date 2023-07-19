@@ -1,8 +1,8 @@
-import { BaseCoreService } from "./baseCore.service";
-import { Request } from "@pepperi-addons/debug-server";
-import IPapiService from "./IPapi.service";
-import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
-import { SchemaManipulator } from "./schemaManipulator";
+import { BaseCoreService } from './baseCore.service';
+import { Request } from '@pepperi-addons/debug-server';
+import IPapiService from './IPapi.service';
+import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
+import { SchemaManipulator } from './schemaManipulator';
 
 
 export class AccountUsersCoreService extends BaseCoreService

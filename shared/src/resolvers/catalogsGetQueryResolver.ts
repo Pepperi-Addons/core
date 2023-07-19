@@ -1,6 +1,6 @@
-import IResolver from "./iResolver";
-import { Request } from "@pepperi-addons/debug-server"
-import ACatalogsResolver from "./aCatalogsResolver";
+import IResolver from './iResolver';
+import { Request } from '@pepperi-addons/debug-server'
+import ACatalogsResolver from './aCatalogsResolver';
 
 export default class CatalogsGetQueryResolver extends ACatalogsResolver implements IResolver
 {
@@ -21,9 +21,9 @@ export default class CatalogsGetQueryResolver extends ACatalogsResolver implemen
 			const fieldsArray = request.query.fields.split(',');
 			for (const index in fieldsArray) 
 			{
-				if(fieldsArray[index] === "CreationDate")
+				if(fieldsArray[index] === 'CreationDate')
 				{
-					fieldsArray[index] = "CreationDateTime";
+					fieldsArray[index] = 'CreationDateTime';
 				}
 			}
 			request.query.fields = fieldsArray.join();

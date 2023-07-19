@@ -4,42 +4,42 @@ import { batch, get_by_unique_field, resources, search } from './data_source_api
 // #region get by key
 export async function get_items_by_key(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "items");
+	return await resourcesFunctionAdapter(client, request, 'items');
 }
 
 export async function get_accounts_by_key(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "accounts");
+	return await resourcesFunctionAdapter(client, request, 'accounts');
 }
 
 export async function get_users_by_key(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "users");
+	return await resourcesFunctionAdapter(client, request, 'users');
 }
 
 export async function get_catalogs_by_key(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "catalogs");
+	return await resourcesFunctionAdapter(client, request, 'catalogs');
 }
 
 export async function get_account_users_by_key(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "account_users");
+	return await resourcesFunctionAdapter(client, request, 'account_users');
 }
 
 export async function get_contacts_by_key(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "contacts");
+	return await resourcesFunctionAdapter(client, request, 'contacts');
 }
 
 export async function get_profiles_by_key(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "profiles");
+	return await resourcesFunctionAdapter(client, request, 'profiles');
 }
 
 export async function get_roles_by_key(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "roles");
+	return await resourcesFunctionAdapter(client, request, 'roles');
 }
 // #endregion
 
@@ -47,84 +47,84 @@ export async function get_roles_by_key(client: Client, request: Request)
 
 export async function items(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "items");
+	return await resourcesFunctionAdapter(client, request, 'items');
 }
 
 export async function accounts(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "accounts");
+	return await resourcesFunctionAdapter(client, request, 'accounts');
 }
 
 export async function users(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "users");
+	return await resourcesFunctionAdapter(client, request, 'users');
 }
 
 export async function catalogs(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "catalogs");
+	return await resourcesFunctionAdapter(client, request, 'catalogs');
 }
 
 export async function account_users(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "account_users");
+	return await resourcesFunctionAdapter(client, request, 'account_users');
 }
 
 export async function contacts(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "contacts");
+	return await resourcesFunctionAdapter(client, request, 'contacts');
 }
 
 export async function profiles(client: Client, request: Request) 
 {
-	return await resourcesFunctionAdapter(client, request, "profiles");
+	return await resourcesFunctionAdapter(client, request, 'profiles');
 }
 
 export async function roles(client: Client, request: Request)
 {
-	return await resourcesFunctionAdapter(client, request, "roles")
+	return await resourcesFunctionAdapter(client, request, 'roles')
 }
 // #endregion
 
 // #region get by unique field
 export async function get_items_by_unique_field(client: Client, request: Request) 
 {
-	return await getByUniqueFieldFunctionAdapter(client, request, "items");
+	return await getByUniqueFieldFunctionAdapter(client, request, 'items');
 }
 
 export async function get_accounts_by_unique_field(client: Client, request: Request) 
 {
-	return await getByUniqueFieldFunctionAdapter(client, request, "accounts");
+	return await getByUniqueFieldFunctionAdapter(client, request, 'accounts');
 }
 
 export async function get_users_by_unique_field(client: Client, request: Request) 
 {
-	return await getByUniqueFieldFunctionAdapter(client, request, "users");
+	return await getByUniqueFieldFunctionAdapter(client, request, 'users');
 }
 
 export async function get_catalogs_by_unique_field(client: Client, request: Request) 
 {
-	return await getByUniqueFieldFunctionAdapter(client, request, "catalogs");
+	return await getByUniqueFieldFunctionAdapter(client, request, 'catalogs');
 }
 
 export async function get_account_users_by_unique_field(client: Client, request: Request) 
 {
-	return await getByUniqueFieldFunctionAdapter(client, request, "account_users");
+	return await getByUniqueFieldFunctionAdapter(client, request, 'account_users');
 }
 
 export async function get_contacts_by_unique_field(client: Client, request: Request) 
 {
-	return await getByUniqueFieldFunctionAdapter(client, request, "contacts");
+	return await getByUniqueFieldFunctionAdapter(client, request, 'contacts');
 }
 
 export async function get_profiles_by_unique_field(client: Client, request: Request) 
 {
-	return await getByUniqueFieldFunctionAdapter(client, request, "profiles");
+	return await getByUniqueFieldFunctionAdapter(client, request, 'profiles');
 }
 
 export async function get_roles_by_unique_field(client: Client, request: Request) 
 {
-	return await getByUniqueFieldFunctionAdapter(client, request, "roles");
+	return await getByUniqueFieldFunctionAdapter(client, request, 'roles');
 }
 
 async function getByUniqueFieldFunctionAdapter(client: Client, request: Request, resourceName: string)
@@ -136,42 +136,42 @@ async function getByUniqueFieldFunctionAdapter(client: Client, request: Request,
 // #region search
 export async function items_search(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "items");
+	return await searchFunctionAdapter(client, request, 'items');
 }
 
 export async function accounts_search(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "accounts");
+	return await searchFunctionAdapter(client, request, 'accounts');
 }
 
 export async function users_search(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "users");
+	return await searchFunctionAdapter(client, request, 'users');
 }
 
 export async function catalogs_search(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "catalogs");
+	return await searchFunctionAdapter(client, request, 'catalogs');
 }
 
 export async function account_users_search(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "account_users");
+	return await searchFunctionAdapter(client, request, 'account_users');
 }
 
 export async function contacts_search(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "contacts");
+	return await searchFunctionAdapter(client, request, 'contacts');
 }
 
 export async function profiles_search(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "profiles");
+	return await searchFunctionAdapter(client, request, 'profiles');
 }
 
 export async function roles_search(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "roles");
+	return await searchFunctionAdapter(client, request, 'roles');
 }
 
 async function searchFunctionAdapter(client: Client, request: Request, resourceName: string)
@@ -183,42 +183,42 @@ async function searchFunctionAdapter(client: Client, request: Request, resourceN
 // #region batch
 export async function batch_items(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "items");
+	return await searchFunctionAdapter(client, request, 'items');
 }
 
 export async function batch_accounts(client: Client, request: Request) 
 {
-	return await searchFunctionAdapter(client, request, "accounts");
+	return await searchFunctionAdapter(client, request, 'accounts');
 }
 
 export async function batch_users(client: Client, request: Request) 
 {
-	return await batchFunctionAdapter(client, request, "users");
+	return await batchFunctionAdapter(client, request, 'users');
 }
 
 export async function batch_catalogs(client: Client, request: Request) 
 {
-	return await batchFunctionAdapter(client, request, "catalogs");
+	return await batchFunctionAdapter(client, request, 'catalogs');
 }
 
 export async function batch_account_users(client: Client, request: Request) 
 {
-	return await batchFunctionAdapter(client, request, "account_users");
+	return await batchFunctionAdapter(client, request, 'account_users');
 }
 
 export async function batch_contacts(client: Client, request: Request) 
 {
-	return await batchFunctionAdapter(client, request, "contacts");
+	return await batchFunctionAdapter(client, request, 'contacts');
 }
 
 export async function batch_profiles(client: Client, request: Request) 
 {
-	return await batchFunctionAdapter(client, request, "profiles");
+	return await batchFunctionAdapter(client, request, 'profiles');
 }
 
 export async function batch_roles(client: Client, request: Request) 
 {
-	return await batchFunctionAdapter(client, request, "roles");
+	return await batchFunctionAdapter(client, request, 'roles');
 }
 
 async function batchFunctionAdapter(client: Client, request: Request, resourceName: string)

@@ -3,7 +3,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { CoreSchemaService } from '../coreSchema.service';
 import { MockApiService, mockClient } from './consts';
-import { Request } from "@pepperi-addons/debug-server";
+import { Request } from '@pepperi-addons/debug-server';
 import { Helper } from '../helper';
 
 chai.use(promised);
@@ -26,7 +26,7 @@ describe('Create schema', async () =>
 		return Promise.resolve()
 	};
 
-	const papiService = new MockApiService("users");
+	const papiService = new MockApiService('users');
 
 	it('should return a valid schema', async () => 
 	{
@@ -65,7 +65,7 @@ describe('Create schema', async () =>
 	it('should throw an "invalid resource" exception', async () => 
 	{
 
-		const papiService = new MockApiService("FAULTY_RESOURCE");
+		const papiService = new MockApiService('FAULTY_RESOURCE');
 
 		const request: Request = {
 			method: 'POST',

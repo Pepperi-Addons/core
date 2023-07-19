@@ -1,6 +1,6 @@
-import IResolver from "./iResolver";
-import { Request } from "@pepperi-addons/debug-server"
-import ACatalogsResolver from "./aCatalogsResolver";
+import IResolver from './iResolver';
+import { Request } from '@pepperi-addons/debug-server'
+import ACatalogsResolver from './aCatalogsResolver';
 
 export default class CatalogsSearchBodyResolver extends ACatalogsResolver implements IResolver
 {
@@ -22,9 +22,9 @@ export default class CatalogsSearchBodyResolver extends ACatalogsResolver implem
 		{
 			for (const index in request.body.Fields) 
 			{
-				if(request.body.Fields[index] === "CreationDate")
+				if(request.body.Fields[index] === 'CreationDate')
 				{
-					request.body.Fields[index] = "CreationDateTime";
+					request.body.Fields[index] = 'CreationDateTime';
 				}
 			}
 		}

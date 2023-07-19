@@ -4,6 +4,7 @@ import BasePapiService from './basePapi.service';
 import { UsersPapiService } from './usersPapi.service';
 import { DIMXObject, AddonDataScheme } from '@pepperi-addons/papi-sdk';
 import { RolesPapiService } from './rolesPapi.service';
+import { BaseResourceFetcherService, ResourceFetcherByKeyService, ResourceFetcherExportService } from './resourceFetcherServices';
 
 export async function create(client: Client, request: Request) 
 {
@@ -11,7 +12,7 @@ export async function create(client: Client, request: Request)
 
 	switch (request.method) 
 	{
-	case "POST": {
+	case 'POST': {
 		const coreSchema = getCoreSchemaService(client, request);
 		return await coreSchema.createSchema();
 	}
@@ -26,7 +27,7 @@ export async function purge(client: Client, request: Request)
 
 	switch (request.method) 
 	{
-	case "POST": {
+	case 'POST': {
 		const coreSchema = getCoreSchemaService(client, request);
 		return await coreSchema.purgeSchema();
 	}
@@ -49,9 +50,10 @@ export async function papi_export(client: Client, request: Request)
 	resourcesRequest.query['page'] = request.body['Page'];
 	resourcesRequest.query['page_size'] = request.body['MaxPageSize'];
 	resourcesRequest.query['order_by'] = request.body['OrderBy'];
-	resourcesRequest.query['include_deleted'] = request.body["IncludeDeleted"];
-	resourcesRequest.query['resource_name'] = request.body["Resource"];
-	resourcesRequest.query['addon_uuid'] = request.body["AddonUUID"];
+	resourcesRequest.query['page_key'] = request.body['PageKey'];
+	resourcesRequest.query['include_deleted'] = request.body['IncludeDeleted'];
+	resourcesRequest.query['resource_name'] = request.body['Resource'];
+	resourcesRequest.query['addon_uuid'] = request.body['AddonUUID'];
 
 	if(request.body.DataSourceExportParams?.ForcedWhereClauseAddition)
 	{
@@ -62,9 +64,10 @@ export async function papi_export(client: Client, request: Request)
 
 	resourcesRequest.body = {};
 
-	const exportResult = await resources(client, resourcesRequest);
+	const coreService = await getCoreService(client, resourcesRequest);
+	const resourceFetcherService = new ResourceFetcherExportService(coreService);
 
-	return {Objects: exportResult};
+	return await resourceFetcherService.fetch(resourcesRequest);
 }
 
 export async function resources(client: Client, request: Request) 
@@ -73,20 +76,22 @@ export async function resources(client: Client, request: Request)
 
 	switch (request.method) 
 	{
-	case "GET":
+	case 'GET':
 	{
 		const coreService = await getCoreService(client, request);
 
 		if(request.query.key)
 		{
-			return await coreService.getResourceByKey();
+			const resourceFetcherService = new ResourceFetcherByKeyService(coreService);
+			return await resourceFetcherService.fetch(request);
 		}
 		else
 		{
-			return await coreService.getResources();
+			const resourceFetcherService = new BaseResourceFetcherService(coreService);
+			return await resourceFetcherService.fetch(request);
 		}
 	}
-	case "POST":
+	case 'POST':
 	{
 		const coreService = await getCoreService(client, request);
 		return await coreService.upsertResource();
@@ -106,7 +111,7 @@ export async function batch(client: Client, request: Request) : Promise<{ DIMXOb
 
 	switch (request.method) 
 	{
-	case "POST":
+	case 'POST':
 	{
 		const coreService = await getCoreService(client, request);
 		return await coreService.batch();
@@ -124,7 +129,7 @@ export async function get_by_unique_field(client: Client, request: Request)
 
 	switch (request.method) 
 	{
-	case "GET":
+	case 'GET':
 	{
 		const coreService = await getCoreService(client, request);
 		return await coreService.getResourceByUniqueField();
@@ -142,7 +147,7 @@ export async function search(client: Client, request: Request)
 
 	switch (request.method) 
 	{
-	case "POST":
+	case 'POST':
 	{
 		const coreService = await getCoreService(client, request);
 		return coreService.search();
@@ -170,25 +175,25 @@ async function getCoreService(client: Client, request: Request): Promise<BaseCor
 
 	switch(request.query?.resource_name)
 	{
-	case "users":
-	case "employees":
+	case 'users':
+	case 'employees':
 	{
 		core = new UsersCoreService(resourceSchema, request, papiService);
 		break;
 	}
-	case "catalogs":
-	case "accounts":
+	case 'catalogs':
+	case 'accounts':
 	{
 		core = new CatalogsAndAccountsCoreService(resourceSchema, request, papiService);
 		break;
 	}
-	case "roles":
+	case 'roles':
 	{
 		core = new RolesCoreService(resourceSchema, request, papiService);
 		break;
 	}
-	case "account_users":
-	case "account_employees":
+	case 'account_users':
+	case 'account_employees':
 	{
 		core = new AccountUsersCoreService(resourceSchema, request, papiService);
 		break;
@@ -209,20 +214,20 @@ function getPapiService(client: Client, resourceName: string) : IPapiService
 
 	switch(resourceName)
 	{
-	case "users":
-	case "employees":
+	case 'users':
+	case 'employees':
 	{
 		papiService = new UsersPapiService(papiClient);
 		break;
 	}
-	case "account_employees":
+	case 'account_employees':
 	{
 		// account_employees queries should use the account_users api.
 		// For more information, please see: https://pepperi.atlassian.net/browse/DI-23201
-		papiService = new BasePapiService("account_users", papiClient);
+		papiService = new BasePapiService('account_users', papiClient);
 		break;
 	}
-	case "roles":
+	case 'roles':
 	{
 		papiService = new RolesPapiService(resourceName, papiClient);
 		break;

@@ -1,9 +1,9 @@
-import { AddonDataScheme } from "@pepperi-addons/papi-sdk";
-import { BaseCoreService } from "./baseCore.service";
-import { UNIQUE_FIELDS } from "./constants";
-import { SchemaManipulator } from "./schemaManipulator";
-import { Request } from "@pepperi-addons/debug-server";
-import IPapiService from "./IPapi.service";
+import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
+import { BaseCoreService } from './baseCore.service';
+import { UNIQUE_FIELDS } from './constants';
+import { SchemaManipulator } from './schemaManipulator';
+import { Request } from '@pepperi-addons/debug-server';
+import IPapiService from './IPapi.service';
 
 
 export class UsersCoreService extends BaseCoreService
@@ -106,8 +106,8 @@ export class UsersCoreService extends BaseCoreService
 	 */
 	private extractUniqueFieldIdAndValueFromRequest()
 	{
-		let field_id = "";
-		let value = "";
+		let field_id = '';
+		let value = '';
 
 		for (const uniqueField of UNIQUE_FIELDS) 
 		{
