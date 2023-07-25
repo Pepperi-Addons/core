@@ -73,10 +73,7 @@ export class BaseCoreService
 		case 'InternalID':
 		{
 
-			const papiItem = await this.papi.getResourceByInternalId(requestedValue);
-			const translatedItem = this.translatePapiItemToItem(papiItem);
-
-			return translatedItem;
+			return await this.handleGetResourceByInternalID(requestedValue);
 		}
 		case 'ExternalID':
 		{
@@ -94,6 +91,13 @@ export class BaseCoreService
 			throw new Error(errorMessage);
 		}
 		}
+	}
+
+	protected async handleGetResourceByInternalID(requestedValue: any) {
+		const papiItem = await this.papi.getResourceByInternalId(requestedValue);
+		const translatedItem = this.translatePapiItemToItem(papiItem);
+
+		return translatedItem;
 	}
 
 	/**
