@@ -1,7 +1,7 @@
 import { Request } from '@pepperi-addons/debug-server/dist';
 import { BaseResourceFetcherService } from './baseResourceFetcher.service';
 
-interface PageKey {
+export interface PageKey {
     Page: number;
     PageSize: number;
 }
