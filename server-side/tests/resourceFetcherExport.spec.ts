@@ -137,7 +137,8 @@ describe('Export resources', async () =>
         
 	});
 });
-async function expectPageKey(resourceFetcherService: ResourceFetcherExportService, requestCopy: { method: string; body: any; query: any; originalUrl?: string | undefined; path?: string | undefined; header: any; }) {
+async function expectPageKey(resourceFetcherService: ResourceFetcherExportService, requestCopy: { method: string; body: any; query: any; originalUrl?: string | undefined; path?: string | undefined; header: any; }) 
+{
 	const res = await resourceFetcherService.fetch(requestCopy);
 
 	expect(res).to.be.an('Object').with.property('NextPageKey');
@@ -152,7 +153,8 @@ async function expectPageKey(resourceFetcherService: ResourceFetcherExportServic
 	expectValidResponseObjects(res);
 }
 
-function expectValidResponseObjects(res: any) {
+function expectValidResponseObjects(res: any) 
+{
 	expect(res).to.be.an('Object').with.property('Objects');
 	expect(res.Objects).to.be.an('Array');
 	expect(res.Objects.length).to.equal(1);

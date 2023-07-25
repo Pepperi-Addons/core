@@ -93,7 +93,8 @@ export class BaseCoreService
 		}
 	}
 
-	protected async handleGetResourceByInternalID(requestedValue: any) {
+	protected async handleGetResourceByInternalID(requestedValue: any) 
+	{
 		const papiItem = await this.papi.getResourceByInternalId(requestedValue);
 		const translatedItem = this.translatePapiItemToItem(papiItem);
 
