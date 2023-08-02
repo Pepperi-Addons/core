@@ -391,7 +391,9 @@ export class BaseCoreService
 
 		if (fields.includes('Key')) 
 		{
-			fields.splice(fields.indexOf('Key'), 1);
+			// Remove any occurrences of Key
+			// And add the papiKeyPropertyName field once instead
+			fields = fields.filter(field => field !== 'Key');
 			fields.push(this.papiKeyPropertyName);
 		}
 
