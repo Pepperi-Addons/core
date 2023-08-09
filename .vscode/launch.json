@@ -82,7 +82,11 @@
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
-            "protocol": "inspector"
+            "protocol": "inspector",
+            "preLaunchTask": {
+                "script": "build-shared",
+                "type": "npm"
+            }
         }
     ]
 }
