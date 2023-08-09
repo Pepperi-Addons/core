@@ -353,7 +353,8 @@ export class BaseCoreService
 			// Create the JSON filter from the SQL where clause
 			const schemaFields = await this.schemaFieldsGetterService.getSchemaFields(this.schema);
 			// create a [key: string]: FieldType object from the schema fields
-			const schemaFieldsObject = Object.keys(schemaFields).reduce((acc, curr) => {
+			const schemaFieldsObject = Object.keys(schemaFields).reduce((acc, curr) => 
+			{
 				acc[curr] = schemaFields[curr].FieldType;
 				return acc;
 			}, {} as {[key: string]: FieldType});
@@ -361,8 +362,10 @@ export class BaseCoreService
 
 			const jsonFilter: JSONFilter = parse(whereClause, schemaFieldsObject)!;
 
-			const nodeTransformers: {[key: string]: NodeTransformer} = Object.keys(schemaFields).reduce((acc, curr) => {
-				acc[curr] = (node: JSONBaseFilter) => {
+			const nodeTransformers: {[key: string]: NodeTransformer} = Object.keys(schemaFields).reduce((acc, curr) => 
+			{
+				acc[curr] = (node: JSONBaseFilter) => 
+				{
 					node.ApiName = schemaFields[curr]?.TranslatedFieldName ?? node.ApiName;
 				}
 				return acc;

@@ -1,4 +1,4 @@
-import { SchemeField } from "@pepperi-addons/papi-sdk";
+import { SchemeField } from '@pepperi-addons/papi-sdk';
 
 export type ResourceField = {
     'InternalID': number,
@@ -41,28 +41,28 @@ export const DIMX_ADDON_UUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
 
 export function getPapiKeyPropertyName(resourceName: string)
 {
-    switch(resourceName)
-    {
-        case 'roles':
-        {
-            return 'Name';
-        }
-        default:
-        {
-            return 'UUID';
-        }
-    }
+	switch(resourceName)
+	{
+	case 'roles':
+	{
+		return 'Name';
+	}
+	default:
+	{
+		return 'UUID';
+	}
+	}
 }
 
 export function getDefaultSchemaFields(): { [key: string]: SchemeField }
 {
-    const result: { [key: string]: SchemeField } = {
-        'Key': {Type: 'String'},
-        'ModificationDateTime': {Type: 'DateTime'},
-        'CreationDateTime': {Type: 'DateTime'},
-        'Hidden': {Type: "Bool"},
+	const result: { [key: string]: SchemeField } = {
+		'Key': {Type: 'String'},
+		'ModificationDateTime': {Type: 'DateTime'},
+		'CreationDateTime': {Type: 'DateTime'},
+		'Hidden': {Type: 'Bool'},
 
-    };
+	};
     
-    return result;
+	return result;
 }
