@@ -1,4 +1,4 @@
-import {IPapiService, PapiBatchResponse, ResourceFields, SearchResult} from 'core-shared';
+import {IPapiService, PapiBatchResponse, ResourceFields, SchemaFieldsGetterService, SearchResult} from 'core-shared';
 import { GetParams, SearchParams, SearchResult as ClientApiSearchResult, UpdateParams } from '@pepperi-addons/client-api';
 import { FieldType } from '@pepperi-addons/pepperi-filters';
 import { parse as transformSqlToJson } from '@pepperi-addons/pepperi-filters';
@@ -10,8 +10,11 @@ import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 export default class BaseCpiSideApiService implements IPapiService
 {
+	protected schemaFieldsGetter: SchemaFieldsGetterService;
 	constructor(protected resourceName: string, protected clientAddonUUID: string, protected iClientApi: IClientApiService)
-	{}
+	{	
+		this.schemaFieldsGetter = new SchemaFieldsGetterService(this);
+	}
 
 	async getResourceFields(): Promise<ResourceFields> 
 	{
@@ -308,19 +311,21 @@ export default class BaseCpiSideApiService implements IPapiService
 
 	protected async getClientApiFieldsTypes() : Promise<{[key: string]: FieldType}>
 	{
-    	const res: {[key: string]: FieldType} = {}
-    	const schema = (await this.getResourceSchema()) as unknown as {[key: string]: any, Key: string};
+		const res: {[key: string]: FieldType} = {}
+
+    	const schema = await this.getResourceSchema();
+		const schemaFields = await this.schemaFieldsGetter.getSchemaFields(schema);
         
-    	for(const fieldName in schema.Fields)
+    	for(const fieldName in schemaFields)
     	{
-    		res[fieldName] = schema.Fields[fieldName].Type
+    		res[fieldName] = schemaFields[fieldName].FieldType;
     	}
 
     	return res;
 	}
 
-	async getResourceSchema(): Promise<AddonDataScheme>
+	async getResourceSchema(resourceName?: string): Promise<AddonDataScheme>
 	{
-		return await pepperi.addons.data.schemes.uuid(this.clientAddonUUID).name(this.resourceName).get() as unknown as AddonDataScheme;
+		return await pepperi.addons.data.schemes.uuid(this.clientAddonUUID).name(resourceName ?? this.resourceName).get() as unknown as AddonDataScheme;
 	}
 }

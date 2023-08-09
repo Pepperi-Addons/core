@@ -9,9 +9,9 @@ export class Helper
 		return new PapiClient({
 			baseURL: client.BaseURL,
 			token: client.OAuthAccessToken,
-			addonUUID: addonUUID ?? client.AddonUUID,
 			actionUUID: client.ActionUUID,
-			addonSecretKey: secretKey ?? client.AddonSecretKey,
+			...(addonUUID && {addonUUID: addonUUID}),
+			...(secretKey && {addonSecretKey: secretKey}),
 		});
 	}
 

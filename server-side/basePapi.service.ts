@@ -1,9 +1,11 @@
-import { AddonDataScheme, PapiClient } from '@pepperi-addons/papi-sdk';
+import { AddonDataScheme, FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ErrorWithStatus, Helper, IPapiService, PapiBatchResponse, ResourceFields, SearchResult } from 'core-shared';
 
 
 export class BasePapiService implements IPapiService
 {
+	protected cachedSchemaMap: {[key: string]: AddonDataScheme} = {};
+
 	constructor(protected resourceName: string, protected papiClient: PapiClient) 
 	{}
 
@@ -188,9 +190,31 @@ export class BasePapiService implements IPapiService
 		
 	}
 
-	public async getResourceSchema(): Promise<AddonDataScheme> 
+	public async getResourceSchema(resourceName: string = this.resourceName): Promise<AddonDataScheme> 
 	{
-		return await this.papiClient.get(`/addons/data/schemes/${this.resourceName}`);
+		if(!this.cachedSchemaMap.hasOwnProperty(resourceName))
+		{
+			// Use GET so we don't have to use a papiClient with owner ID.
+			const findOptions: FindOptions = {
+				where: `Name='${resourceName}'`
+			};
+
+			const resArray =  await this.papiClient.addons.data.schemes.get(findOptions);
+
+			if(resArray.length === 0)
+			{
+				const errorMessage = `failed with status: 404 - Resource ${resourceName} not found`;
+				console.error(errorMessage);
+
+				const error = new Error(errorMessage);
+				throw new ErrorWithStatus(error);
+
+			}
+
+			this.cachedSchemaMap[resourceName] = resArray[0];
+		}
+		
+		return this.cachedSchemaMap[resourceName];
 	}
 }
 

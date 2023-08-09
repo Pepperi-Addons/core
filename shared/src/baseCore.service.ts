@@ -1,13 +1,22 @@
 import { Request } from '@pepperi-addons/debug-server';
 import { DIMXObject, AddonDataScheme } from '@pepperi-addons/papi-sdk';
 import { FieldType, JSONBaseFilter, JSONFilter, parse, transform, toApiQueryString } from '@pepperi-addons/pepperi-filters';
+import { NodeTransformer } from '@pepperi-addons/pepperi-filters/build/json-filter-transformer';
 
-import { PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from './constants';
+import { getPapiKeyPropertyName, PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from './constants';
 import IPapiService from './IPapi.service';
 import { ReferenceTranslationManager } from './referenceTranslators/referenceTranslationExecutioner';
+import { SchemaFieldsGetterService } from './schemaFieldsGetter.service';
 
 export class BaseCoreService 
 {
+	protected schemaFieldsGetterService: SchemaFieldsGetterService;
+	/**
+	 * The fields that are always returned in the schema
+	 */
+	protected defaultSchemaFields: string[] = ['ModificationDateTime', 'CreationDateTime', 'Key'];
+
+
 	protected get uniqueFields(): string[]
 	{
 		return UNIQUE_FIELDS;
@@ -15,12 +24,13 @@ export class BaseCoreService
 
 	protected get papiKeyPropertyName(): string
 	{
-		return 'UUID';
+		return getPapiKeyPropertyName(this.schema.Name);
 	}
 
 	constructor(protected schema: AddonDataScheme, protected request: Request, protected papi: IPapiService) 
 	{
 		this.validateResource();
+		this.schemaFieldsGetterService = new SchemaFieldsGetterService(this.papi);
 	}
 
 	/**
@@ -47,7 +57,7 @@ export class BaseCoreService
 		this.validateKey(requestedKey);
 
 		const papiItem = await this.papi.getResourceByKey(requestedKey);
-		const translatedItem = this.translatePapiItemToItem(papiItem);
+		const translatedItem = await this.translatePapiItemToItem(papiItem);
 
 		return translatedItem;
 	}
@@ -78,7 +88,7 @@ export class BaseCoreService
 		case 'ExternalID':
 		{
 			const papiItem = await this.papi.getResourceByExternalId(requestedValue);
-			const translatedItem = this.translatePapiItemToItem(papiItem);
+			const translatedItem = await this.translatePapiItemToItem(papiItem);
 
 			return translatedItem;
 		}
@@ -96,7 +106,7 @@ export class BaseCoreService
 	protected async handleGetResourceByInternalID(requestedValue: any) 
 	{
 		const papiItem = await this.papi.getResourceByInternalId(requestedValue);
-		const translatedItem = this.translatePapiItemToItem(papiItem);
+		const translatedItem = await this.translatePapiItemToItem(papiItem);
 
 		return translatedItem;
 	}
@@ -125,11 +135,11 @@ export class BaseCoreService
 	{
 		this.validateSearchPrerequisites();
 		// Create a papi Search body
-		const papiSearchBody = this.translateBodyToPapiSearchBody();
+		const papiSearchBody = await this.translateBodyToPapiSearchBody();
 
 		const res: SearchResult = await this.papi.searchResource(papiSearchBody);
 		
-		res.Objects = this.translatePapiItemToItem(res.Objects);
+		res.Objects = await this.translatePapiItemToItem(res.Objects);
 
 		// if Fields are requested, drop any other fields
 		// PAPI handles this for us, but this should be done
@@ -193,27 +203,13 @@ export class BaseCoreService
 	/**
 	 * Returns a papi compliant search body
 	 */
-	private translateBodyToPapiSearchBody()
+	private async translateBodyToPapiSearchBody()
 	{
 		const papiSearchBody: any = {};
 		
-		this.translatePapiSupportedSearchFields(papiSearchBody);
+		await this.translatePapiSupportedSearchFields(papiSearchBody);
 
-		// If fields include property Key, remove it from the fields list and and UUID instead.
-		let fields = papiSearchBody.Fields?.split(',');
-
-		// Remove possible duplicates in Fields
-		fields = fields?.filter((item,index) => fields.indexOf(item) === index);
-
-		if(fields?.includes('Key'))
-		{
-			fields.splice(fields.indexOf('Key'), 1);
-			fields.push(this.papiKeyPropertyName);
-
-			papiSearchBody.Fields = fields.join(',');
-		}
-
-		papiSearchBody.Where = this.translateWhereClauseKeyToUUID(papiSearchBody.Where);
+		papiSearchBody.Where = await this.translateWhereClauseKeyToUUID(papiSearchBody.Where);
 
 		// If the query passed a page_size=-1, remove it.
 		// Resources with a lot of objects might time out otherwise.
@@ -249,7 +245,7 @@ export class BaseCoreService
 		return res;
 	}
 
-	protected translatePapiSupportedSearchFields(papiSearchBody: any) 
+	protected async translatePapiSupportedSearchFields(papiSearchBody: any) 
 	{
 		// populate papiSearchBody with the properties on the request's body, keeping any existing properties on the papiSearchBody.
 		Object.keys(this.request.body).map(key => papiSearchBody[key] = this.request.body[key]);
@@ -265,10 +261,12 @@ export class BaseCoreService
 			papiSearchBody.UniqueFieldID = this.papiKeyPropertyName;
 		}
 
-		papiSearchBody.Fields = papiSearchBody.Fields ? papiSearchBody.Fields : this.getSchemasFields().split(',');
+		const fieldsToTranslate: string[] = papiSearchBody.Fields ?? this.getSchemasFields().split(',');
+		const schemaFieldsResult = await this.schemaFieldsGetterService.getSchemaFields(this.schema);
+		papiSearchBody.Fields = fieldsToTranslate.map(field => schemaFieldsResult[field] ? schemaFieldsResult[field].TranslatedFieldName : field);
 
 		// Fields are passed as an array of strings, while PAPI supports a string that is separated by commas.
-		papiSearchBody.Fields = this.changeKeyFieldQueryToUuidFieldQuery(papiSearchBody.Fields);
+		papiSearchBody.Fields = papiSearchBody.Fields.join(',');
 	}
 
 	/**
@@ -282,7 +280,10 @@ export class BaseCoreService
 	 */
 	protected getSchemasFields(): string
 	{
-		return Object.keys(this.schema.Fields!).join(',');
+		const schemaFields = Object.keys(this.schema.Fields!);
+		// Add default fields to the fields array
+		const fieldsArray = [...schemaFields, ...this.defaultSchemaFields];
+		return fieldsArray.join(',');
 	}
 
 	/**
@@ -296,13 +297,16 @@ export class BaseCoreService
 
 		// Set the fields to be returned by PAPI
 		// For more information see: https://pepperi.atlassian.net/browse/DI-23169
-		queryCopy.fields = queryCopy.fields ? queryCopy.fields : this.getSchemasFields();
 
-		// Since PAPI does not have a Key field, we need to remove it from the query
-		// And add the equivalent UUID field to the query
-		queryCopy.fields = this.changeKeyFieldQueryToUuidFieldQuery(queryCopy.fields);
+		const fieldsToTranslate = (queryCopy.fields ? queryCopy.fields : this.getSchemasFields()).split(',');
+		const schemaFieldsResult = await this.schemaFieldsGetterService.getSchemaFields(this.schema);
 
-		queryCopy.where = this.translateWhereClauseKeyToUUID(queryCopy.where);
+		queryCopy.fields = fieldsToTranslate.map(field => schemaFieldsResult[field] ? schemaFieldsResult[field].TranslatedFieldName : field);
+
+		// pass the fields as a string, separated by commas
+		queryCopy.fields = queryCopy.fields.join(',');
+
+		queryCopy.where = await this.translateWhereClauseKeyToUUID(queryCopy.where);
 
 		// If the query passed a page_size=-1, remove it.
 		// Resources with a lot of objects might time out otherwise.
@@ -323,7 +327,7 @@ export class BaseCoreService
 
 		const papiItems = await this.papi.getResources(queryCopy);
 
-		const translatedItems = this.translatePapiItemToItem(papiItems);
+		const translatedItems = await this.translatePapiItemToItem(papiItems);
 
 		// if Fields are requested, drop any other fields
 		// PAPI handles this for us, but this should be done
@@ -340,22 +344,32 @@ export class BaseCoreService
 	 * @returns
 	 * 
 	 */ 
-	private translateWhereClauseKeyToUUID(whereClause: string | undefined): string | undefined
+	private async translateWhereClauseKeyToUUID(whereClause: string | undefined): Promise<string | undefined>
 	{
 		let newWhereClause: string | undefined = undefined;
 		
 		if(whereClause)
 		{
 			// Create the JSON filter from the SQL where clause
-			const jsonFilter: JSONFilter = parse(whereClause, this.getSchemaFieldsTypes())!;
+			const schemaFields = await this.schemaFieldsGetterService.getSchemaFields(this.schema);
+			// create a [key: string]: FieldType object from the schema fields
+			const schemaFieldsObject = Object.keys(schemaFields).reduce((acc, curr) => {
+				acc[curr] = schemaFields[curr].FieldType;
+				return acc;
+			}, {} as {[key: string]: FieldType});
+
+
+			const jsonFilter: JSONFilter = parse(whereClause, schemaFieldsObject)!;
+
+			const nodeTransformers: {[key: string]: NodeTransformer} = Object.keys(schemaFields).reduce((acc, curr) => {
+				acc[curr] = (node: JSONBaseFilter) => {
+					node.ApiName = schemaFields[curr]?.TranslatedFieldName ?? node.ApiName;
+				}
+				return acc;
+			}, {} as {[key: string]: NodeTransformer});
 
 			// Replace all Key fields with this.papiKeyPropertyName fields
-			const transformedJsonFilter = transform(jsonFilter, {
-				'Key': (node: JSONBaseFilter) => 
-				{
-					node.ApiName = this.papiKeyPropertyName;
-				}
-			});
+			const transformedJsonFilter = transform(jsonFilter, nodeTransformers);
 
 			// Transform the JSON filter back to SQL where clause
 			newWhereClause = toApiQueryString(transformedJsonFilter);
@@ -366,42 +380,6 @@ export class BaseCoreService
 
 	}
 
-	private getSchemaFieldsTypes(): {[key: string]: FieldType}
-	{
-    	const res: {[key: string]: FieldType} = {}
-        
-    	for(const fieldName in this.schema.Fields)
-    	{
-    		res[fieldName] = this.schema.Fields[fieldName].Type as FieldType;
-    	}
-
-    	return res;
-	}
-
-	/**
-	 * If a query contains a key field, change it to a UUID field
-	 * @param query
-	 */
-	private changeKeyFieldQueryToUuidFieldQuery(fields: string | string[]): string
-	{
-		// Set fields: string[]
-		// In case of an array, copy the fields so the original fields
-		// array isn't affected by any changes
-		fields = Array.isArray(fields) ? [...fields] : fields.split(',');
-
-		if (fields.includes('Key')) 
-		{
-			// Remove any occurrences of Key
-			// And add the papiKeyPropertyName field once instead
-			fields = fields.filter(field => field !== 'Key');
-			fields.push(this.papiKeyPropertyName);
-		}
-
-		// Set fields: string
-		fields = fields.join(',');
-
-		return fields;
-	}
 	/**
 	 * Upserts a resource
 	 * @returns the updated resource
@@ -413,7 +391,7 @@ export class BaseCoreService
 		// Create the PAPI item
 		const papiItem = await this.papi.upsertResource(papiItemRequestBody);
 		// Translate the PAPI item to an item
-		const translatedItem = this.translatePapiItemToItem(papiItem);
+		const translatedItem = await this.translatePapiItemToItem(papiItem);
 
 		return translatedItem;
 	}
@@ -557,23 +535,24 @@ export class BaseCoreService
 	 * @param papiItem the papi item to translate
 	 * @returns a resource item
 	 */
-	protected translatePapiItemToItem(papiItem: any | any[]) 
+	protected async translatePapiItemToItem(papiItem: any | any[], fields?: string[]) 
 	{
+		fields = fields ?? this.getSchemasFields().split(',');
+
 		const isArray = Array.isArray(papiItem);
 		const papiItems = isArray ? papiItem : [papiItem];
 
 		// Add Key property, equal to UUID.
-		let resItems = this.addKeyProperty(papiItems);
+		let resItems = await this.translateKeyProperty(papiItems);
 
-		// Remove properties that are not part of the schema.
-		resItems = this.removePropertiesNotListedOnSchema(resItems);
+		// Translate PAPI references to ADAL references.
+		resItems = await this.translatePapiReferencesToAdalReferences(resItems, fields);
 
 		// Add ms to DateTime fields. 
 		// For more information see: https://pepperi.atlassian.net/browse/DI-23237
-		resItems = this.addMsToDateTimeFields(resItems);
-
-		// Translate PAPI references to ADAL references.
-		resItems = this.translatePapiReferencesToAdalReferences(resItems);
+		// As the function relies on the original schema field names, it must be called
+		// after the call to translatePapiReferencesToAdalReferences.
+		resItems = await this.addMsToDateTimeFields(resItems);
 
 		return isArray ? resItems : resItems[0];
 	}
@@ -583,7 +562,7 @@ export class BaseCoreService
 	 * @param papiItem 
 	 * @returns 
 	 */
-	private addKeyProperty(papiItems: any[]): any[]
+	private translateKeyProperty(papiItems: any[]): any[]
 	{
 		const resItems = papiItems.map(papiItem => 
 		{
@@ -592,39 +571,22 @@ export class BaseCoreService
 
 		resItems.map(papiItem => 
 		{
-			const keyValue = papiItem[this.papiKeyPropertyName];
-			papiItem.Key = keyValue ? keyValue.toString() : '';
-		})
-		return resItems;
-	}
-
-	removePropertiesNotListedOnSchema(items: any[]): any[]
-	{
-		const resItems = this.shallowCopyObjects(items);
-
-		if(resItems.length > 0)
-		{
-		// Arbitrarily work on the fields of the first item.
-		// Since all items belong to the same resource, they have the same fields
-			const resItemFields = Object.keys(resItems[0]);
-			const schemaFields = Object.keys(this.schema.Fields!);
-
-			// Keep only fields that are listed on the schema, or are TSA fields.
-			const fieldsToDelete = resItemFields.filter(field => this.shouldFieldBeDeleted(field, schemaFields));
-			fieldsToDelete.map(absentField => resItems.map(resItem => 
+			if(Object.keys(papiItem).includes(this.papiKeyPropertyName))
 			{
-				delete resItem[absentField];
-			}));
-		}
-		
-		
+				const keyValue = papiItem[this.papiKeyPropertyName];
+				papiItem.Key = keyValue ? keyValue.toString() : '';
+
+				delete papiItem[this.papiKeyPropertyName];
+			}
+		});
+
 		return resItems;
 	}
 
 	/**
 	 * Add milliseconds to DateTime fields on the PAPI item.
 	 */
-	private addMsToDateTimeFields(papiItems: any[]): any[]
+	private async addMsToDateTimeFields(papiItems: any[]): Promise<any[]>
 	{
 		const resItems = this.shallowCopyObjects(papiItems);
 
@@ -634,10 +596,10 @@ export class BaseCoreService
 			// Since all items belong to the same resource, they have the same fields
 
 			const resItemFields = Object.keys(resItems[0]);
-			const schemaFields = Object.keys(this.schema.Fields!);
 
 			// Keep fields that are part of the schema, and are of type DateTime
-			const dateTimeFields = resItemFields.filter(field => schemaFields.includes(field) && this.schema.Fields![field].Type === 'DateTime');
+			const schemaFields = await this.schemaFieldsGetterService.getSchemaFields(this.schema);
+			const dateTimeFields = resItemFields.filter(field => schemaFields[field]?.FieldType === 'DateTime');
 
 			// Set a new Date on the resItem
 			dateTimeFields.map(dateTimeField => resItems.map(resItem => 
@@ -661,17 +623,29 @@ export class BaseCoreService
 		});
 	}
 
-	protected shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean
-	{
-		return !(schemaFields.includes(field) || field.startsWith('TSA') || field.startsWith('PSA'));
-	}
 
-	private translatePapiReferencesToAdalReferences(papiItems: any[]): any[]
+	private async translatePapiReferencesToAdalReferences(papiItems: any[], fields: string[]): Promise<any[]>
 	{
-		const referenceTranslationExecutioner = new ReferenceTranslationManager(this.schema);
-		const resItem = referenceTranslationExecutioner.papiToAdal(papiItems);
+		const schemaFieldsResult = await this.schemaFieldsGetterService.getSchemaFields(this.schema);
+		const resItems = papiItems.map(papiItem =>
+		{
+			const papiItemShallowCopy = {...papiItem};
+			const papiItemKeys = Object.keys(papiItemShallowCopy);
+			const papiItemReferences = papiItemKeys.filter(key => key.includes('.'));
+			for (const papiItemKey of papiItemReferences)
+			{
+				const originalFieldName = fields.find(field => schemaFieldsResult[field]?.TranslatedFieldName === papiItemKey);
+				if (originalFieldName && originalFieldName !== papiItemKey)
+				{
+					papiItemShallowCopy[originalFieldName] = papiItemShallowCopy[papiItemKey];
+					delete papiItemShallowCopy[papiItemKey];
+				}
+			}
 
-		return resItem;
+			return papiItemShallowCopy;
+		});
+
+		return resItems;
 	}
 
 	/**
@@ -684,5 +658,4 @@ export class BaseCoreService
 			throw new Error('No key provided');
 		}
 	}
-
 }
