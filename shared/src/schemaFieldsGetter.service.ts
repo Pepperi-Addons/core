@@ -14,13 +14,13 @@ export class SchemaFieldsGetterService
      * The maximum depth of reference fields to get
      * This is to prevent infinite loops
      */
-    protected readonly MAX_DEPTH = 5;
-    protected cachedSchemaFields: {[key: string]: SchemaFieldsResult} = {};
+	protected readonly MAX_DEPTH = 5;
+	protected cachedSchemaFields: {[key: string]: SchemaFieldsResult} = {};
 
 	constructor(protected schemaGetter: ISchemaGetter)
 	{}
 
-	public async getSchemaFields(schema: AddonDataScheme, currentDepth: number = 0): Promise<SchemaFieldsResult>
+	public async getSchemaFields(schema: AddonDataScheme, currentDepth = 0): Promise<SchemaFieldsResult>
 	{
 		if(!this.cachedSchemaFields[schema.Name])
 		{
@@ -58,28 +58,28 @@ export class SchemaFieldsGetterService
 
 		if (currentDepth <= this.MAX_DEPTH && schema.Fields![fieldName]?.Resource) 
 		{
-            const referencedSchema = await this.schemaGetter.getResourceSchema(schema.Fields![fieldName].Resource);
-            const referencedSchemaFields =  await this.getSchemaFields(referencedSchema, currentDepth + 1);
+			const referencedSchema = await this.schemaGetter.getResourceSchema(schema.Fields![fieldName].Resource);
+			const referencedSchemaFields =  await this.getSchemaFields(referencedSchema, currentDepth + 1);
 
-            for (const referencedFieldName in referencedSchemaFields)
-            {
-                const referencedField = referencedSchemaFields[referencedFieldName];
+			for (const referencedFieldName in referencedSchemaFields)
+			{
+				const referencedField = referencedSchemaFields[referencedFieldName];
 
-                res[`${fieldName}.${referencedFieldName}`] = {
-                    FieldType: referencedField.FieldType,
-                    TranslatedFieldName: `${fieldName}.${referencedField.TranslatedFieldName}`
-                };
+				res[`${fieldName}.${referencedFieldName}`] = {
+					FieldType: referencedField.FieldType,
+					TranslatedFieldName: `${fieldName}.${referencedField.TranslatedFieldName}`
+				};
 
-                // ADAL also supports the following query syntax: "ResourceName.ReferencedFieldName", 
+				// ADAL also supports the following query syntax: "ResourceName.ReferencedFieldName", 
 			    // so we need to add the following to the result as well:
-                if(referencedFieldName === 'Key')
-                {
-                    res[fieldName] = {
-                        FieldType: referencedField.FieldType,
-                        TranslatedFieldName: `${fieldName}.${this.handleKeyToPapiKeyPropertyName(referencedFieldName, referencedSchema)}`
-                    };
-                }
-            }
+				if(referencedFieldName === 'Key')
+				{
+					res[fieldName] = {
+						FieldType: referencedField.FieldType,
+						TranslatedFieldName: `${fieldName}.${this.handleKeyToPapiKeyPropertyName(referencedFieldName, referencedSchema)}`
+					};
+				}
+			}
 		}
 
 		return res;
