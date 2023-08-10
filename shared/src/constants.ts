@@ -61,7 +61,6 @@ export function getDefaultSchemaFields(): { [key: string]: SchemeField }
 		'ModificationDateTime': {Type: 'DateTime'},
 		'CreationDateTime': {Type: 'DateTime'},
 		'Hidden': {Type: 'Bool'},
-
 	};
     
 	return result;

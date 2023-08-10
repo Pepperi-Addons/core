@@ -3,7 +3,7 @@ import { DIMXObject, AddonDataScheme } from '@pepperi-addons/papi-sdk';
 import { FieldType, JSONBaseFilter, JSONFilter, parse, transform, toApiQueryString } from '@pepperi-addons/pepperi-filters';
 import { NodeTransformer } from '@pepperi-addons/pepperi-filters/build/json-filter-transformer';
 
-import { getPapiKeyPropertyName, PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from './constants';
+import { getDefaultSchemaFields, getPapiKeyPropertyName, PapiBatchResponse, RESOURCE_TYPES, SearchResult, UNIQUE_FIELDS } from './constants';
 import IPapiService from './IPapi.service';
 import { ReferenceTranslationManager } from './referenceTranslators/referenceTranslationExecutioner';
 import { SchemaFieldsGetterService } from './schemaFieldsGetter.service';
@@ -11,11 +11,6 @@ import { SchemaFieldsGetterService } from './schemaFieldsGetter.service';
 export class BaseCoreService 
 {
 	protected schemaFieldsGetterService: SchemaFieldsGetterService;
-	/**
-	 * The fields that are always returned in the schema
-	 */
-	protected defaultSchemaFields: string[] = ['ModificationDateTime', 'CreationDateTime', 'Key'];
-
 
 	protected get uniqueFields(): string[]
 	{
@@ -281,8 +276,9 @@ export class BaseCoreService
 	protected getSchemasFields(): string
 	{
 		const schemaFields = Object.keys(this.schema.Fields!);
+		const defaultSchemaFields = Object.keys(getDefaultSchemaFields());
 		// Add default fields to the fields array
-		const fieldsArray = [...schemaFields, ...this.defaultSchemaFields];
+		const fieldsArray = [...schemaFields, ...defaultSchemaFields];
 		return fieldsArray.join(',');
 	}
 
