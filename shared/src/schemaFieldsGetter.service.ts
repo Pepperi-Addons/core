@@ -14,7 +14,7 @@ export class SchemaFieldsGetterService
      * The maximum depth of reference fields to get
      * This is to prevent infinite loops
      */
-	protected readonly MAX_DEPTH = 5;
+	protected readonly MAX_DEPTH = 2;
 	protected cachedSchemaFields: {[key: string]: SchemaFieldsResult} = {};
 
 	constructor(protected schemaGetter: ISchemaGetter)
