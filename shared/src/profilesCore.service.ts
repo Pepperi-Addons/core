@@ -14,7 +14,7 @@ export class ProfilesCoreService extends BaseCoreService
 
 		this.validateGetBeInternalIDResult(papiItems);
 
-		const translatedItem = this.translatePapiItemToItem(papiItems[0]);
+		const translatedItem = await this.translatePapiItemToItem(papiItems[0]);
 
 		return translatedItem;
 	}

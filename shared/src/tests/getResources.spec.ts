@@ -76,7 +76,10 @@ describe('GET resources', async () =>
 		}
 		if(query.fields == 'UUID')
 		{
-			return Promise.resolve(resourcesList.filter(resource => query.include_deleted || !resource.Hidden).map(resource => resource.UUID));
+			return Promise.resolve(resourcesList.filter(resource => query.include_deleted || !resource.Hidden).map(resource => 
+			{
+				return {UUID: resource.UUID}
+			}));
 		}
 		else
 		{

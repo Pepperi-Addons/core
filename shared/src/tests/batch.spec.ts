@@ -6,7 +6,6 @@ import { MockApiService, mockClient, usersSchema } from './consts';
 import { Request } from '@pepperi-addons/debug-server';
 import { BaseCoreService } from '../baseCore.service';
 import { PapiBatchResponse } from '../constants';
-import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 chai.use(promised);
 

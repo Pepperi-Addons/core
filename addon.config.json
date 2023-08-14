@@ -16,7 +16,7 @@
     "ClientStack": "ng10",
     "Editors": [],
     "Dependencies": {
-      "papi": "9.5.510"
+      "papi": "9.6.14"
     },
     "CPISide": [
       "addon-cpi.ts"

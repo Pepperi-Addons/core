@@ -249,7 +249,7 @@ function getPapiService(client: Client, resourceName: string) : IPapiService
 
 async function getResourceSchema(client: Client, request: Request): Promise<AddonDataScheme>
 {
-	const papiClient = Helper.getPapiClient(client, request.query.addon_uuid);
+	const papiClient = Helper.getPapiClient(client);
 	const schemaOwnerPapiService = new BasePapiService(request.query.resource_name, papiClient);
 	const resourceSchema = await schemaOwnerPapiService.getResourceSchema();
 

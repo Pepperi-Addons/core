@@ -75,10 +75,4 @@ export class CatalogsAndAccountsCoreService extends BaseCoreService
 
 		return await super.batch();
 	}
-
-	// CreationDate shouldn't be deleted, as it will be translated to CreationDateTime, which is a part of the schema.
-	protected override shouldFieldBeDeleted(field: string, schemaFields: string[]): boolean
-	{
-		return super.shouldFieldBeDeleted(field, schemaFields) && field !== 'CreationDate'
-	}
 }

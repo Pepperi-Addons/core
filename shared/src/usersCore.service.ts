@@ -49,7 +49,7 @@ export class UsersCoreService extends BaseCoreService
 		}
 
 		// Translate the PAPI item to an item
-		const translatedItem = this.translatePapiItemToItem(papiItem);
+		const translatedItem = await this.translatePapiItemToItem(papiItem);
 
 		return translatedItem;
 	}
