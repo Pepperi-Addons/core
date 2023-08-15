@@ -163,26 +163,26 @@ export class BasePapiService implements IPapiService
     */
 	protected translateUniqueFieldQueriesToPapi(papiSearchBody: any): void 
 	{
-		let shouldDeleteUniqueFields = false;
+		let shouldDeleteUniqueFieldsProperties = false;
 		if (papiSearchBody.UniqueFieldID === 'ExternalID') 
 		{
-			papiSearchBody.Where = `ExternalID in ('${papiSearchBody.UniqueFieldList.join("\',\'")}') ${papiSearchBody.Where ?  `AND (${papiSearchBody.Where})` : '' }`;
-			shouldDeleteUniqueFields = true;
+			papiSearchBody.ExternalIDList = papiSearchBody.UniqueFieldList;
+			shouldDeleteUniqueFieldsProperties = true;
 		}
 
 		if (papiSearchBody.UniqueFieldID === 'InternalID') 
 		{
 			papiSearchBody.InternalIDList = papiSearchBody.UniqueFieldList;
-			shouldDeleteUniqueFields = true;
+			shouldDeleteUniqueFieldsProperties = true;
 		}
 
 		if (papiSearchBody.UniqueFieldID === 'UUID' || papiSearchBody.UniqueFieldID === 'Key') 
 		{
 			papiSearchBody.UUIDList = papiSearchBody.UniqueFieldList;
-			shouldDeleteUniqueFields = true;
+			shouldDeleteUniqueFieldsProperties = true;
 		}
 
-		if (shouldDeleteUniqueFields) 
+		if (shouldDeleteUniqueFieldsProperties) 
 		{
 			delete papiSearchBody.UniqueFieldID;
 			delete papiSearchBody.UniqueFieldList;
