@@ -14,14 +14,14 @@ export class RolesPapiService extends BasePapiService
 		throw new Error('Method not implemented.');
 	}
 
-	public override async getResourceByKey(key: string): Promise<any> 
+	public override async getResourceByKey(key: string, fieldsString: string): Promise<any> 
 	{
 		try
 		{
 			// Since roles doesn't have a UUID in PAPI, translate the Key
 			// to a where clause on Name field.
 			const whereClause = `Name='${key}'`;
-			return (await this.papiClient.get(`/${this.resourceName}?where=${whereClause}`))[0];
+			return (await this.papiClient.get(`/${this.resourceName}?where=${whereClause}&fields=${fieldsString}`))[0];
 		}
 		catch(error)
 		{

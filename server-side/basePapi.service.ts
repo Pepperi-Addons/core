@@ -72,11 +72,15 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	public async getResourceByKey(key: string): Promise<any> 
+	// getResourceByKey(key: string, fieldsString: string): Promise<any>;
+    // getResourceByExternalId(externalId: any, fieldsString: string): Promise<any>;
+    // getResourceByInternalId(internalId: any, fieldsString: string): Promise<any>;
+
+	public async getResourceByKey(key: string, fieldsString: string): Promise<any> 
 	{
 		try
 		{
-			return await this.papiClient.get(`/${this.resourceName}/UUID/${key}`);
+			return await this.papiClient.get(`/${this.resourceName}/UUID/${key}?fields=${fieldsString}`);
 		}
 		catch(error)
 		{
@@ -84,11 +88,11 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	public async getResourceByExternalId(externalId: any)
+	public async getResourceByExternalId(externalId: any, fieldsString: string)
 	{
 		try
 		{
-			return await this.papiClient.get(`/${this.resourceName}/ExternalId/${externalId}`);
+			return await this.papiClient.get(`/${this.resourceName}/ExternalId/${externalId}?fields=${fieldsString}`);
 		}
 		catch(error)
 		{
@@ -96,11 +100,11 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	public async getResourceByInternalId(internalId: any)
+	public async getResourceByInternalId(internalId: any, fieldsString: string)
 	{
 		try
 		{
-			return await this.papiClient.get(`/${this.resourceName}/${internalId}`);
+			return await this.papiClient.get(`/${this.resourceName}/${internalId}?fields=${fieldsString}`);
 		}
 		catch(error)
 		{

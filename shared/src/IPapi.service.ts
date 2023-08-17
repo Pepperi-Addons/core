@@ -15,11 +15,11 @@ export interface IPapiService extends ISchemaGetter
 
 	getResources(query: any): Promise<Array<any>>;
 
-	getResourceByKey(key: string): Promise<any>;
+	getResourceByKey(key: string, fieldsString: string): Promise<any>;
 
-	getResourceByExternalId(externalId: any): Promise<any>;
+	getResourceByExternalId(externalId: any, fieldsString: string): Promise<any>;
 
-	getResourceByInternalId(internalId: any): Promise<any>;
+	getResourceByInternalId(internalId: any, fieldsString: string): Promise<any>;
 
 	searchResource(body: void): Promise<SearchResult>;
 }
