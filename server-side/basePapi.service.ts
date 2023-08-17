@@ -72,10 +72,6 @@ export class BasePapiService implements IPapiService
 		}
 	}
 
-	// getResourceByKey(key: string, fieldsString: string): Promise<any>;
-    // getResourceByExternalId(externalId: any, fieldsString: string): Promise<any>;
-    // getResourceByInternalId(internalId: any, fieldsString: string): Promise<any>;
-
 	public async getResourceByKey(key: string, fieldsString: string): Promise<any> 
 	{
 		try
