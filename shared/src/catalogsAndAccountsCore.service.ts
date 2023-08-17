@@ -7,6 +7,13 @@ import CatalogsSearchBodyResolver from './resolvers/catalogsSearchBodyResolver';
 
 export class CatalogsAndAccountsCoreService extends BaseCoreService
 {
+	protected override getSchemasFields(): string
+	{
+		const fieldsArray = super.getSchemasFields().split(',');
+		fieldsArray.push('CreationDate');
+		return fieldsArray.join(',');
+	}
+
 	/**
 	 * Return the item with the given key
 	 */
