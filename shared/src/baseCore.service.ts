@@ -53,6 +53,7 @@ export class BaseCoreService
 
 		const papiItem = await this.papi.getResourceByKey(requestedKey);
 		const translatedItem = await this.translatePapiItemToItem(papiItem);
+		this.deleteUnwantedFieldsFromItems(translatedItem, this.getSchemasFields());
 
 		return translatedItem;
 	}
@@ -68,24 +69,26 @@ export class BaseCoreService
 		//validate field_id and value query parameters are present
 		this.validateUniqueKeyPrerequisites(requestedFieldId, requestedValue);
 
+		let translatedItem: any;
+
 		switch(requestedFieldId)
 		{
 		case 'UUID':
 		case 'Key':
 		{
-			return await this.getResourceByKey(requestedValue);
+			translatedItem = await this.getResourceByKey(requestedValue);
+			break;
 		}
 		case 'InternalID':
 		{
-
-			return await this.handleGetResourceByInternalID(requestedValue);
+			translatedItem = await this.handleGetResourceByInternalID(requestedValue);
+			break;
 		}
 		case 'ExternalID':
 		{
 			const papiItem = await this.papi.getResourceByExternalId(requestedValue);
-			const translatedItem = await this.translatePapiItemToItem(papiItem);
-
-			return translatedItem;
+			translatedItem = await this.translatePapiItemToItem(papiItem);
+			break;
 		}
 		default:
 		{
@@ -96,6 +99,10 @@ export class BaseCoreService
 			throw new Error(errorMessage);
 		}
 		}
+		
+		this.deleteUnwantedFieldsFromItems(translatedItem, this.getSchemasFields());
+		return translatedItem;
+
 	}
 
 	protected async handleGetResourceByInternalID(requestedValue: any) 
@@ -154,6 +161,7 @@ export class BaseCoreService
 		if (fieldsArray) 
 		{
 			fieldsArray = Array.isArray(fieldsArray) ? fieldsArray : fieldsArray.split(',');
+			items = Array.isArray(items) ? items : [items];
 			items.forEach(item => 
 			{
 				Object.keys(item).forEach(key => 

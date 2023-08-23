@@ -13,7 +13,11 @@ export default class CatalogsResourceCreationDateToCreationDateTimeResolver exte
 	{
 		if(object.hasOwnProperty('CreationDate'))
 		{
-			object.CreationDateTime = object.CreationDate;
+			if(!object.hasOwnProperty('CreationDateTime'))
+			{
+				object.CreationDateTime = object.CreationDate;
+			}
+			
 			delete object.CreationDate;
 		}
 	}
