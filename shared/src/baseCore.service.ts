@@ -50,8 +50,8 @@ export class BaseCoreService
 		const requestedKey = key ?? this.request.query.key;
 
 		this.validateKey(requestedKey);
-
-		const papiItem = await this.papi.getResourceByKey(requestedKey);
+		const translatedFields = await this.translateFieldsToPapi();
+		const papiItem = await this.papi.getResourceByKey(requestedKey, translatedFields.join(','));
 		const translatedItem = await this.translatePapiItemToItem(papiItem);
 		this.deleteUnwantedFieldsFromItems(translatedItem, this.getSchemasFields());
 
@@ -86,7 +86,8 @@ export class BaseCoreService
 		}
 		case 'ExternalID':
 		{
-			const papiItem = await this.papi.getResourceByExternalId(requestedValue);
+			const translatedFields = await this.translateFieldsToPapi();
+			const papiItem = await this.papi.getResourceByExternalId(requestedValue, translatedFields.join(','));
 			translatedItem = await this.translatePapiItemToItem(papiItem);
 			break;
 		}
@@ -107,7 +108,9 @@ export class BaseCoreService
 
 	protected async handleGetResourceByInternalID(requestedValue: any) 
 	{
-		const papiItem = await this.papi.getResourceByInternalId(requestedValue);
+		const translatedFields = await this.translateFieldsToPapi();
+		
+		const papiItem = await this.papi.getResourceByInternalId(requestedValue, translatedFields.join(','));
 		const translatedItem = await this.translatePapiItemToItem(papiItem);
 
 		return translatedItem;
@@ -265,11 +268,20 @@ export class BaseCoreService
 		}
 
 		const fieldsToTranslate: string[] = papiSearchBody.Fields ?? this.getSchemasFields().split(',');
-		const schemaFieldsResult = await this.schemaFieldsGetterService.getSchemaFields(this.schema);
-		papiSearchBody.Fields = fieldsToTranslate.map(field => schemaFieldsResult[field] ? schemaFieldsResult[field].TranslatedFieldName : field);
+		const translatedFields = await this.translateFieldsToPapi(fieldsToTranslate);
+		papiSearchBody.Fields = translatedFields;
 
 		// Fields are passed as an array of strings, while PAPI supports a string that is separated by commas.
 		papiSearchBody.Fields = papiSearchBody.Fields.join(',');
+	}
+
+	private async translateFieldsToPapi(fieldsToTranslate?: string[])
+	{
+		fieldsToTranslate = fieldsToTranslate ?? this.getSchemasFields().split(',');
+		const schemaFieldsResult = await this.schemaFieldsGetterService.getSchemaFields(this.schema);
+		const translatedFields = fieldsToTranslate.map(field => schemaFieldsResult[field] ? schemaFieldsResult[field].TranslatedFieldName : field);
+
+		return translatedFields;
 	}
 
 	/**

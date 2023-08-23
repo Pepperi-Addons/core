@@ -112,8 +112,10 @@ export default class BaseCpiSideApiService implements IPapiService
 		throw new Error('Method not implemented.');
 	}
 
-	async getResourceByKey(key: string): Promise<any> 
+	async getResourceByKey(key: string, fieldsString?: string): Promise<any> 
 	{
+		// The passed fieldsString doesn't include filtering of whatever's available in CPI side.
+		// Disregard the passed fieldsString and get all fields from CPI side.
 		const schemaFields = await this.getRequestedClientApiFields();
 		const getParams: GetParams<string> = {
 			key: {  
@@ -127,14 +129,19 @@ export default class BaseCpiSideApiService implements IPapiService
 		return getResult.object
 	}
 
-	async getResourceByExternalId(externalId: any): Promise<any> 
+	async getResourceByExternalId(externalId: any, fieldsString: string): Promise<any> 
 	{
+		// The passed fieldsString doesn't include filtering of whatever's available in CPI side.
+		// Disregard the passed fieldsString and get all fields from CPI side.
+
 		const searchBody = this.createAUniqueFieldRequestBody('ExternalID', externalId);
 		return await this.callSearchExpectingASingleResource(searchBody);
 	}
 
-	async getResourceByInternalId(internalId: any): Promise<any> 
+	async getResourceByInternalId(internalId: any, fieldsString: string): Promise<any> 
 	{
+		// The passed fieldsString doesn't include filtering of whatever's available in CPI side.
+		// Disregard the passed fieldsString and get all fields from CPI side.
 		const searchBody = this.createAUniqueFieldRequestBody('InternalID', internalId);
 		return await this.callSearchExpectingASingleResource(searchBody);
 	}
