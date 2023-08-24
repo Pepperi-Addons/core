@@ -26,14 +26,14 @@ export class UsersCoreService extends BaseCoreService
 		console.log(`Core - Employees - Trying to upsert the resource...`);
 		// Translate the item to PAPI format
 		const papiItemRequestBody = this.translateItemToPapiItem(this.request.body);
-
+		const fields = await this.getPapiTranslatedSchemaFields();
 		// Choose the appropriate papi function to call
 		let papiItem;
 		if(await this.doesUserExist())
 		{
 			console.log(`Core - Employees - User already exist. Try to update it...`);
 			
-			papiItem = await this.papi.updateResource(papiItemRequestBody);
+			papiItem = await this.papi.updateResource(papiItemRequestBody, fields);
 
 			console.log(`Core - Employees - Successfully updated the user.`);
 
@@ -42,7 +42,7 @@ export class UsersCoreService extends BaseCoreService
 		{
 			console.log(`Core - Employees - User does not exist. Try to create it...`);
 			
-			papiItem = await this.papi.createResource(papiItemRequestBody);
+			papiItem = await this.papi.createResource(papiItemRequestBody, fields);
 
 			console.log(`Core - Employees - Successfully created a user.`);
 			

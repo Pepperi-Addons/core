@@ -22,8 +22,10 @@ export default class BaseCpiSideApiService implements IPapiService
 		throw new Error('Method not implemented.');
 	}
 
-	async createResource(body: any): Promise<any> 
+	async createResource(body: any, fieldsString: string): Promise<any> 
 	{
+		//fieldsString is not needed in CPI-side. It is calculated in an case in this.getResourceByKey()
+
 		// Build CreateResourceParams
 		const createResourceParams: CreateResourceParams = {
 			object: body,
@@ -46,8 +48,10 @@ export default class BaseCpiSideApiService implements IPapiService
 		return resultObject;
 	}
 
-	async updateResource(body: any): Promise<any> 
+	async updateResource(body: any, fieldsString: string): Promise<any> 
 	{
+		//fieldsString is not needed in CPI-side. It is calculated in an case in this.getResourceByKey()
+
 		// Build UpdateParams
 		const updateParams: UpdateParams = {
 			objects: [
@@ -72,7 +76,7 @@ export default class BaseCpiSideApiService implements IPapiService
 		return resultObject;
 	}
 
-	async upsertResource(body: any): Promise<any> 
+	async upsertResource(body: any, fieldsString: string): Promise<any> 
 	{
 		let res: any;
 		let doesResourceExist: boolean | undefined;
@@ -89,11 +93,11 @@ export default class BaseCpiSideApiService implements IPapiService
 
 		if(doesResourceExist)
 		{
-			res = await this.updateResource(body);
+			res = await this.updateResource(body, fieldsString);
 		}
 		else
 		{
-			res = await this.createResource(body); 
+			res = await this.createResource(body, fieldsString); 
 		}
 
 		return res;

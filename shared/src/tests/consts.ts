@@ -84,17 +84,17 @@ export class MockApiService implements IPapiService
 		throw new Error('Method not implemented.');
 	}
 
-	async createResource(body: any): Promise<any>
+	async createResource(body: any, fields: string): Promise<any>
 	{
-		return await this.upsertResource(body);
+		return await this.upsertResource(body, fields);
 	}
 
-	async updateResource(body: any): Promise<any>
+	async updateResource(body: any, fields: string): Promise<any>
 	{
-		return await this.upsertResource(body);
+		return await this.upsertResource(body, fields);
 	}
 
-	async upsertResource(body: any): Promise<any>
+	async upsertResource(body: any, fields: string): Promise<any>
 	{
 		return Promise.resolve({});
 	}
