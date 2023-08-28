@@ -5,11 +5,11 @@ export interface IPapiService extends ISchemaGetter
 {
 	getResourceFields(): Promise<ResourceFields>;
 
-	createResource(body: any): Promise<any>;
+	createResource(body: any, fieldsString: string): Promise<any>;
 
-	updateResource(body: any): Promise<any>;
+	updateResource(body: any, fieldsString: string): Promise<any>;
 
-	upsertResource(body: any): Promise<any>;
+	upsertResource(body: any, fieldsString: string): Promise<any>;
 
 	batch(body: any): Promise<PapiBatchResponse>;
 

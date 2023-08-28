@@ -23,21 +23,21 @@ export class BasePapiService implements IPapiService
 
 	}
 
-	public async createResource(body: any)
+	public async createResource(body: any, fieldsString: string)
 	{
-		return await this.upsertResource(body);
+		return await this.upsertResource(body, fieldsString);
 	}
 
-	public async updateResource(body: any)
+	public async updateResource(body: any, fieldsString: string)
 	{
-		return await this.upsertResource(body);
+		return await this.upsertResource(body, fieldsString);
 	}
 
-	public async upsertResource(body: any) 
+	public async upsertResource(body: any, fieldsString: string) 
 	{
 		try
 		{
-			return await this.papiClient.post(`/${this.resourceName}`, body);
+			return await this.papiClient.post(`/${this.resourceName}?_fields=${fieldsString}`, body);
 		}
 		catch(error)
 		{

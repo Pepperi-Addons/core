@@ -407,12 +407,22 @@ export class BaseCoreService
 	{
 		// Translate the item to PAPI format
 		const papiItemRequestBody = this.translateItemToPapiItem(this.request.body);
+		const fields = await this.getPapiTranslatedSchemaFields();
 		// Create the PAPI item
-		const papiItem = await this.papi.upsertResource(papiItemRequestBody);
+		const papiItem = await this.papi.upsertResource(papiItemRequestBody, fields);
 		// Translate the PAPI item to an item
 		const translatedItem = await this.translatePapiItemToItem(papiItem);
 
 		return translatedItem;
+	}
+
+	protected async getPapiTranslatedSchemaFields(): Promise<string>
+	{
+		const fieldsToTranslate = this.getSchemasFields().split(',');
+		const schemaFieldsResult = await this.schemaFieldsGetterService.getSchemaFields(this.schema);
+
+		const fields = fieldsToTranslate.map(field => schemaFieldsResult[field] ? schemaFieldsResult[field].TranslatedFieldName : field);
+		return fields.join(',');
 	}
 
 	/**
