@@ -597,7 +597,7 @@ export class BaseCoreService
 		{
 			return {...papiItem};
 		});
-        const requestedFields: string[] = this.request.body?.Fields ?? (this.request.query.fields ? this.request.query.fields.split(',') : []);
+		const requestedFields: string[] = this.request.body?.Fields ?? (this.request.query.fields ? this.request.query.fields.split(',') : []);
 
 		resItems.map(papiItem => 
 		{
