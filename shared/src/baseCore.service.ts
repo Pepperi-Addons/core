@@ -597,6 +597,7 @@ export class BaseCoreService
 		{
 			return {...papiItem};
 		});
+		const requestedFields: string[] = this.request.body?.Fields ?? (this.request.query.fields ? this.request.query.fields.split(',') : []);
 
 		resItems.map(papiItem => 
 		{
@@ -605,7 +606,10 @@ export class BaseCoreService
 				const keyValue = papiItem[this.papiKeyPropertyName];
 				papiItem.Key = keyValue ? keyValue.toString() : '';
 
-				delete papiItem[this.papiKeyPropertyName];
+				if(!requestedFields.includes(this.papiKeyPropertyName))
+				{
+					delete papiItem[this.papiKeyPropertyName];
+				}
 			}
 		});
 
